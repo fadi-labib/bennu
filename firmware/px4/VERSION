@@ -1,0 +1,4 @@
+PX4_VERSION=v1.15.2
+BOARD_TARGET=holybro_pixhawk6c
+LAST_FLASH_DATE=
+NOTES=Initial setup, not yet flashed

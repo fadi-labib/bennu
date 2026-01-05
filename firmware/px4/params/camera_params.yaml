@@ -1,0 +1,12 @@
+# Camera trigger configuration for Bennu
+# Camera: Raspberry Pi HQ Camera triggered via companion computer
+
+# Camera trigger
+TRIG_INTERFACE: 3            # MAVLink trigger (sends to companion)
+TRIG_MODE: 4                 # Distance-based trigger
+TRIG_DIST: 5.0               # Trigger every 5 meters (adjust per mission)
+TRIG_ACT_TIME: 0.5           # Trigger activation time (seconds)
+TRIG_MIN_INTERVA: 1.0        # Minimum interval between triggers (seconds)
+
+# Camera feedback
+CAM_CAP_FBACK: 1             # Enable capture feedback

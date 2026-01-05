@@ -1,0 +1,18 @@
+# GPS configuration for Bennu
+# Module: Holybro M9N (u-blox M9N) with built-in compass
+
+# GPS
+GPS_1_CONFIG: 201           # GPS on UART port (GPS1)
+GPS_1_PROTOCOL: 1           # u-blox protocol
+GPS_1_GNSS: 7               # GPS + GLONASS + Galileo
+
+# Compass (built into M9N)
+CAL_MAG0_EN: 1              # Enable internal compass
+CAL_MAG1_EN: 1              # Enable external compass (GPS module)
+CAL_MAG_PRIME: 1            # Use external compass as primary
+EKF2_MAG_TYPE: 1            # Automatic magnetometer selection
+
+# Geofence (safety)
+GF_ACTION: 1                # Geofence action: warning
+GF_MAX_HOR_DIST: 500        # Max horizontal distance (meters)
+GF_MAX_VER_DIST: 120        # Max vertical distance (meters)
