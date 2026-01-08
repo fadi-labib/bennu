@@ -1,0 +1,5 @@
+camera_capture_node:
+  ros__parameters:
+    output_dir: "/home/pi/captures"
+    image_width: 4056
+    image_height: 3040
