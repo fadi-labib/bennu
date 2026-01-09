@@ -1,0 +1,32 @@
+# WebODM — web interface for OpenDroneMap
+# Usage: docker compose up -d
+# Access: http://localhost:8000
+version: "3"
+
+services:
+  webapp:
+    image: opendronemap/webodm_webapp:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - webodm_data:/webodm/app/media
+    depends_on:
+      - db
+      - worker
+    restart: unless-stopped
+
+  db:
+    image: opendronemap/webodm_db:latest
+    volumes:
+      - webodm_db:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  worker:
+    image: opendronemap/nodeodm:latest
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+volumes:
+  webodm_data:
+  webodm_db:
