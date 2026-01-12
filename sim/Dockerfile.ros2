@@ -1,0 +1,45 @@
+# ROS2 Jazzy + Micro XRCE-DDS Agent + bennu workspace
+FROM ros:jazzy
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install additional dependencies
+RUN apt-get update && apt-get install -y \
+    python3-pip \
+    python3-colcon-common-extensions \
+    python3-rosdep \
+    python3-vcstool \
+    exiftool \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Micro XRCE-DDS Agent from source
+WORKDIR /opt
+RUN git clone --depth 1 https://github.com/eProsima/Micro-XRCE-DDS-Agent.git \
+    && cd Micro-XRCE-DDS-Agent \
+    && mkdir build && cd build \
+    && cmake .. \
+    && make -j$(nproc) \
+    && make install \
+    && ldconfig \
+    && rm -rf /opt/Micro-XRCE-DDS-Agent
+
+# Create workspace and clone px4_msgs
+WORKDIR /ros2_ws/src
+RUN git clone --depth 1 https://github.com/PX4/px4_msgs.git
+
+# Copy bennu packages (will be overridden by volume mount in dev)
+COPY drone/ros2_ws/src/bennu_camera /ros2_ws/src/bennu_camera
+COPY drone/ros2_ws/src/bennu_bringup /ros2_ws/src/bennu_bringup
+
+# Build workspace
+WORKDIR /ros2_ws
+RUN . /opt/ros/jazzy/setup.sh \
+    && colcon build --symlink-install
+
+# Source workspace in bashrc
+RUN echo "source /opt/ros/jazzy/setup.bash" >> /root/.bashrc \
+    && echo "source /ros2_ws/install/setup.bash" >> /root/.bashrc
+
+WORKDIR /ros2_ws
+
+CMD ["bash", "-c", "MicroXRCEAgent udp4 -p 8888"]
