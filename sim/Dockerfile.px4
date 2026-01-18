@@ -31,7 +31,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python packages not available via apt on 24.04
-RUN pip3 install --break-system-packages pyulog kconfiglib
+RUN pip3 install --break-system-packages pyulog kconfiglib pyros-genmsg
 
 # Install Gazebo Harmonic
 RUN curl -fsSL https://packages.osrfoundation.org/gazebo.gpg \
@@ -44,10 +44,14 @@ RUN curl -fsSL https://packages.osrfoundation.org/gazebo.gpg \
 
 # Clone PX4-Autopilot
 WORKDIR /opt
+# Clone PX4 (shallow) then fetch tags needed by the build's version script.
+# The nuttx submodule also needs its tags for px_update_git_header.py.
 RUN git clone --depth 1 --branch v1.15.2 \
     https://github.com/PX4/PX4-Autopilot.git px4 \
     && cd px4 \
-    && git submodule update --init --recursive --depth 1
+    && git fetch --tags --depth 1 \
+    && git submodule update --init --recursive --depth 1 \
+    && find . -path "*/nuttx/nuttx" -type d -exec sh -c 'cd "$1" && git fetch --tags --depth 1' _ {} \;
 
 # Build PX4 SITL
 WORKDIR /opt/px4
