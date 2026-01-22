@@ -4,7 +4,7 @@
 3D-printed 7" quadcopter for outdoor photogrammetry using PX4 + ROS2 + OpenDroneMap.
 
 ## Tech Stack
-- **Flight Controller:** PX4 v1.15+ on Holybro Pixhawk 6C
+- **Flight Controller:** PX4 v1.16+ on Holybro Pixhawk 6C
 - **Companion Computer:** Raspberry Pi 5 (8GB), Ubuntu 24.04, ROS2 Jazzy
 - **PX4-ROS2 Bridge:** uXRCE-DDS (not MAVROS)
 - **Camera:** Raspberry Pi HQ Camera (IMX477) + 6mm CS-mount lens
