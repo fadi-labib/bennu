@@ -28,7 +28,6 @@ services:
       - "14580:14580/udp"
     networks:
       - bennu-sim
-    runtime: nvidia
     deploy:
       resources:
         reservations:
