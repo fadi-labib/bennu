@@ -19,6 +19,8 @@ services:
       - QT_QPA_PLATFORM=xcb
       - PX4_SYS_AUTOSTART=4001
       - PX4_GZ_MODEL=x500
+      - __GLX_VENDOR_LIBRARY_NAME=nvidia
+      - __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     ports:
