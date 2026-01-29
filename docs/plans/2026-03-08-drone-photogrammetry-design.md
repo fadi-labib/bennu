@@ -1,7 +1,11 @@
 # Bennu — DIY 3D-Printed Photogrammetry Drone
 
 **Date:** 2026-03-08
-**Status:** Approved
+**Status:** Implemented (all 13 tasks merged to main)
+
+> **Note:** This design originally targeted PX4 v1.15 and ROS2 Humble.
+> The project has since upgraded to PX4 v1.16+ and ROS2 Jazzy.
+> See `2026-03-08-drone-platform-readiness-design.md` for the current architecture.
 
 ## Overview
 

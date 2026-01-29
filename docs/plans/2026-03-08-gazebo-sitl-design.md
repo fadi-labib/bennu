@@ -1,5 +1,7 @@
 # Gazebo SITL Simulation — Design
 
+**Status:** Implemented (8 tasks merged to main)
+
 **Goal:** Run the full Bennu software stack (PX4 + ROS2 + camera node) in simulation on the dev machine using Docker, so we can test waypoint missions, camera triggers, and geotagging without hardware.
 
 **Dev machine:** Ubuntu 24.04, x86_64, no ROS2/Gazebo installed natively.
