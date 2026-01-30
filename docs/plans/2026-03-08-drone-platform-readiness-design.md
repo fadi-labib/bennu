@@ -128,9 +128,15 @@ tests in CI.
     "rtk_fixed_pct": 0.95,
     "coverage_pct": 0.98
   },
+  "checksums_digest": "sha256-of-checksums.sha256-file",
   "signature": "base64-encoded-ed25519-signature"
 }
 ```
+
+**Required vs optional fields:**
+- Required: `contract_version`, `mission_id`, `drone_id`, `drone_hardware`, `capture`,
+  `quality_summary` (with `coverage_pct` nullable), `checksums_digest`, `signature`
+- Optional: `survey` (omitted for manual flights, test flights, non-grid missions)
 
 ### images.csv (Per-Image)
 
@@ -152,14 +158,20 @@ tests in CI.
 | gsd_cm | float | Calculated ground sample distance |
 | quality_score | float | 0.0-1.0 composite quality score |
 | quality_flags | string | Comma-separated: ok, blur, overexposed, underexposed |
-| ambient_light_lux | float | BH1750 reading (if sensor present) |
+| ambient_light_lux | float | BH1750 reading (if sensor present), nullable |
+| capture_offset_ms | float | Offset from trigger timestamp for this sensor (multi-sensor sync), nullable |
 
 ### Contract Rules
 
 - Semantic versioning (v1, v1.1, v2)
-- Strict JSON Schema validation in CI (both repos)
+- Strict JSON Schema validation in CI for `manifest.json` (both repos)
+- CSV validation: column names, types, and row count checked via schema definition
+  in `contract/v1/images.schema.json` (defines columns, types, constraints)
 - Minor versions add optional fields only (backward compatible)
 - Major versions may remove or change fields (migration notes required)
+- Schema authority: contract schema lives in a shared artifact (git submodule or
+  versioned release). The drone repo pins a contract version tag and runs
+  conformance tests. The platform repo is the schema author.
 
 ## Drone Hardware Architecture
 
@@ -283,11 +295,11 @@ drone/ros2_ws/src/
 │   ├── drone_identity.py          # Drone ID, hardware manifest, key management
 │   └── health_monitor.py          # Battery, GPS quality, sensor health
 │
-├── bennu_camera/                  # Multi-sensor capture (enhanced existing)
+├── bennu_camera/                  # Capture + quality (enhanced existing)
 │   ├── camera_node.py             # RGB capture (existing, enhanced with attitude)
-│   ├── nir_node.py                # NIR camera capture (Config A)
-│   ├── thermal_node.py            # FLIR Lepton driver (Config B)
-│   ├── sync_manager.py            # Multi-sensor trigger coordination
+│   ├── nir_node.py                # NIR camera capture (Config A) [deferred: needs hardware]
+│   ├── thermal_node.py            # FLIR Lepton driver (Config B) [deferred: needs hardware]
+│   ├── sync_manager.py            # Multi-sensor trigger coordination [deferred: needs hardware]
 │   ├── calibration.py             # Light sensor + panel capture
 │   ├── quality.py                 # Blur, exposure, histogram scoring
 │   └── geotag.py                  # Enhanced: attitude, RTK fix, GSD, accuracy
@@ -400,8 +412,25 @@ Bundle ready for export (local storage, rsync, or HTTP upload)
 - Each drone has an Ed25519 keypair provisioned during setup.
 - Private key stored on Pi 5 (`/etc/bennu/keys/drone.key`).
 - Public key registered with the platform.
-- `manifest.json` is signed at mission end. The signature covers the manifest
-  content including `checksums.sha256` hash.
+
+**Signing order (integrity chain):**
+
+1. Compute SHA-256 of every file in the bundle → write `checksums.sha256`
+2. Compute SHA-256 of `checksums.sha256` → set `checksums_digest` in manifest
+3. Serialize manifest to canonical JSON (sorted keys, no whitespace: `json.dumps(m, sort_keys=True, separators=(',', ':'))`)
+4. Sign the canonical JSON bytes with Ed25519 → set `signature` in manifest
+5. Write final `manifest.json` (includes `checksums_digest` and `signature`)
+
+This creates a Merkle-like chain: signature covers manifest, manifest covers
+checksums file, checksums file covers all content files.
+
+**Canonical serialization:** The signing format is JSON with sorted keys and
+compact separators (`json.dumps(obj, sort_keys=True, separators=(',', ':'))`).
+This is deterministic across Python implementations. For cross-language
+verification, the platform must use equivalent sorted-key compact JSON. The
+`signature` field is excluded from the signed payload (sign the manifest dict
+without the `signature` key, then add it).
+
 - Platform verifies signature on ingest. Reject unsigned or tampered bundles.
 
 This establishes: "this dataset was produced by drone bennu-001 and has not been
@@ -419,13 +448,22 @@ When LTE/MQTT telemetry is added:
 
 ## Testing Strategy
 
-| Test Type | Scope | Tooling | When |
-|---|---|---|---|
-| Unit | Geotag math, quality scoring, manifest generation, signer | pytest | CI on every PR |
-| Schema conformance | Bundle output validates against platform schema | jsonschema + pytest | CI on every PR |
-| SITL integration | Full capture pipeline in Gazebo sim | Docker Compose sim stack | CI (nightly or per-PR) |
-| HIL (hardware-in-loop) | Real sensors on bench, no flight | Manual | Per-phase gate |
-| Flight test | Actual flight, validate bundle end-to-end | Manual | Per-phase gate |
+Tests are structured in two tiers:
+
+1. **Package tests** (`colcon test`): ROS2-aware tests inside each package's `test/`
+   directory. These validate code through proper package installation and discovery.
+2. **Contract tests** (top-level `tests/`): Schema validation and integration tests
+   that span multiple packages. These use `pip install -e` for package imports,
+   not raw PYTHONPATH hacks.
+
+| Test Type | Scope | Tooling | Location | When |
+|---|---|---|---|---|
+| Unit | Geotag math, quality scoring, signer | pytest via colcon test | `<package>/test/` | CI on every PR |
+| Schema conformance | manifest.json + images.csv validate against contract schema | jsonschema + pytest | `tests/contract/` | CI on every PR |
+| Bundle integration | End-to-end bundle generation + validation | pytest | `tests/integration/` | CI on every PR |
+| SITL integration | Full capture pipeline in Gazebo sim | Docker Compose sim stack | `tests/sitl/` | CI (nightly or per-PR) |
+| HIL (hardware-in-loop) | Real sensors on bench, no flight | Manual | — | Per-phase gate |
+| Flight test | Actual flight, validate bundle end-to-end | Manual | — | Per-phase gate |
 
 Pass/fail thresholds:
 - Unit: 100% pass
