@@ -192,13 +192,17 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements-dev.txt
+      - run: |
+          for pkg in drone/ros2_ws/src/bennu_*/; do
+            pip install -e "$pkg"
+          done
       - run: ruff check .
-      - run: python -m pytest tests/ -v
+      - run: python -m pytest drone/ros2_ws/src/*/test/ tests/ -v
 ```
 
 **Step 3: Verify locally**
 
-Run: `pip install -r requirements-dev.txt && ruff check . && python -m pytest tests/ -v`
+Run: `pip install -r requirements-dev.txt && for pkg in drone/ros2_ws/src/bennu_*/; do pip install -e "$pkg"; done && ruff check . && python -m pytest drone/ros2_ws/src/*/test/ tests/ -v`
 Expected: lint passes, tests pass
 
 **Step 4: Commit**
@@ -251,14 +255,14 @@ git commit -m "docs: add project governance files (LICENSE, CONTRIBUTING, SECURI
 - Create: `drone/ros2_ws/src/bennu_core/resource/bennu_core`
 - Create: `drone/ros2_ws/src/bennu_core/bennu_core/__init__.py`
 - Create: `drone/ros2_ws/src/bennu_core/bennu_core/drone_identity.py`
-- Test: `tests/unit/test_drone_identity.py`
+- Test: `drone/ros2_ws/src/bennu_core/test/test_drone_identity.py`
 
 **Context:** Every mission bundle needs drone_id and hardware manifest. This module manages the drone's identity (ID, hardware config, Ed25519 keypair). It does NOT depend on ROS2 at runtime for the identity/signing logic — pure Python with optional ROS2 node wrapper.
 
 **Step 1: Write the failing test**
 
 ```python
-# tests/unit/test_drone_identity.py
+# drone/ros2_ws/src/bennu_core/test/test_drone_identity.py
 import pytest
 from bennu_core.drone_identity import DroneIdentity
 
@@ -291,7 +295,7 @@ def test_hardware_manifest_structure():
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd /home/fadi/projects/bennu && python -m pytest tests/unit/test_drone_identity.py -v`
+Run: `cd /home/fadi/projects/bennu && python -m pytest drone/ros2_ws/src/bennu_core/test/test_drone_identity.py -v`
 Expected: FAIL (module does not exist)
 
 **Step 3: Implement DroneIdentity**
@@ -321,13 +325,13 @@ Create standard ROS2 Python package boilerplate (package.xml, setup.py, setup.cf
 
 **Step 4: Run tests to verify they pass**
 
-Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_core && python -m pytest tests/unit/test_drone_identity.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_core && python -m pytest drone/ros2_ws/src/bennu_core/test/test_drone_identity.py -v`
 Expected: 2 PASS
 
 **Step 5: Commit**
 
 ```bash
-git add drone/ros2_ws/src/bennu_core/ tests/unit/test_drone_identity.py
+git add drone/ros2_ws/src/bennu_core/ drone/ros2_ws/src/bennu_core/test/test_drone_identity.py
 git commit -m "feat: add bennu_core package with drone identity module"
 ```
 
@@ -342,7 +346,7 @@ git commit -m "feat: add bennu_core package with drone identity module"
 - Create: `drone/ros2_ws/src/bennu_dataset/resource/bennu_dataset`
 - Create: `drone/ros2_ws/src/bennu_dataset/bennu_dataset/__init__.py`
 - Create: `drone/ros2_ws/src/bennu_dataset/bennu_dataset/signer.py`
-- Test: `tests/unit/test_signer.py`
+- Test: `drone/ros2_ws/src/bennu_dataset/test/test_signer.py`
 
 **Context:** The drone signs manifest.json with Ed25519. The platform verifies on ingest. This module generates keypairs, signs JSON content, and verifies signatures. Uses PyNaCl.
 
@@ -353,7 +357,7 @@ Add `pynacl>=1.5` to `requirements-dev.txt`.
 **Step 2: Write the failing test**
 
 ```python
-# tests/unit/test_signer.py
+# drone/ros2_ws/src/bennu_dataset/test/test_signer.py
 import json
 import pytest
 from bennu_dataset.signer import ManifestSigner
@@ -393,7 +397,7 @@ def test_export_and_import_keys(tmp_path):
 
 **Step 3: Run test to verify it fails**
 
-Run: `cd /home/fadi/projects/bennu && python -m pytest tests/unit/test_signer.py -v`
+Run: `cd /home/fadi/projects/bennu && python -m pytest drone/ros2_ws/src/bennu_dataset/test/test_signer.py -v`
 Expected: FAIL (module does not exist)
 
 **Step 4: Implement ManifestSigner**
@@ -448,13 +452,13 @@ Create standard ROS2 Python package boilerplate for bennu_dataset.
 
 **Step 5: Run tests to verify they pass**
 
-Run: `cd /home/fadi/projects/bennu && pip install pynacl && pip install -e drone/ros2_ws/src/bennu_dataset && python -m pytest tests/unit/test_signer.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install pynacl && pip install -e drone/ros2_ws/src/bennu_dataset && python -m pytest drone/ros2_ws/src/bennu_dataset/test/test_signer.py -v`
 Expected: 3 PASS
 
 **Step 6: Commit**
 
 ```bash
-git add drone/ros2_ws/src/bennu_dataset/ tests/unit/test_signer.py requirements-dev.txt
+git add drone/ros2_ws/src/bennu_dataset/ drone/ros2_ws/src/bennu_dataset/test/test_signer.py requirements-dev.txt
 git commit -m "feat: add Ed25519 manifest signing (bennu_dataset.signer)"
 ```
 
@@ -476,14 +480,14 @@ git commit -m "feat: add Ed25519 manifest signing (bennu_dataset.signer)"
 
 **Files:**
 - Create: `drone/ros2_ws/src/bennu_camera/bennu_camera/quality.py`
-- Test: `tests/unit/test_quality.py`
+- Test: `drone/ros2_ws/src/bennu_camera/test/test_quality.py`
 
 **Context:** Every captured image gets a 0.0-1.0 quality score based on blur detection (Laplacian variance) and exposure analysis (histogram). Quality flags (ok, blur, overexposed, underexposed) are recorded in images.csv.
 
 **Step 1: Write the failing test**
 
 ```python
-# tests/unit/test_quality.py
+# drone/ros2_ws/src/bennu_camera/test/test_quality.py
 import numpy as np
 import pytest
 from bennu_camera.quality import ImageQualityScorer
@@ -526,7 +530,7 @@ def test_score_result_structure():
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd /home/fadi/projects/bennu && python -m pytest tests/unit/test_quality.py -v`
+Run: `cd /home/fadi/projects/bennu && python -m pytest drone/ros2_ws/src/bennu_camera/test/test_quality.py -v`
 Expected: FAIL
 
 **Step 3: Implement ImageQualityScorer**
@@ -541,13 +545,13 @@ Add `opencv-python-headless>=4.8` and `numpy>=1.26` to `requirements-dev.txt`.
 
 **Step 4: Run tests to verify they pass**
 
-Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_camera && python -m pytest tests/unit/test_quality.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_camera && python -m pytest drone/ros2_ws/src/bennu_camera/test/test_quality.py -v`
 Expected: 5 PASS
 
 **Step 5: Commit**
 
 ```bash
-git add drone/ros2_ws/src/bennu_camera/bennu_camera/quality.py tests/unit/test_quality.py requirements-dev.txt
+git add drone/ros2_ws/src/bennu_camera/bennu_camera/quality.py drone/ros2_ws/src/bennu_camera/test/test_quality.py requirements-dev.txt
 git commit -m "feat: add image quality scoring (blur + exposure detection)"
 ```
 
@@ -557,14 +561,14 @@ git commit -m "feat: add image quality scoring (blur + exposure detection)"
 
 **Files:**
 - Modify: `drone/ros2_ws/src/bennu_camera/bennu_camera/geotag.py`
-- Test: `tests/unit/test_geotag.py`
+- Test: `drone/ros2_ws/src/bennu_camera/test/test_geotag.py`
 
 **Context:** The existing geotag.py writes basic EXIF GPS data. Enhance it to produce the full images.csv row: attitude (heading, pitch, roll), RTK fix type, position accuracy, GSD calculation, quality score, quality flags. This data feeds directly into the mission bundle.
 
 **Step 1: Write the failing test**
 
 ```python
-# tests/unit/test_geotag.py
+# drone/ros2_ws/src/bennu_camera/test/test_geotag.py
 import pytest
 from bennu_camera.geotag import ImageMetadata, compute_gsd
 
@@ -592,12 +596,13 @@ def test_image_metadata_to_csv_row():
         quality_score=0.95,
         quality_flags="ok",
         ambient_light_lux=45000.0,
+        capture_offset_ms=None,
     )
     row = meta.to_csv_dict()
     assert row["sequence"] == 1
     assert row["rtk_fix_type"] == "RTK_FIXED"
     assert row["quality_score"] == 0.95
-    assert len(row) == 17  # All columns present
+    assert len(row) == 18  # All columns present (including capture_offset_ms)
 
 def test_gsd_scales_with_altitude():
     gsd_low = compute_gsd(40.0, 6.0, 7.9, 3040)
@@ -608,24 +613,24 @@ def test_gsd_scales_with_altitude():
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_camera && python -m pytest tests/unit/test_geotag.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_camera && python -m pytest drone/ros2_ws/src/bennu_camera/test/test_geotag.py -v`
 Expected: FAIL
 
 **Step 3: Implement enhanced geotag module**
 
-Add `ImageMetadata` dataclass with all 17 CSV columns and `to_csv_dict()` method. Add `compute_gsd(altitude_m, focal_length_mm, sensor_height_mm, image_height_px)` function.
+Add `ImageMetadata` dataclass with all 18 CSV columns (including `capture_offset_ms`) and `to_csv_dict()` method. Add `compute_gsd(altitude_m, focal_length_mm, sensor_height_mm, image_height_px)` function.
 
 Keep existing EXIF writing functions. Add the new metadata structures alongside.
 
 **Step 4: Run tests to verify they pass**
 
-Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_camera && python -m pytest tests/unit/test_geotag.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_camera && python -m pytest drone/ros2_ws/src/bennu_camera/test/test_geotag.py -v`
 Expected: 3 PASS
 
 **Step 5: Commit**
 
 ```bash
-git add drone/ros2_ws/src/bennu_camera/bennu_camera/geotag.py tests/unit/test_geotag.py
+git add drone/ros2_ws/src/bennu_camera/bennu_camera/geotag.py drone/ros2_ws/src/bennu_camera/test/test_geotag.py
 git commit -m "feat: add extended image metadata and GSD calculation"
 ```
 
@@ -640,14 +645,14 @@ git commit -m "feat: add extended image metadata and GSD calculation"
 - Create: `drone/ros2_ws/src/bennu_mission/resource/bennu_mission`
 - Create: `drone/ros2_ws/src/bennu_mission/bennu_mission/__init__.py`
 - Create: `drone/ros2_ws/src/bennu_mission/bennu_mission/mission_manifest.py`
-- Test: `tests/unit/test_mission_manifest.py`
+- Test: `drone/ros2_ws/src/bennu_mission/test/test_mission_manifest.py`
 
 **Context:** Generates `manifest.json` and `images.csv` from a list of ImageMetadata records + DroneIdentity + mission parameters. Output must validate against the contract v1 schema.
 
 **Step 1: Write the failing test**
 
 ```python
-# tests/unit/test_mission_manifest.py
+# drone/ros2_ws/src/bennu_mission/test/test_mission_manifest.py
 import json
 import jsonschema
 import pytest
@@ -711,7 +716,7 @@ def test_generate_images_csv():
             heading_deg=45.0, pitch_deg=-90.0, roll_deg=0.0,
             rtk_fix_type="AUTONOMOUS", position_accuracy_m=2.5,
             gsd_cm=2.1, quality_score=0.90, quality_flags="ok",
-            ambient_light_lux=None,
+            ambient_light_lux=None, capture_offset_ms=None,
         ),
     ]
     gen = ManifestGenerator(identity=identity, mission_id="test-002")
@@ -721,20 +726,20 @@ def test_generate_images_csv():
     header = lines[0].split(",")
     assert "sequence" in header
     assert "rtk_fix_type" in header
-    assert len(header) == 17
+    assert len(header) == 18  # includes capture_offset_ms
 
 def test_quality_summary_counts():
     identity = DroneIdentity("bennu-001", "Pixhawk6C", "1.16.1", "F9P", ["rgb:IMX477"])
     images = [
         ImageMetadata(1, "0001_rgb.jpg", "rgb", "2026-03-15T10:32:00Z",
                       35.0, 139.0, 120.0, 80.0, 0.0, -90.0, 0.0,
-                      "RTK_FIXED", 0.08, 2.1, 0.95, "ok", 45000.0),
+                      "RTK_FIXED", 0.08, 2.1, 0.95, "ok", 45000.0, None),
         ImageMetadata(2, "0002_rgb.jpg", "rgb", "2026-03-15T10:32:05Z",
                       35.0, 139.0, 120.0, 80.0, 0.0, -90.0, 0.0,
-                      "RTK_FIXED", 0.08, 2.1, 0.3, "blur", 45000.0),
+                      "RTK_FIXED", 0.08, 2.1, 0.3, "blur", 45000.0, None),
         ImageMetadata(3, "0003_rgb.jpg", "rgb", "2026-03-15T10:32:10Z",
                       35.0, 139.0, 120.0, 80.0, 0.0, -90.0, 0.0,
-                      "RTK_FLOAT", 0.5, 2.1, 0.2, "blur,overexposed", 45000.0),
+                      "RTK_FLOAT", 0.5, 2.1, 0.2, "blur,overexposed", 45000.0, None),
     ]
     gen = ManifestGenerator(identity=identity, mission_id="test-003")
     manifest = gen.generate_manifest(
@@ -751,7 +756,7 @@ def test_quality_summary_counts():
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd /home/fadi/projects/bennu && python -m pytest tests/unit/test_mission_manifest.py -v`
+Run: `cd /home/fadi/projects/bennu && python -m pytest drone/ros2_ws/src/bennu_mission/test/test_mission_manifest.py -v`
 Expected: FAIL
 
 **Step 3: Implement ManifestGenerator**
@@ -764,13 +769,13 @@ The generator:
 
 **Step 4: Run tests to verify they pass**
 
-Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_core -e drone/ros2_ws/src/bennu_camera -e drone/ros2_ws/src/bennu_mission && python -m pytest tests/unit/test_mission_manifest.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_core -e drone/ros2_ws/src/bennu_camera -e drone/ros2_ws/src/bennu_mission && python -m pytest drone/ros2_ws/src/bennu_mission/test/test_mission_manifest.py -v`
 Expected: 3 PASS
 
 **Step 5: Commit**
 
 ```bash
-git add drone/ros2_ws/src/bennu_mission/ tests/unit/test_mission_manifest.py
+git add drone/ros2_ws/src/bennu_mission/ drone/ros2_ws/src/bennu_mission/test/test_mission_manifest.py
 git commit -m "feat: add mission manifest generator (contract v1 compliant)"
 ```
 
@@ -780,14 +785,14 @@ git commit -m "feat: add mission manifest generator (contract v1 compliant)"
 
 **Files:**
 - Create: `drone/ros2_ws/src/bennu_dataset/bennu_dataset/packager.py`
-- Test: `tests/unit/test_packager.py`
+- Test: `drone/ros2_ws/src/bennu_dataset/test/test_packager.py`
 
 **Context:** Assembles the full mission bundle directory structure: copies images, generates checksums, signs manifest, produces the final export-ready directory.
 
 **Step 1: Write the failing test**
 
 ```python
-# tests/unit/test_packager.py
+# drone/ros2_ws/src/bennu_dataset/test/test_packager.py
 import json
 import hashlib
 import pytest
@@ -807,12 +812,19 @@ def test_package_creates_bundle_structure(tmp_path):
 
     output_dir = tmp_path / "bundle"
     packager = BundlePackager(output_dir=output_dir)
+    quality_report = {
+        "per_image": [
+            {"filename": "0001_rgb.jpg", "score": 0.95, "flags": ["ok"]},
+            {"filename": "0002_rgb.jpg", "score": 0.88, "flags": ["ok"]},
+        ]
+    }
     packager.package(
         mission_id="test-001",
         manifest=manifest,
         images_csv=images_csv,
         image_files=[images_dir / "0001_rgb.jpg", images_dir / "0002_rgb.jpg"],
         flight_log=flight_log,
+        quality_report=quality_report,
     )
 
     bundle = output_dir / "test-001"
@@ -822,6 +834,7 @@ def test_package_creates_bundle_structure(tmp_path):
     assert (bundle / "images" / "0002_rgb.jpg").exists()
     assert (bundle / "metadata" / "images.csv").exists()
     assert (bundle / "telemetry" / "flight.ulg").exists()
+    assert (bundle / "quality" / "report.json").exists()
     assert (bundle / "checksums.sha256").exists()
 
 def test_checksums_are_valid(tmp_path):
@@ -838,6 +851,7 @@ def test_checksums_are_valid(tmp_path):
         images_csv="sequence,filename\n1,0001_rgb.jpg\n",
         image_files=[images_dir / "0001_rgb.jpg"],
         flight_log=b"log",
+        quality_report={"per_image": [{"filename": "0001_rgb.jpg", "score": 0.9, "flags": ["ok"]}]},
     )
 
     checksums_text = (output_dir / "chk-test" / "checksums.sha256").read_text()
@@ -849,7 +863,7 @@ def test_checksums_are_valid(tmp_path):
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_dataset && python -m pytest tests/unit/test_packager.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_dataset && python -m pytest drone/ros2_ws/src/bennu_dataset/test/test_packager.py -v`
 Expected: FAIL
 
 **Step 3: Implement BundlePackager**
@@ -860,18 +874,19 @@ The packager:
 - Copies image files to `images/`
 - Writes `metadata/images.csv`
 - Writes `telemetry/flight.ulg`
+- Writes `quality/report.json` (per-image quality scores and flags)
 - Writes `manifest.json`
 - Computes SHA-256 of all files → `checksums.sha256`
 
 **Step 4: Run tests to verify they pass**
 
-Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_dataset && python -m pytest tests/unit/test_packager.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_dataset && python -m pytest drone/ros2_ws/src/bennu_dataset/test/test_packager.py -v`
 Expected: 2 PASS
 
 **Step 5: Commit**
 
 ```bash
-git add drone/ros2_ws/src/bennu_dataset/bennu_dataset/packager.py tests/unit/test_packager.py
+git add drone/ros2_ws/src/bennu_dataset/bennu_dataset/packager.py drone/ros2_ws/src/bennu_dataset/test/test_packager.py
 git commit -m "feat: add bundle packager with checksum generation"
 ```
 
@@ -997,11 +1012,11 @@ git commit -m "test: add end-to-end bundle generation integration test"
 
 **Phase 1 Exit Gate:**
 - Image quality scoring produces blur/exposure flags with 0.0-1.0 score
-- Enhanced geotag produces all 17 CSV columns including RTK fix type and GSD
+- Enhanced geotag produces all 18 CSV columns including RTK fix type, GSD, and capture_offset_ms
 - ManifestGenerator produces contract v1 compliant manifest.json
 - BundlePackager assembles complete bundle with valid checksums
 - End-to-end test passes: identity → capture → score → manifest → package → sign → validate
-- ≥99% images have complete metadata fields (all 17 columns populated)
+- ≥99% images have complete metadata fields (all 18 columns populated, nullable fields allowed)
 
 ---
 
@@ -1014,14 +1029,14 @@ git commit -m "test: add end-to-end bundle generation integration test"
 - Create: `drone/ros2_ws/src/bennu_bringup/config/sensor_configs/survey.yaml`
 - Create: `drone/ros2_ws/src/bennu_bringup/config/sensor_configs/inspection.yaml`
 - Create: `drone/ros2_ws/src/bennu_bringup/config/sensor_configs/mapping.yaml`
-- Test: `tests/unit/test_sensor_config.py`
+- Test: `drone/ros2_ws/src/bennu_camera/test/test_sensor_config.py`
 
 **Context:** The drone carries one sensor configuration per flight (survey, inspection, mapping). The config determines which camera nodes to launch and what metadata fields to populate.
 
 **Step 1: Write the failing test**
 
 ```python
-# tests/unit/test_sensor_config.py
+# drone/ros2_ws/src/bennu_camera/test/test_sensor_config.py
 import pytest
 from bennu_camera.sensor_config import SensorConfig, load_sensor_config
 
@@ -1065,7 +1080,7 @@ has_ambient_light: false
 
 **Step 2: Run test to verify it fails**
 
-Run: `python -m pytest tests/unit/test_sensor_config.py -v`
+Run: `python -m pytest drone/ros2_ws/src/bennu_camera/test/test_sensor_config.py -v`
 Expected: FAIL
 
 **Step 3: Implement SensorConfig**
@@ -1083,7 +1098,7 @@ Expected: 4 PASS
 ```bash
 git add drone/ros2_ws/src/bennu_camera/bennu_camera/sensor_config.py \
   drone/ros2_ws/src/bennu_bringup/config/sensor_configs/ \
-  tests/unit/test_sensor_config.py requirements-dev.txt
+  drone/ros2_ws/src/bennu_camera/test/test_sensor_config.py requirements-dev.txt
 git commit -m "feat: add sensor configuration system (survey, inspection, mapping)"
 ```
 
@@ -1093,14 +1108,14 @@ git commit -m "feat: add sensor configuration system (survey, inspection, mappin
 
 **Files:**
 - Create: `drone/ros2_ws/src/bennu_camera/bennu_camera/calibration.py`
-- Test: `tests/unit/test_calibration.py`
+- Test: `drone/ros2_ws/src/bennu_camera/test/test_calibration.py`
 
 **Context:** For Config A (survey), ambient light readings from BH1750 are recorded per capture. This module stores calibration readings and generates `calibration.csv` for the bundle.
 
 **Step 1: Write the failing test**
 
 ```python
-# tests/unit/test_calibration.py
+# drone/ros2_ws/src/bennu_camera/test/test_calibration.py
 import pytest
 from bennu_camera.calibration import CalibrationCollector
 
@@ -1147,14 +1162,14 @@ git commit -m "feat: add calibration data collector for ambient light readings"
 - Create: `drone/ros2_ws/src/bennu_survey/resource/bennu_survey`
 - Create: `drone/ros2_ws/src/bennu_survey/bennu_survey/__init__.py`
 - Create: `drone/ros2_ws/src/bennu_survey/bennu_survey/grid_planner.py`
-- Test: `tests/unit/test_grid_planner.py`
+- Test: `drone/ros2_ws/src/bennu_survey/test/test_grid_planner.py`
 
 **Context:** Generates a survey grid (list of waypoints) from an AOI polygon + desired overlap + altitude + GSD. This is the core of mission planning. Uses simple UTM projection for distance calculations.
 
 **Step 1: Write the failing test**
 
 ```python
-# tests/unit/test_grid_planner.py
+# drone/ros2_ws/src/bennu_survey/test/test_grid_planner.py
 import pytest
 from bennu_survey.grid_planner import GridPlanner
 
@@ -1214,14 +1229,14 @@ git commit -m "feat: add survey grid planner with overlap-based waypoint generat
 
 **Files:**
 - Create: `drone/ros2_ws/src/bennu_survey/bennu_survey/terrain_follow.py`
-- Test: `tests/unit/test_terrain_follow.py`
+- Test: `drone/ros2_ws/src/bennu_survey/test/test_terrain_follow.py`
 
 **Context:** Adjusts planned waypoint altitudes based on ground elevation from a DEM (GeoTIFF). Target AGL remains constant regardless of terrain undulation. Uses rasterio.
 
 **Step 1: Write the failing test**
 
 ```python
-# tests/unit/test_terrain_follow.py
+# drone/ros2_ws/src/bennu_survey/test/test_terrain_follow.py
 import numpy as np
 import pytest
 from bennu_survey.terrain_follow import adjust_waypoints_for_terrain
@@ -1264,57 +1279,62 @@ git commit -m "feat: add DEM-based terrain following for survey waypoints"
 
 **Files:**
 - Create: `drone/ros2_ws/src/bennu_mission/bennu_mission/coverage_tracker.py`
-- Test: `tests/unit/test_coverage_tracker.py`
+- Test: `drone/ros2_ws/src/bennu_mission/test/test_coverage_tracker.py`
 
-**Context:** Tracks which planned grid cells have been captured, reports coverage percentage, and identifies gaps. Feeds into `quality_summary.coverage_pct` in the manifest.
+**Context:** Tracks which planned grid cells have been covered by actual image captures, reports coverage percentage, and identifies gaps. Uses image footprints (computed from GSD + sensor dimensions) to determine which grid cells each capture covers. This is more accurate than waypoint proximity — it reflects actual photogrammetric coverage even when triggers are missed or spacing changes. Feeds into `quality_summary.coverage_pct` in the manifest.
 
 **Step 1: Write the failing test**
 
 ```python
-# tests/unit/test_coverage_tracker.py
+# drone/ros2_ws/src/bennu_mission/test/test_coverage_tracker.py
 import pytest
 from bennu_mission.coverage_tracker import CoverageTracker
 
 def test_coverage_starts_at_zero():
-    waypoints = [
-        {"lat": 35.0, "lon": 139.0, "alt": 80},
-        {"lat": 35.001, "lon": 139.0, "alt": 80},
-        {"lat": 35.002, "lon": 139.0, "alt": 80},
+    """Grid cells with no image footprints report 0% coverage."""
+    grid_cells = [
+        {"lat": 35.0, "lon": 139.0},
+        {"lat": 35.001, "lon": 139.0},
+        {"lat": 35.002, "lon": 139.0},
     ]
-    tracker = CoverageTracker(waypoints, capture_radius_m=10.0)
+    tracker = CoverageTracker(grid_cells, cell_size_m=20.0)
     assert tracker.coverage_pct() == 0.0
 
-def test_coverage_increases_on_capture():
-    waypoints = [
-        {"lat": 35.0, "lon": 139.0, "alt": 80},
-        {"lat": 35.001, "lon": 139.0, "alt": 80},
+def test_coverage_from_image_footprint():
+    """An image at a grid cell position with sufficient GSD covers that cell."""
+    grid_cells = [
+        {"lat": 35.0, "lon": 139.0},
+        {"lat": 35.0001, "lon": 139.0},  # ~11m apart
     ]
-    tracker = CoverageTracker(waypoints, capture_radius_m=20.0)
-    tracker.mark_captured(lat=35.0, lon=139.0)
-    assert tracker.coverage_pct() == 0.5
-
-def test_full_coverage():
-    waypoints = [
-        {"lat": 35.0, "lon": 139.0, "alt": 80},
-        {"lat": 35.001, "lon": 139.0, "alt": 80},
-    ]
-    tracker = CoverageTracker(waypoints, capture_radius_m=20.0)
-    tracker.mark_captured(lat=35.0, lon=139.0)
-    tracker.mark_captured(lat=35.001, lon=139.0)
+    tracker = CoverageTracker(grid_cells, cell_size_m=20.0)
+    # Image at first cell: footprint_m = gsd_cm/100 * image_width_px
+    # 2.1cm GSD * 4056px = ~85m footprint — covers both cells
+    tracker.record_capture(lat=35.0, lon=139.0, gsd_cm=2.1, image_width_px=4056, image_height_px=3040)
     assert tracker.coverage_pct() == 1.0
 
-def test_gaps_reported():
-    waypoints = [
-        {"lat": 35.0, "lon": 139.0, "alt": 80},
-        {"lat": 35.001, "lon": 139.0, "alt": 80},
-        {"lat": 35.002, "lon": 139.0, "alt": 80},
+def test_partial_coverage():
+    """Well-separated cells require separate captures."""
+    grid_cells = [
+        {"lat": 35.0, "lon": 139.0},
+        {"lat": 35.005, "lon": 139.0},  # ~550m apart
     ]
-    tracker = CoverageTracker(waypoints, capture_radius_m=20.0)
-    tracker.mark_captured(lat=35.0, lon=139.0)
-    tracker.mark_captured(lat=35.002, lon=139.0)
+    tracker = CoverageTracker(grid_cells, cell_size_m=20.0)
+    tracker.record_capture(lat=35.0, lon=139.0, gsd_cm=2.1, image_width_px=4056, image_height_px=3040)
+    assert tracker.coverage_pct() == 0.5
+
+def test_gaps_reported():
+    """Uncovered grid cells are reported as gaps."""
+    grid_cells = [
+        {"lat": 35.0, "lon": 139.0},
+        {"lat": 35.005, "lon": 139.0},  # ~550m apart
+        {"lat": 35.010, "lon": 139.0},  # ~1100m apart
+    ]
+    tracker = CoverageTracker(grid_cells, cell_size_m=20.0)
+    tracker.record_capture(lat=35.0, lon=139.0, gsd_cm=2.1, image_width_px=4056, image_height_px=3040)
+    tracker.record_capture(lat=35.010, lon=139.0, gsd_cm=2.1, image_width_px=4056, image_height_px=3040)
     gaps = tracker.gaps()
     assert len(gaps) == 1
-    assert gaps[0]["lat"] == 35.001
+    assert gaps[0]["lat"] == 35.005
 ```
 
 **Step 2-5:** Standard TDD cycle.
@@ -1329,14 +1349,14 @@ git commit -m "feat: add coverage tracker for survey gap detection"
 
 **Files:**
 - Create: `drone/ros2_ws/src/bennu_mission/bennu_mission/repeat_mission.py`
-- Test: `tests/unit/test_repeat_mission.py`
+- Test: `drone/ros2_ws/src/bennu_mission/test/test_repeat_mission.py`
 
 **Context:** Re-fly the same grid for change detection. Loads a previous mission's waypoints and replays them. Tracks deviation from the planned path for repeatability metrics.
 
 **Step 1: Write the failing test**
 
 ```python
-# tests/unit/test_repeat_mission.py
+# drone/ros2_ws/src/bennu_mission/test/test_repeat_mission.py
 import json
 import pytest
 from bennu_mission.repeat_mission import RepeatMission
@@ -1374,12 +1394,69 @@ git commit -m "feat: add repeat mission support for change detection workflows"
 
 ---
 
+---
+
+### Task 18: Mission Execution Node
+
+**Files:**
+- Create: `drone/ros2_ws/src/bennu_mission/bennu_mission/mission_node.py`
+- Create: `drone/ros2_ws/src/bennu_bringup/launch/survey.launch.py`
+- Create: `drone/ros2_ws/src/bennu_bringup/launch/mapping.launch.py`
+- Test: `drone/ros2_ws/src/bennu_mission/test/test_mission_node.py`
+
+**Context:** The grid planner produces waypoints but nothing executes them. `mission_node.py` is a ROS2 node that uploads waypoints to PX4 via uXRCE-DDS (using `TrajectorySetpoint` or `VehicleCommand` messages), monitors flight progress, triggers capture pipeline at each waypoint, and transitions through mission states (idle → armed → takeoff → mission → RTL → land). Launch files wire everything together for specific mission profiles.
+
+**Step 1: Write the failing test**
+
+```python
+# drone/ros2_ws/src/bennu_mission/test/test_mission_node.py
+import pytest
+from bennu_mission.mission_node import MissionExecutor, MissionState
+
+def test_mission_starts_idle():
+    executor = MissionExecutor(waypoints=[])
+    assert executor.state == MissionState.IDLE
+
+def test_mission_state_transitions():
+    waypoints = [
+        {"lat": 35.0, "lon": 139.0, "alt": 80},
+        {"lat": 35.001, "lon": 139.0, "alt": 80},
+    ]
+    executor = MissionExecutor(waypoints=waypoints)
+    assert executor.state == MissionState.IDLE
+    executor.arm()
+    assert executor.state == MissionState.ARMED
+    executor.takeoff()
+    assert executor.state == MissionState.TAKEOFF
+
+def test_waypoint_progress():
+    waypoints = [
+        {"lat": 35.0, "lon": 139.0, "alt": 80},
+        {"lat": 35.001, "lon": 139.0, "alt": 80},
+        {"lat": 35.002, "lon": 139.0, "alt": 80},
+    ]
+    executor = MissionExecutor(waypoints=waypoints)
+    assert executor.current_waypoint_index == 0
+    executor.advance_waypoint()
+    assert executor.current_waypoint_index == 1
+    assert executor.progress_pct() == pytest.approx(1 / 3, abs=0.01)
+```
+
+**Step 2-5:** Standard TDD cycle. The full ROS2 node (publishing to PX4 topics) is tested in SITL; the unit tests cover state machine logic and waypoint management only.
+
+```bash
+git commit -m "feat: add mission execution node with state machine and launch files"
+```
+
+---
+
 **Phase 3 Exit Gate:**
 - Grid planner generates waypoints from AOI polygon + overlap parameters
 - Terrain following adjusts waypoint altitudes based on DEM
-- Coverage tracker reports percentage and identifies gaps
+- Coverage tracker reports image-footprint-based percentage and identifies gaps
+- Mission executor manages flight state machine and waypoint progress
+- Launch files wire survey and mapping mission profiles
 - Repeat mission re-uses previous waypoints with deviation tracking
-- Mission replay on same AOI produces bounded path deviation
 
 ---
 
@@ -1389,16 +1466,17 @@ git commit -m "feat: add repeat mission support for change detection workflows"
 |---|---|---|
 | 0: Foundation | 1-6 | Contract schema, CI, governance, identity, signing |
 | 1: Data Quality | 7-11 | Quality scoring, geotagging, manifest, packager, e2e test |
-| 2: Multi-Sensor | 12-13 | Sensor configs, calibration data |
-| 3: Survey Intelligence | 14-17 | Grid planner, terrain following, coverage, repeat missions |
+| 2: Sensor Config | 12-13 | Sensor configs, calibration data |
+| 3: Survey Intelligence | 14-18 | Grid planner, terrain following, coverage, mission execution, repeat missions |
 
-Total: 17 tasks, each independently testable and committable.
+Total: 18 tasks, each independently testable and committable.
 
 After all tasks, the drone can:
 1. Plan a survey grid for any polygon AOI
 2. Adjust altitudes for terrain
-3. Capture images with quality scoring
-4. Generate full metadata (17 columns including RTK and GSD)
-5. Package a signed, schema-validated mission bundle
-6. Track coverage and identify gaps
-7. Repeat missions for change detection
+3. Execute a planned mission (upload waypoints, fly, trigger captures)
+4. Capture images with quality scoring
+5. Generate full metadata (18 columns including RTK, GSD, and capture_offset_ms)
+6. Package a signed, schema-validated mission bundle
+7. Track coverage via image footprints and identify gaps
+8. Repeat missions for change detection
