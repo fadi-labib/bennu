@@ -1,6 +1,8 @@
 # System Architecture
 
-Bennu is split into three subsystems, each with a clear responsibility: the **Drone** flies and captures images, the **Ground Station** plans missions and monitors telemetry, and the **Processing Pipeline** turns raw photos into 3D models. This separation of concerns keeps flight-critical code isolated from intelligence and processing workloads, which is the same pattern used by commercial drone platforms.
+Bennu is split into three subsystems, each with a clear responsibility: the **Drone** flies and captures geotagged images, the **Ground Station** plans missions and monitors telemetry, and the **Processing Pipeline** reconstructs 3D models from the captured data. This separation of concerns keeps flight-critical code isolated from intelligence and processing workloads, which is the same pattern used by commercial drone platforms.
+
+Bennu is evolving toward a data-acquisition platform that exports versioned, signed **mission bundles** — a standardized directory of images, metadata, telemetry, and quality reports. These bundles can be processed locally with WebODM (the current pipeline) or ingested by an independent geospatial analysis platform. See the [Platform Readiness Design](../plans/2026-03-08-drone-platform-readiness-design.md) for details.
 
 ## Hardware Architecture
 
@@ -12,9 +14,7 @@ The flight controller is intentionally kept simple. It does not run ROS2 nodes, 
 
 ### Companion Computer --- Raspberry Pi 5
 
-The Pi 5 (8 GB) is the intelligence layer. It runs Ubuntu 24.04 with ROS2 Jazzy and hosts the uXRCE-DDS agent that bridges PX4 topics into the ROS2 ecosystem. It also drives the camera over CSI and handles geotagging by subscribing to PX4 position data.
-
-The Pi 5 is optional for Phase 1 (manual flight) and Phase 2 (waypoint survey with QGC-only camera triggering). It becomes required in Phase 3 when ROS2 nodes take over mission planning and autonomous coverage.
+The Pi 5 (8 GB) is the intelligence layer. It runs Ubuntu 24.04 with ROS2 Jazzy and hosts the uXRCE-DDS agent that bridges PX4 topics into the ROS2 ecosystem. It drives the camera over CSI, handles geotagging by subscribing to PX4 position data, and assembles signed mission bundles for export.
 
 ### Camera --- Pi HQ Camera (IMX477)
 
@@ -45,6 +45,7 @@ This architecture means a software bug in a ROS2 node cannot cause a crash. The 
 | Companion Computer | Raspberry Pi 5 | ROS2 Jazzy, uXRCE-DDS Agent | Camera capture, geotagging, future autonomy |
 | Ground Station | PC | QGroundControl | Mission planning, telemetry, parameter tuning |
 | Processing | PC (Docker) | WebODM / OpenDroneMap | 3D reconstruction from geotagged images |
+| Data Export | Pi 5 → Ground Station | Mission bundle (v1 contract) | Signed dataset package for platform ingestion |
 
 PX4 includes a built-in uXRCE-DDS client. On the Pi 5, the Micro-XRCE-DDS Agent translates PX4's internal topics (vehicle position, camera trigger events, battery status) into standard ROS2 topics. This is a first-class integration --- no MAVLink parsing, no MAVROS, no message translation layers.
 
@@ -112,8 +113,8 @@ Build the frame, wire the flight controller and propulsion system, flash PX4, an
 
 ### Phase 2: Survey + Camera
 
-Add the Pi 5 and Pi HQ Camera. Establish the uXRCE-DDS serial link between the Pi and Pixhawk. Plan waypoint survey missions in QGroundControl with distance-based camera triggering. The Pi captures geotagged images during flight, and post-flight processing in WebODM produces 3D reconstructions.
+Add the Pi 5 and Pi HQ Camera. Establish the uXRCE-DDS serial link between the Pi and Pixhawk. Plan waypoint survey missions in QGroundControl with distance-based camera triggering. The Pi captures geotagged images during flight. Post-flight, images are either processed locally with WebODM or packaged as a signed mission bundle for platform ingestion.
 
 ### Phase 3: Autonomy (Future)
 
-Replace QGroundControl mission planning with onboard ROS2 nodes. A coverage planner node generates survey grids from area boundary polygons. Live telemetry streams to a ROS2 ground station. This phase may require upgrading to a Jetson for onboard SLAM or obstacle avoidance.
+Replace QGroundControl mission planning with onboard ROS2 nodes. A coverage planner generates survey grids from area polygons, executes the mission, and assembles signed mission bundles autonomously. This phase may require upgrading to a Jetson for onboard SLAM or obstacle avoidance.

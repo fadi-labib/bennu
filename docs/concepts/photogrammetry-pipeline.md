@@ -2,7 +2,7 @@
 
 Photogrammetry is the process of reconstructing 3D geometry from overlapping 2D photographs. By capturing many images of the same scene from different angles, software can triangulate the 3D position of features visible across multiple photos. The result is a dense point cloud, a textured 3D mesh, and a georeferenced orthophoto --- all from ordinary camera images.
 
-Bennu uses photogrammetry for outdoor site survey: mapping terrain, structures, or construction sites from the air. The drone flies a grid pattern, captures geotagged images, and a ground-based processing pipeline (OpenDroneMap) handles the reconstruction.
+Bennu uses photogrammetry for outdoor site survey: mapping terrain, structures, or construction sites from the air. The drone flies a grid pattern, captures geotagged images, and exports them as a signed mission bundle. For local processing, OpenDroneMap handles the 3D reconstruction. The mission bundle can also be ingested by an external geospatial platform for further analysis.
 
 ## The Pipeline
 

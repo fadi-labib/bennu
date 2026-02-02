@@ -9,7 +9,7 @@ hide:
 
 ## What is Bennu?
 
-Bennu is an open-source drone platform designed for aerial photogrammetry. It captures geotagged aerial images during autonomous survey flights, then reconstructs high-resolution 3D maps and orthomosaics on the ground using OpenDroneMap.
+Bennu is an open-source data-acquisition drone designed for aerial photogrammetry and site survey. It captures geotagged aerial images during autonomous survey flights and packages them into signed, versioned mission bundles. Bundles can be processed locally with OpenDroneMap or ingested by an independent geospatial analysis platform.
 
 The project combines a 3D-printed frame with production-grade flight software, giving you a capable survey drone at a fraction of commercial costs (~$650-850).
 
