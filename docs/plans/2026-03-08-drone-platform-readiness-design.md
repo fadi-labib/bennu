@@ -505,6 +505,24 @@ Pass/fail thresholds:
    sky view, multipath). Every image carries fix type — platform degrades
    gracefully for non-RTK images.
 
+## Future Systems-Engineering Artifacts
+
+The following artifacts are not required for v1 but should be created as the
+project matures past initial flight testing:
+
+- **Safety & hazard register** — Catalog of flight hazards (prop failure, GPS loss,
+  battery failure, flyaway), mitigations, and pre-flight go/no-go checklists.
+- **Power & mass budget** — Component-level mass breakdown, BEC current draw at
+  peak/cruise, thermal margins, weight budget for sensor payloads.
+- **Observability design** — ROS2 health/status topics, fault classification
+  (recoverable vs terminal), log retention policy, post-flight diagnostic artifacts.
+- **Requirement-to-test traceability matrix** — Map each requirement in this design
+  to specific test(s) that verify it.
+- **Geospatial accuracy strategy** — Baseline absolute accuracy with M9N GPS, upgrade
+  path through RTK/PPK/GCP, and accuracy validation methodology.
+- **Compatibility matrix** — Pinned versions of PX4, px4_msgs, ROS2 distro, XRCE
+  agent, Docker base images, and tested upgrade paths.
+
 ## Success Metrics
 
 - Bundle reliability: ≥99% successful bundle generation from completed missions
