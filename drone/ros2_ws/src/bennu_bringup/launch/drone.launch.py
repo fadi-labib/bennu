@@ -38,10 +38,16 @@ def generate_launch_description():
         description="Baud rate for PX4 serial connection",
     )
 
+    dds_agent_binary_arg = DeclareLaunchArgument(
+        "dds_agent_binary",
+        default_value="MicroXRCEAgent",
+        description="XRCE-DDS agent binary name (MicroXRCEAgent or micro_ros_agent)",
+    )
+
     # DDS agent for real hardware (serial)
     dds_agent_serial = ExecuteProcess(
         cmd=[
-            "MicroXRCEAgent",
+            LaunchConfiguration("dds_agent_binary"),
             "serial",
             "--dev", LaunchConfiguration("serial_port"),
             "-b", LaunchConfiguration("baud_rate"),
@@ -54,7 +60,7 @@ def generate_launch_description():
     # DDS agent for simulation (UDP)
     dds_agent_udp = ExecuteProcess(
         cmd=[
-            "MicroXRCEAgent",
+            LaunchConfiguration("dds_agent_binary"),
             "udp4",
             "-p", "8888",
         ],
@@ -81,6 +87,7 @@ def generate_launch_description():
         output_dir_arg,
         serial_port_arg,
         baud_rate_arg,
+        dds_agent_binary_arg,
         dds_agent_serial,
         dds_agent_udp,
         camera_node,
