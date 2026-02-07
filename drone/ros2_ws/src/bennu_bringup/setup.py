@@ -19,6 +19,6 @@ setup(
     maintainer="Fadi Labib",
     maintainer_email="github@fadilabib.com",
     description="Launch files and config for Bennu drone",
-    license="MIT",
+    license="Apache-2.0",
     entry_points={},
 )
