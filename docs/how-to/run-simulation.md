@@ -94,12 +94,40 @@ Docker and the simulation.
     3. **Container GPU access** — run `docker exec bennu-px4-sitl nvidia-smi` to verify the GPU is visible inside the container
     4. **CDI spec** — run `nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml` if the CDI spec is missing
 
-## Phase 1: Fly in QGC
+## Fly the Drone
 
-Use QGroundControl to plan waypoint missions, test takeoff, landing, and RTL
-(Return to Launch). No ROS2 nodes are needed for this phase.
+Once the simulation is running and QGroundControl shows a green **Ready to Fly**
+status bar, you can fly the simulated drone. No ROS2 nodes are needed for this —
+QGroundControl talks directly to PX4 over MAVLink.
 
-## Phase 2: Test ROS2 Nodes
+### Takeoff
+
+1. Click the **Takeoff** button in the bottom-left action bar (Fly view).
+2. Confirm the takeoff altitude (default ~2.5 m) and slide to confirm.
+3. The drone arms, spins up motors, and climbs to the target altitude.
+
+### Fly to a Point
+
+Click anywhere on the map and choose **Go to location**. The drone flies to that
+point at its current altitude.
+
+### Plan a Waypoint Mission
+
+1. Switch to the **Plan** tab (top toolbar).
+2. Click on the map to add waypoints. Each waypoint gets a default altitude you
+   can adjust in the sidebar.
+3. Click **Upload** (top-right) to send the mission to PX4.
+4. Switch back to the **Fly** tab and click **Start Mission**.
+
+The drone takes off, flies the waypoints in order, and returns to launch.
+
+### Land
+
+- **Land** — click the **Land** button to land at the current position.
+- **RTL** (Return to Launch) — click **RTL** to fly back to the takeoff point
+  and land automatically. This is the same behavior as the real drone's failsafe.
+
+## Test ROS2 Nodes
 
 Open a shell in the ROS2 container and launch the Bennu nodes:
 
