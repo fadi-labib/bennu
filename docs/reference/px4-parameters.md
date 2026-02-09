@@ -15,7 +15,7 @@ Bennu's PX4 parameters are organized into 6 YAML files, applied in order via `up
     | `EKF2_GPS_P_NOISE` | `0.5` | GPS position noise |
     | `EKF2_BARO_NOISE` | `3.5` | Barometer noise |
     | `COM_DL_LOSS_T` | `10` | Data link loss timeout (seconds) |
-    | `NAV_DLL_ACT` | `0` | Data link loss action: return to launch |
+    | `NAV_DLL_ACT` | `2` | Data link loss action (0=Disabled 1=Hold 2=RTL 3=Land) |
     | `NAV_RCL_ACT` | `2` | RC loss action: return to launch |
     | `COM_RCL_EXCEPT` | `0` | No RC loss exceptions |
     | `RTL_RETURN_ALT` | `30` | RTL altitude (meters) |

@@ -15,7 +15,7 @@ EKF2_BARO_NOISE: 3.5
 # Failsafes
 COM_DL_LOSS_T: 10          # Data link loss timeout (seconds)
 NAV_DLL_ACT: 2             # Data link loss action (0=Disabled 1=Hold 2=RTL 3=Land)
-NAV_RCL_ACT: 2             # RC loss action: return to launch
+NAV_RCL_ACT: 2             # RC loss action (1=Hold 2=RTL 3=Land 5=Terminate 6=Disarm)
 COM_RCL_EXCEPT: 0          # No RC loss exceptions
 RTL_RETURN_ALT: 30         # RTL altitude (meters)
 RTL_DESCEND_ALT: 10        # RTL descend altitude

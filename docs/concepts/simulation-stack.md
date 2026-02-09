@@ -39,7 +39,7 @@ The simulation replicates the same communication architecture as real hardware, 
 
 ### PX4 to QGroundControl
 
-PX4 SITL exposes MAVLink on UDP port 14540. QGroundControl running on the host connects to this port automatically and behaves as if it were connected to a real drone via telemetry radio. You can upload missions, monitor telemetry, and tune parameters.
+PX4 SITL sends MAVLink on UDP port 14550. Both containers use host networking, so QGroundControl running on the host auto-discovers the simulated drone and behaves as if it were connected to a real drone via telemetry radio. You can upload missions, monitor telemetry, and tune parameters.
 
 ### PX4 to uXRCE-DDS
 
@@ -47,7 +47,7 @@ PX4 SITL runs its built-in uXRCE-DDS client over UDP port 8888. The uXRCE-DDS Ag
 
 ### Container Networking
 
-Both containers share a Docker network, so they can reach each other by service name. The px4-sitl container exposes UDP 14540 to the host for QGroundControl access. GPU passthrough (via NVIDIA Container Toolkit and CDI) is available for hardware-accelerated Gazebo rendering.
+Both containers use host networking (`network_mode: host`), so they communicate via localhost — no port mapping or service-name resolution needed. GPU passthrough for hardware-accelerated Gazebo rendering is available as an optional overlay (`gpu.yml`).
 
 ## Simulation Diagram
 
@@ -66,7 +66,7 @@ graph LR
     subgraph Host
         QGC[QGroundControl]
     end
-    PX4 -->|"UDP 14540"| QGC
+    PX4 -->|"MAVLink<br/>UDP 14550"| QGC
     PX4 <-->|"UDP 8888"| XRCE
 ```
 
@@ -95,7 +95,7 @@ In both modes, the camera node subscribes to `VehicleGlobalPosition` and writes 
 | GPS | M9N hardware receiver | Gazebo simulated GPS |
 | Physics | Real world | Gazebo Harmonic |
 | Launch argument | `use_sim:=false` | `use_sim:=true` |
-| QGC connection | Telemetry radio (MAVLink) | UDP 14540 (localhost) |
+| QGC connection | Telemetry radio (MAVLink) | UDP 14550 (localhost, host networking) |
 | Start command | Manual launch on Pi 5 | `docker compose -f docker-compose.sim.yml up` |
 
 The goal is to minimize the difference between simulation and hardware. The same ROS2 nodes, the same launch files, and the same uXRCE-DDS protocol are used in both environments. Only the transport layer and camera backend change.
