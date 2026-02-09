@@ -1,14 +1,14 @@
 # Bennu SITL Simulation Stack
 # Usage:
-#   cd sim && docker compose -f docker-compose.sim.yml up                        (headless)
-#   cd sim && BENNU_GAZEBO_GUI=1 docker compose -f docker-compose.sim.yml up     (with 3D GUI)
+#   cd sim && docker compose -f docker-compose.sim.yml up                    (headless)
+#   cd sim && docker compose -f docker-compose.sim.yml -f gpu.yml up         (with Gazebo GUI)
 #
 # Starts PX4 SITL with Gazebo Harmonic and ROS2 Jazzy with uXRCE-DDS.
 # QGroundControl auto-connects on localhost (host networking).
 #
-# Prerequisites for GUI mode:
-#   - NVIDIA Container Toolkit installed (with CDI spec generated)
-#   - xhost +local:docker
+# The base file runs headless (no GPU required). For the Gazebo 3D GUI,
+# layer gpu.yml which adds NVIDIA GPU passthrough and X11 forwarding.
+# See gpu.yml header for prerequisites.
 
 services:
   px4-sitl:
@@ -18,18 +18,10 @@ services:
     container_name: bennu-px4-sitl
     network_mode: host
     environment:
-      - DISPLAY=${DISPLAY}
-      - QT_QPA_PLATFORM=xcb
       - PX4_SYS_AUTOSTART=4001
       - PX4_GZ_MODEL=x500
-      - HEADLESS=${BENNU_GAZEBO_GUI:+0}${BENNU_GAZEBO_GUI:-1}
-      - __GLX_VENDOR_LIBRARY_NAME=nvidia
-      - __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-    devices:
-      - nvidia.com/gpu=all
-    command: ["bash", "-c", "if [ \"$$HEADLESS\" = \"1\" ]; then echo '=== Gazebo GUI: DISABLED (set BENNU_GAZEBO_GUI=1 to enable) ==='; else echo '=== Gazebo GUI: ENABLED ==='; fi && make px4_sitl gz_x500"]
+      - BENNU_GUI=0
+    command: ["bash", "-c", "if [ \"$$BENNU_GUI\" = \"1\" ]; then echo '=== Gazebo GUI: ENABLED ==='; else echo '=== Gazebo GUI: DISABLED (layer gpu.yml to enable) ==='; export HEADLESS=1; fi && make px4_sitl gz_x500"]
 
   ros2-dev:
     build:
@@ -37,11 +29,7 @@ services:
       dockerfile: sim/Dockerfile.ros2
     container_name: bennu-ros2-dev
     network_mode: host
-    environment:
-      - DISPLAY=${DISPLAY}
-      - QT_QPA_PLATFORM=xcb
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ../drone/ros2_ws/src:/ros2_ws/src/bennu:rw
     depends_on:
       - px4-sitl
