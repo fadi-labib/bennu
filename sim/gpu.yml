@@ -1,0 +1,23 @@
+# GPU override — adds NVIDIA passthrough and Gazebo GUI
+# Usage: docker compose -f docker-compose.sim.yml -f gpu.yml up
+#
+# Prerequisites:
+#   - NVIDIA GPU with drivers installed (nvidia-smi must work)
+#   - NVIDIA Container Toolkit installed (with CDI spec generated)
+#   - xhost +local:docker  (run once per login session)
+
+services:
+  px4-sitl:
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_QPA_PLATFORM=xcb
+      - BENNU_GUI=1
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - __NV_PRIME_RENDER_OFFLOAD=1
+      - __GLX_VENDOR_LIBRARY_NAME=nvidia
+      - __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    devices:
+      - nvidia.com/gpu=all

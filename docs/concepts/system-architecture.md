@@ -103,6 +103,53 @@ graph TB
     CAM_NODE -.->|"WiFi / rsync<br/>Post-flight"| WebODM
 ```
 
+## Hardware vs Simulation — Side by Side
+
+The simulation stack mirrors the real hardware architecture. The same protocols and software run in both environments — only the transport and camera backend change.
+
+```mermaid
+graph TB
+    subgraph Real["Real Hardware"]
+        direction TB
+        R_QGC[QGroundControl]
+        R_PX4[PX4 on Pixhawk 6C]
+        R_PI[Raspberry Pi 5]
+        R_CAM[Pi HQ Camera]
+        R_ODM[WebODM]
+
+        R_QGC <-->|"MAVLink<br/>Telemetry Radio"| R_PX4
+        R_PX4 <-->|"uXRCE-DDS<br/>UART 921600"| R_PI
+        R_PI -->|"CSI"| R_CAM
+        R_PI -.->|"WiFi / rsync"| R_ODM
+    end
+
+    subgraph Sim["Simulation (Docker)"]
+        direction TB
+        S_QGC[QGroundControl]
+        S_PX4[PX4 SITL + Gazebo]
+        S_ROS2[ROS2 Container]
+        S_CAM[Placeholder JPEG]
+        S_VAL[Artifact Validation]
+
+        S_QGC <-->|"MAVLink<br/>UDP 14550"| S_PX4
+        S_PX4 <-->|"uXRCE-DDS<br/>UDP 8888"| S_ROS2
+        S_ROS2 -->|"In-memory"| S_CAM
+        S_ROS2 -.->|"pytest"| S_VAL
+    end
+```
+
+| Layer | Real Hardware | Simulation |
+|-------|-------------|------------|
+| Flight controller | PX4 on Pixhawk 6C (STM32H743) | PX4 SITL on x86_64 |
+| Physics | Real world | Gazebo Harmonic (headless) |
+| PX4 ↔ GCS | MAVLink over telemetry radio | MAVLink over UDP |
+| PX4 ↔ ROS2 | uXRCE-DDS over UART (TELEM2) | uXRCE-DDS over UDP 8888 |
+| Camera | `libcamera-still` → 12.3MP JPEG | Placeholder backend → minimal JPEG |
+| Image transfer | WiFi / rsync post-flight | Volume mount, validated by pytest |
+| Launch command | `ros2 launch bennu_bringup drone.launch.py` | `make dev` or `make test-sitl` |
+
+The key insight: **QGroundControl, MAVSDK, and your ROS2 nodes cannot tell the difference** between real hardware and simulation. They use the same MAVLink and uXRCE-DDS messages in both cases. This is what makes simulation-first development possible — code tested in SITL will behave identically on the real drone.
+
 ## Three-Phase Deployment
 
 Bennu is designed to be built and flown incrementally. Each phase adds capability without reworking what came before.

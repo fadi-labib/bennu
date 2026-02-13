@@ -16,7 +16,12 @@ if [ ! -d "$IMAGE_DIR" ]; then
     exit 1
 fi
 
-IMAGE_COUNT=$(ls -1 "$IMAGE_DIR"/*.jpg "$IMAGE_DIR"/*.JPG 2>/dev/null | wc -l)
+IMAGE_COUNT=$(find "$IMAGE_DIR" -maxdepth 1 -iname '*.jpg' -o -iname '*.jpeg' | wc -l)
+if [ "$IMAGE_COUNT" -eq 0 ]; then
+    echo "Error: No images found in $IMAGE_DIR"
+    echo "Expected .jpg or .jpeg files. Check that images have been transferred."
+    exit 1
+fi
 echo "Processing $IMAGE_COUNT images from $IMAGE_DIR"
 echo "Profile: $PROFILE"
 
