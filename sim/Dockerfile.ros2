@@ -23,6 +23,15 @@ RUN git clone --depth 1 https://github.com/eProsima/Micro-XRCE-DDS-Agent.git \
     && ldconfig \
     && rm -rf /opt/Micro-XRCE-DDS-Agent
 
+# Test and simulation dependencies
+RUN pip3 install --break-system-packages \
+    pytest \
+    pytest-watch \
+    jsonschema \
+    pynacl \
+    mavsdk \
+    ruff
+
 # Create workspace and clone px4_msgs
 WORKDIR /ros2_ws/src
 RUN git clone --depth 1 https://github.com/PX4/px4_msgs.git
