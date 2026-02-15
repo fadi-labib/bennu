@@ -1,0 +1,51 @@
+# Bennu Debug Environment — Full GUI with Gazebo 3D window
+# Usage: make dev-debug
+#
+# Prerequisites:
+#   - NVIDIA GPU with drivers installed (nvidia-smi must work)
+#   - NVIDIA Container Toolkit installed (with CDI spec generated)
+#   - xhost +local:docker  (run once per login session)
+#
+# Same as dev but with GPU passthrough and Gazebo GUI enabled.
+
+services:
+  px4-sitl:
+    build:
+      context: ..
+      dockerfile: sim/Dockerfile.px4
+    container_name: bennu-px4-sitl
+    network_mode: host
+    environment:
+      - PX4_SYS_AUTOSTART=4001
+      - PX4_GZ_MODEL=x500
+      - DISPLAY=${DISPLAY}
+      - QT_QPA_PLATFORM=xcb
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - __NV_PRIME_RENDER_OFFLOAD=1
+      - __GLX_VENDOR_LIBRARY_NAME=nvidia
+      - __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    devices:
+      - nvidia.com/gpu=all
+    # HEADLESS is NOT set — Gazebo renders the 3D GUI window
+    command: >-
+      bash -c "unset HEADLESS &&
+      echo '=== Gazebo GUI: ENABLED ===' &&
+      make px4_sitl gz_x500"
+
+  ros2-dev:
+    build:
+      context: ..
+      dockerfile: sim/Dockerfile.ros2
+    container_name: bennu-ros2-dev
+    network_mode: host
+    volumes:
+      - ../drone/ros2_ws/src:/ros2_ws/src/bennu:rw
+      - ../tests:/ros2_ws/tests:rw
+      - ../contract:/ros2_ws/contract:rw
+    depends_on:
+      - px4-sitl
+    stdin_open: true
+    tty: true

@@ -1,6 +1,6 @@
 {
     "name": "Bennu ROS2 Dev",
-    "dockerComposeFile": ["../sim/docker-compose.sim.yml"],
+    "dockerComposeFile": ["../sim/docker-compose.dev.yml"],
     "service": "ros2-dev",
     "workspaceFolder": "/ros2_ws",
     "customizations": {

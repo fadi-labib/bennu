@@ -30,26 +30,40 @@ graph LR
     PX4 <-->|"UDP 8888"| XRCE
 ```
 
-## Start the Simulation
+## Compose Profiles
 
-The simulation runs in **headless mode** by default (no 3D window, no GPU
-required). This works on any machine. To see the Gazebo 3D view, layer the GPU
-override file.
+The simulation stack is split into three Docker Compose files for different
+use cases. A Makefile in `sim/` wraps all Docker Compose commands.
+
+| Profile | Compose File | Make Target | Use Case |
+|---|---|---|---|
+| Dev | `docker-compose.dev.yml` | `make dev` | Interactive development, pytest-watch |
+| SIL | `docker-compose.sil.yml` | `make test-sitl` | Headless CI, automated mission tests |
+| Debug | `docker-compose.debug.yml` | `make dev-debug` | Gazebo 3D GUI with GPU passthrough |
+
+## Start the Simulation
 
 ### Headless Mode (default)
 
 ```bash
 cd sim
-docker compose -f docker-compose.sim.yml up --build
+make dev
 ```
 
 PX4 SITL starts with Gazebo physics running in the background. You can fly
 the drone using QGroundControl without the 3D window.
 
+To start dev mode with pytest-watch auto-rerunning tests on file changes:
+
+```bash
+cd sim
+make dev-watch
+```
+
 ### GUI Mode (with Gazebo 3D window)
 
-To see the drone in the Gazebo 3D viewport, layer `gpu.yml` which adds NVIDIA
-GPU passthrough and X11 forwarding:
+To see the drone in the Gazebo 3D viewport, use the debug profile which adds
+NVIDIA GPU passthrough and X11 forwarding:
 
 ```bash
 # Allow Docker containers to access your display (run once per login session)
@@ -57,18 +71,14 @@ xhost +local:docker
 
 # Launch with Gazebo GUI enabled
 cd sim
-docker compose -f docker-compose.sim.yml -f gpu.yml up --build
+make dev-debug
 ```
 
 Gazebo opens in a new window showing the x500 quadcopter model.
 
-The base compose file and `gpu.yml` are separate so that the headless stack
-works on any machine (CI servers, laptops without a GPU, etc.) while GPU
-support is opt-in.
-
 ### Connect QGroundControl
 
-Open QGroundControl — it auto-connects to PX4 SITL via MAVLink on
+Open QGroundControl --- it auto-connects to PX4 SITL via MAVLink on
 `localhost:14550`. Both containers use host networking, so no port mapping is
 needed.
 
@@ -89,15 +99,30 @@ Docker and the simulation.
     If you see `Failed to create OpenGL context` in the logs, the GPU is not
     accessible inside the container. Check:
 
-    1. **X11 access** — run `xhost +local:docker` on the host
-    2. **NVIDIA drivers** — run `nvidia-smi` on the host to confirm drivers are loaded
-    3. **Container GPU access** — run `docker exec bennu-px4-sitl nvidia-smi` to verify the GPU is visible inside the container
-    4. **CDI spec** — run `nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml` if the CDI spec is missing
+    1. **X11 access** --- run `xhost +local:docker` on the host
+    2. **NVIDIA drivers** --- run `nvidia-smi` on the host to confirm drivers are loaded
+    3. **Container GPU access** --- run `docker exec bennu-px4-sitl nvidia-smi` to verify the GPU is visible inside the container
+    4. **CDI spec** --- run `nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml` if the CDI spec is missing
+
+## Run Tests
+
+```bash
+cd sim
+
+# Unit, contract, and integration tests (no PX4 needed)
+make test-unit
+
+# Full mission SIL test (headless, requires PX4 SITL)
+make test-sitl
+
+# Run all tests
+make test-all
+```
 
 ## Fly the Drone
 
 Once the simulation is running and QGroundControl shows a green **Ready to Fly**
-status bar, you can fly the simulated drone. No ROS2 nodes are needed for this —
+status bar, you can fly the simulated drone. No ROS2 nodes are needed for this ---
 QGroundControl talks directly to PX4 over MAVLink.
 
 ### Takeoff
@@ -123,8 +148,8 @@ The drone takes off, flies the waypoints in order, and returns to launch.
 
 ### Land
 
-- **Land** — click the **Land** button to land at the current position.
-- **RTL** (Return to Launch) — click **RTL** to fly back to the takeoff point
+- **Land** --- click the **Land** button to land at the current position.
+- **RTL** (Return to Launch) --- click **RTL** to fly back to the takeoff point
   and land automatically. This is the same behavior as the real drone's failsafe.
 
 ## Test ROS2 Nodes
@@ -160,5 +185,21 @@ Alternatively, use QGroundControl's built-in MAVLink console
 
 ```bash
 cd sim
-docker compose -f docker-compose.sim.yml down
+make clean
+```
+
+## All Make Targets
+
+Run `cd sim && make help` to see all available commands:
+
+```
+dev                  Start dev environment (headless PX4 + ros2-dev shell)
+dev-watch            Start dev + pytest-watch auto-rerun
+dev-debug            Start debug environment with Gazebo GUI (requires GPU + xhost)
+test-unit            Run unit + contract + integration tests (no PX4 needed)
+test-sitl            Run full mission SIL headless
+test-scenarios       Run scenario matrix
+test-all             Run unit + sitl tests
+clean                Stop all containers, remove volumes
+help                 Show available commands
 ```
