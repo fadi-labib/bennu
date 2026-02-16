@@ -30,7 +30,11 @@
 - Start WebODM: `cd ground/odm && docker compose up -d`
 - Flash PX4 params: `./firmware/px4/upload_params.sh`
 - Transfer images: `./ground/transfer/sync_images.sh`
-- Start sim: `cd sim && docker compose -f docker-compose.sim.yml up`
+- Start sim (dev): `cd sim && make dev`
+- Start sim (GUI): `cd sim && make dev-debug`
+- Run unit tests: `cd sim && make test-unit`
+- Run SIL tests: `cd sim && make test-sitl`
+- Stop sim: `cd sim && make clean`
 
 ## Workflow Rules
 - Never include Co-Authored-By Claude in commit messages
