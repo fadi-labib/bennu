@@ -23,14 +23,14 @@ RUN git clone --depth 1 https://github.com/eProsima/Micro-XRCE-DDS-Agent.git \
     && ldconfig \
     && rm -rf /opt/Micro-XRCE-DDS-Agent
 
-# Test and simulation dependencies
+# Test and simulation dependencies (pinned to major versions for reproducibility)
 RUN pip3 install --break-system-packages \
-    pytest \
-    pytest-watch \
-    jsonschema \
-    pynacl \
-    mavsdk \
-    ruff
+    "pytest>=7,<9" \
+    "pytest-watch>=4,<5" \
+    "jsonschema>=4,<5" \
+    "pynacl>=1.5,<2" \
+    "mavsdk>=2,<3" \
+    "ruff>=0.4,<1"
 
 # Create workspace and clone px4_msgs
 WORKDIR /ros2_ws/src

@@ -30,12 +30,12 @@ graph LR
     PX4 <-->|"UDP 8888"| XRCE
 ```
 
-## Compose Profiles
+## Compose Environments
 
 The simulation stack is split into three Docker Compose files for different
 use cases. A Makefile in `sim/` wraps all Docker Compose commands.
 
-| Profile | Compose File | Make Target | Use Case |
+| Environment | Compose File | Make Target | Use Case |
 |---|---|---|---|
 | Dev | `docker-compose.dev.yml` | `make dev` | Interactive development, pytest-watch |
 | SIL | `docker-compose.sil.yml` | `make test-sitl` | Headless CI, automated mission tests |
@@ -109,7 +109,7 @@ Docker and the simulation.
 ```bash
 cd sim
 
-# Unit, contract, and integration tests (no PX4 needed)
+# Unit, contract, and integration tests
 make test-unit
 
 # Full mission SIL test (headless, requires PX4 SITL)
@@ -196,7 +196,7 @@ Run `cd sim && make help` to see all available commands:
 dev                  Start dev environment (headless PX4 + ros2-dev shell)
 dev-watch            Start dev + pytest-watch auto-rerun
 dev-debug            Start debug environment with Gazebo GUI (requires GPU + xhost)
-test-unit            Run unit + contract + integration tests (no PX4 needed)
+test-unit            Run unit + contract + integration tests (starts PX4 via depends_on)
 test-sitl            Run full mission SIL headless
 test-scenarios       Run scenario matrix
 test-all             Run unit + sitl tests
