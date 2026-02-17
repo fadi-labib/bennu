@@ -109,7 +109,7 @@ Docker and the simulation.
 ```bash
 cd sim
 
-# Unit, contract, and integration tests
+# Unit, contract, and integration tests (no PX4 needed)
 make test-unit
 
 # Full mission SIL test (headless, requires PX4 SITL)
@@ -196,7 +196,7 @@ Run `cd sim && make help` to see all available commands:
 dev                  Start dev environment (headless PX4 + ros2-dev shell)
 dev-watch            Start dev + pytest-watch auto-rerun
 dev-debug            Start debug environment with Gazebo GUI (requires GPU + xhost)
-test-unit            Run unit + contract + integration tests (starts PX4 via depends_on)
+test-unit            Run unit + contract + integration tests (no PX4)
 test-sitl            Run full mission SIL headless
 test-scenarios       Run scenario matrix
 test-all             Run unit + sitl tests

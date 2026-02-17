@@ -38,4 +38,4 @@ services:
       - ./artifacts:/ros2_ws/artifacts:rw
     depends_on:
       - px4-sitl
-    entrypoint: ["bash", "-c", "python3 /ros2_ws/scripts/run_mission.py --scenario /ros2_ws/scenarios/nominal_survey.yaml"]
+    command: ["python3", "/ros2_ws/scripts/run_mission.py", "--scenario", "/ros2_ws/scenarios/nominal_survey.yaml"]
