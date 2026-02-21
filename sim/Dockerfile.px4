@@ -28,6 +28,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     lsb-release \
     gnupg \
+    libopencv-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Gazebo Harmonic
