@@ -4,6 +4,8 @@
 # Headless PX4 SITL + ROS2 Jazzy with source mounts for live editing.
 # QGroundControl auto-connects on localhost:14550 (host networking).
 
+name: bennu-dev
+
 services:
   px4-sitl:
     build:

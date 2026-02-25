@@ -4,6 +4,8 @@
 # px4-sitl uses prebuilt GHCR image with local build fallback.
 # test-runner always builds locally. No GPU required.
 
+name: bennu-sil
+
 services:
   px4-sitl:
     image: ghcr.io/fadi-labib/bennu/px4-sitl:latest
