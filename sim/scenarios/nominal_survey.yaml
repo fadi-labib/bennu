@@ -1,17 +1,16 @@
-# Nominal survey mission — stub scenario for infrastructure testing
-# Full scenario schema arrives in Phase 2 (Task 8)
 name: nominal_survey
-description: Basic square survey pattern at 30m altitude
-waypoints:
-  - lat: 47.397742
-    lon: 8.545594
-    alt: 30
-  - lat: 47.397842
-    lon: 8.545594
-    alt: 30
-  - lat: 47.397842
-    lon: 8.546594
-    alt: 30
-  - lat: 47.397742
-    lon: 8.546594
-    alt: 30
+description: Baseline happy path — flat world, small grid, complete bundle
+world: default
+vehicle: x500
+mission:
+  type: grid
+  altitude_m: 30
+  speed_mps: 3
+  waypoints: 6
+  trigger_distance_m: 10
+camera_backend: placeholder
+assertions:
+  min_triggers: 4
+  expected_end_state: landed
+  max_duration_s: 180
+  require_bundle: false   # Bundle validation added in Phase 3
