@@ -9,3 +9,4 @@ Information-oriented technical specifications and data for lookup. These pages a
 - [Frame Specifications](frame-specifications.md) — Dimensions, print settings, and hardware
 - [PX4 Parameters](px4-parameters.md) — Flight controller configuration values
 - [ROS2 Interfaces](ros2-interfaces.md) — Topics, services, and message types
+- [ROS2 Ecosystem](ros2-ecosystem.md) — Evaluated OSS packages with fit assessment and adoption tiers
