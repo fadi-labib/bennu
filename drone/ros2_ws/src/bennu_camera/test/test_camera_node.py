@@ -24,6 +24,13 @@ def test_backend_factory_placeholder():
     assert backend.name == "placeholder"
 
 
+def test_backend_factory_libcamera():
+    """'libcamera' key maps to LibcameraBackend (production default)."""
+    backend = _create_backend("libcamera")
+    assert isinstance(backend, LibcameraBackend)
+    assert backend.name == "libcamera"
+
+
 def test_backend_factory_invalid():
     """Unknown backend name raises ValueError."""
     with pytest.raises(ValueError, match="Unknown camera backend"):
