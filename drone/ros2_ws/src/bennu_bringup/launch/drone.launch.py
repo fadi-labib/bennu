@@ -9,7 +9,7 @@ Supports both real hardware (serial) and simulation (UDP).
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess, DeclareLaunchArgument
 from launch.conditions import IfCondition, UnlessCondition
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
 
 
@@ -42,6 +42,17 @@ def generate_launch_description():
         "dds_agent_binary",
         default_value="MicroXRCEAgent",
         description="XRCE-DDS agent binary name (MicroXRCEAgent or micro_ros_agent)",
+    )
+
+    camera_backend_arg = DeclareLaunchArgument(
+        "camera_backend",
+        default_value=PythonExpression([
+            "'placeholder' if '",
+            LaunchConfiguration("use_sim"),
+            "' == 'true' else 'libcamera'",
+        ]),
+        description="Camera capture backend (libcamera, placeholder). "
+        "Defaults to placeholder when use_sim:=true",
     )
 
     # DDS agent for real hardware (serial)
@@ -78,6 +89,7 @@ def generate_launch_description():
             {"output_dir": LaunchConfiguration("output_dir")},
             {"image_width": 4056},
             {"image_height": 3040},
+            {"camera_backend": LaunchConfiguration("camera_backend")},
         ],
         output="screen",
     )
@@ -88,6 +100,7 @@ def generate_launch_description():
         serial_port_arg,
         baud_rate_arg,
         dds_agent_binary_arg,
+        camera_backend_arg,
         dds_agent_serial,
         dds_agent_udp,
         camera_node,

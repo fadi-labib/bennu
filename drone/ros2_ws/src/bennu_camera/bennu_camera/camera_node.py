@@ -2,17 +2,24 @@
 Bennu Camera Node — captures geotagged images triggered by PX4.
 
 Subscribes to PX4 camera trigger events via uXRCE-DDS,
-captures images using libcamera, and writes GPS EXIF data.
+captures images using configurable backends, and writes GPS EXIF data.
 """
 import os
-import subprocess
 from datetime import datetime
+from pathlib import Path
 
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 
 from bennu_camera.geotag import write_gps_exif
+from bennu_camera.backends import LibcameraBackend, PlaceholderBackend
+
+
+BACKENDS = {
+    "libcamera": LibcameraBackend,
+    "placeholder": PlaceholderBackend,
+}
 
 
 class CameraNode(Node):
@@ -25,10 +32,17 @@ class CameraNode(Node):
         self.declare_parameter("output_dir", "/home/pi/captures")
         self.declare_parameter("image_width", 4056)
         self.declare_parameter("image_height", 3040)
+        self.declare_parameter("camera_backend", "libcamera")
 
         self.output_dir = self.get_parameter("output_dir").value
         self.width = self.get_parameter("image_width").value
         self.height = self.get_parameter("image_height").value
+
+        backend_name = self.get_parameter("camera_backend").value
+        if backend_name not in BACKENDS:
+            raise ValueError(f"Unknown camera backend: {backend_name}")
+        self._backend = BACKENDS[backend_name]()
+        self.get_logger().info(f"Camera backend: {self._backend.name}")
 
         os.makedirs(self.output_dir, exist_ok=True)
 
@@ -92,32 +106,18 @@ class CameraNode(Node):
         self._capture_image()
 
     def _capture_image(self):
-        """Capture image with libcamera, or create placeholder in sim."""
+        """Capture image using the configured backend."""
         self._capture_count += 1
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"bennu_{timestamp}_{self._capture_count:04d}.jpg"
         filepath = os.path.join(self.output_dir, filename)
 
-        try:
-            subprocess.run(
-                [
-                    "libcamera-still",
-                    "-o", filepath,
-                    "--width", str(self.width),
-                    "--height", str(self.height),
-                    "--nopreview",
-                    "-t", "1",
-                ],
-                check=True,
-                capture_output=True,
-                timeout=10,
+        success = self._backend.capture(Path(filepath), self.width, self.height)
+        if not success:
+            self.get_logger().error(
+                f"Capture #{self._capture_count} failed via {self._backend.name} "
+                f"(target: {filepath}, {self.width}x{self.height})"
             )
-        except FileNotFoundError:
-            # Sim mode: create a minimal placeholder JPEG
-            self._write_placeholder_jpeg(filepath)
-            self.get_logger().info("Sim mode: created placeholder image")
-        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
-            self.get_logger().error(f"Capture failed: {e}")
             return
 
         # Write GPS EXIF
@@ -129,33 +129,6 @@ class CameraNode(Node):
                 self.get_logger().warn(f"Saved: {filename} (geotag failed)")
         else:
             self.get_logger().warn(f"Saved: {filename} (no GPS fix)")
-
-    def _write_placeholder_jpeg(self, filepath: str):
-        """Write a minimal valid JPEG file as a placeholder in simulation."""
-        # Minimal 1x1 JPEG
-        data = bytes([
-            0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46,
-            0x49, 0x46, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01,
-            0x00, 0x01, 0x00, 0x00, 0xFF, 0xDB, 0x00, 0x43,
-            0x00, 0x08, 0x06, 0x06, 0x07, 0x06, 0x05, 0x08,
-            0x07, 0x07, 0x07, 0x09, 0x09, 0x08, 0x0A, 0x0C,
-            0x14, 0x0D, 0x0C, 0x0B, 0x0B, 0x0C, 0x19, 0x12,
-            0x13, 0x0F, 0x14, 0x1D, 0x1A, 0x1F, 0x1E, 0x1D,
-            0x1A, 0x1C, 0x1C, 0x20, 0x24, 0x2E, 0x27, 0x20,
-            0x22, 0x2C, 0x23, 0x1C, 0x1C, 0x28, 0x37, 0x29,
-            0x2C, 0x30, 0x31, 0x34, 0x34, 0x34, 0x1F, 0x27,
-            0x39, 0x3D, 0x38, 0x32, 0x3C, 0x2E, 0x33, 0x34,
-            0x32, 0xFF, 0xC0, 0x00, 0x0B, 0x08, 0x00, 0x01,
-            0x00, 0x01, 0x01, 0x01, 0x11, 0x00, 0xFF, 0xC4,
-            0x00, 0x1F, 0x00, 0x00, 0x01, 0x05, 0x01, 0x01,
-            0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04,
-            0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0xFF,
-            0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x3F,
-            0x00, 0x7B, 0x40, 0x1B, 0xFF, 0xD9,
-        ])
-        with open(filepath, "wb") as f:
-            f.write(data)
 
 
 def main(args=None):
