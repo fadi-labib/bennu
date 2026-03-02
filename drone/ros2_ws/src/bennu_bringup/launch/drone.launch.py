@@ -9,7 +9,7 @@ Supports both real hardware (serial) and simulation (UDP).
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess, DeclareLaunchArgument
 from launch.conditions import IfCondition, UnlessCondition
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
 
 
@@ -46,8 +46,13 @@ def generate_launch_description():
 
     camera_backend_arg = DeclareLaunchArgument(
         "camera_backend",
-        default_value="libcamera",
-        description="Camera capture backend (libcamera, placeholder)",
+        default_value=PythonExpression([
+            "'placeholder' if '",
+            LaunchConfiguration("use_sim"),
+            "' == 'true' else 'libcamera'",
+        ]),
+        description="Camera capture backend (libcamera, placeholder). "
+        "Defaults to placeholder when use_sim:=true",
     )
 
     # DDS agent for real hardware (serial)
