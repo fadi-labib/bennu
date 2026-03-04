@@ -3,6 +3,7 @@ import os
 import shutil
 import tempfile
 import pytest
+from unittest.mock import patch
 
 from bennu_camera.geotag import write_gps_exif, format_gps_coord
 
@@ -89,3 +90,30 @@ class TestWriteGpsExif:
                 pass
         finally:
             os.unlink(temp_path)
+
+
+class TestWriteGpsExifErrors:
+    def test_returns_error_message_when_exiftool_missing(self, tmp_path):
+        """write_gps_exif returns error string when exiftool is not installed."""
+        jpeg = tmp_path / "test.jpg"
+        jpeg.write_bytes(b'\xff\xd8\xff\xd9')  # minimal JPEG
+        with patch(
+            "bennu_camera.geotag.subprocess.run",
+            side_effect=FileNotFoundError("exiftool"),
+        ):
+            result = write_gps_exif(str(jpeg), 37.0, -122.0, 50.0)
+        assert result is not True
+        assert "exiftool" in result.lower()
+
+    def test_returns_error_message_on_process_failure(self, tmp_path):
+        """write_gps_exif returns error string on subprocess failure."""
+        import subprocess as sp
+        jpeg = tmp_path / "test.jpg"
+        jpeg.write_bytes(b'\xff\xd8\xff\xd9')
+        with patch(
+            "bennu_camera.geotag.subprocess.run",
+            side_effect=sp.CalledProcessError(1, "exiftool", stderr=b"bad image"),
+        ):
+            result = write_gps_exif(str(jpeg), 37.0, -122.0, 50.0)
+        assert result is not True
+        assert isinstance(result, str)
