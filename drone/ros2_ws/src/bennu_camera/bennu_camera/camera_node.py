@@ -33,6 +33,7 @@ class CameraNode(Node):
         self.declare_parameter("image_width", 4056)
         self.declare_parameter("image_height", 3040)
         self.declare_parameter("camera_backend", "libcamera")
+        self.declare_parameter("timer_interval", 5.0)
 
         self.output_dir = self.get_parameter("output_dir").value
         self.width = self.get_parameter("image_width").value
@@ -84,7 +85,8 @@ class CameraNode(Node):
                 "px4_msgs not found — running in standalone timer mode"
             )
             # Fallback: capture on timer (for testing without PX4)
-            self.create_timer(5.0, self._on_timer_capture)
+            interval = self.get_parameter("timer_interval").value
+            self.create_timer(interval, self._on_timer_capture)
 
         self._capture_count = 0
         self.get_logger().info(
