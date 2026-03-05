@@ -40,7 +40,10 @@ class CameraNode(Node):
 
         backend_name = self.get_parameter("camera_backend").value
         if backend_name not in BACKENDS:
-            raise ValueError(f"Unknown camera backend: {backend_name}")
+            valid = ", ".join(sorted(BACKENDS.keys()))
+            raise ValueError(
+                f"Unknown camera backend: {backend_name} (valid: {valid})"
+            )
         self._backend = BACKENDS[backend_name]()
         self.get_logger().info(f"Camera backend: {self._backend.name}")
 
