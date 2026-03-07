@@ -84,8 +84,12 @@ class CameraNode(Node):
             self.get_logger().warn(
                 "px4_msgs not found — running in standalone timer mode"
             )
-            # Fallback: capture on timer (for testing without PX4)
+            # Fallback: capture on timer — used in sim mode and when running without PX4
             interval = self.get_parameter("timer_interval").value
+            if interval <= 0.0:
+                raise ValueError(
+                    f"timer_interval must be > 0, got {interval}"
+                )
             self.create_timer(interval, self._on_timer_capture)
 
         self._capture_count = 0
@@ -131,7 +135,7 @@ class CameraNode(Node):
             if result is True:
                 self.get_logger().info(f"Saved: {filename} (geotagged)")
             else:
-                self.get_logger().warn(f"Saved: {filename} (geotag failed: {result})")
+                self.get_logger().error(f"Saved: {filename} (UNGEOTAGGED — geotag failed: {result})")
         else:
             self.get_logger().warn(f"Saved: {filename} (no GPS fix)")
 
