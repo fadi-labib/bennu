@@ -8,8 +8,10 @@ Tests the full sequence that camera_node._capture_image() performs:
 This runs without rclpy — it tests the data pipeline, not the ROS2 wiring.
 """
 import shutil
+import subprocess
 
 import pytest
+from unittest.mock import patch
 
 from bennu_camera.backends.placeholder_backend import PlaceholderBackend
 from bennu_camera.geotag import write_gps_exif
@@ -39,20 +41,20 @@ def test_placeholder_capture_then_geotag(tmp_path):
     assert data[-2:] == b'\xff\xd9'  # JPEG EOI
 
 
-@pytest.mark.skipif(not HAS_EXIFTOOL, reason="exiftool not installed")
-def test_geotag_preserves_jpeg_on_failure(tmp_path):
-    """If geotag fails on a non-JPEG, original file is unchanged."""
-    # Create a file that isn't a valid JPEG
+def test_geotag_preserves_file_on_failure(tmp_path):
+    """If geotag fails, original file content is unchanged."""
     not_jpeg = tmp_path / "not_a_jpeg.jpg"
     original_content = b"this is not a jpeg"
     not_jpeg.write_bytes(original_content)
 
-    result = write_gps_exif(str(not_jpeg), 37.0, -122.0, 50.0)
+    with patch(
+        "bennu_camera.geotag.subprocess.run",
+        side_effect=subprocess.CalledProcessError(1, "exiftool", stderr=b"Not a JPEG"),
+    ):
+        result = write_gps_exif(str(not_jpeg), 37.0, -122.0, 50.0)
 
-    # exiftool should fail on non-JPEG content
-    assert result is not True  # Should be an error string after Task 1
-    # Original file should still exist (exiftool doesn't delete on failure)
-    assert not_jpeg.exists()
+    assert result is not True
+    assert not_jpeg.read_bytes() == original_content
 
 
 @pytest.mark.skipif(not HAS_EXIFTOOL, reason="exiftool not installed")
