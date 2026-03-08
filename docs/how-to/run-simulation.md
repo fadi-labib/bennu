@@ -8,7 +8,8 @@ container provides the ROS2 Jazzy environment with the uXRCE-DDS agent.
 
     - [Docker](https://docs.docker.com/get-docker/) and Docker Compose installed
     - [QGroundControl](https://docs.qgroundcontrol.com/master/en/qgc-user-guide/getting_started/download_and_install.html) installed on the host
-    - X11 display server running (for the Gazebo GUI)
+    - NVIDIA GPU with Container Toolkit installed (for GUI mode)
+    - X11 display server running (for GUI mode)
 
 ## Architecture
 
@@ -31,35 +32,67 @@ graph LR
 
 ## Start the Simulation
 
-### 1. Allow X11 Access for Docker
+The simulation runs in **headless mode** by default (no 3D window, no GPU
+required). This works on any machine. To see the Gazebo 3D view, layer the GPU
+override file.
 
-```bash
-xhost +local:docker
-```
-
-### 2. Build and Launch
+### Headless Mode (default)
 
 ```bash
 cd sim
 docker compose -f docker-compose.sim.yml up --build
 ```
 
+PX4 SITL starts with Gazebo physics running in the background. You can fly
+the drone using QGroundControl without the 3D window.
+
+### GUI Mode (with Gazebo 3D window)
+
+To see the drone in the Gazebo 3D viewport, layer `gpu.yml` which adds NVIDIA
+GPU passthrough and X11 forwarding:
+
+```bash
+# Allow Docker containers to access your display (run once per login session)
+xhost +local:docker
+
+# Launch with Gazebo GUI enabled
+cd sim
+docker compose -f docker-compose.sim.yml -f gpu.yml up --build
+```
+
 Gazebo opens in a new window showing the x500 quadcopter model.
 
-### 3. Connect QGroundControl
+The base compose file and `gpu.yml` are separate so that the headless stack
+works on any machine (CI servers, laptops without a GPU, etc.) while GPU
+support is opt-in.
 
-Open QGroundControl -- it auto-connects to PX4 SITL on `udp://localhost:14540`.
+### Connect QGroundControl
 
-## NVIDIA GPU Acceleration (optional)
+Open QGroundControl — it auto-connects to PX4 SITL via MAVLink on
+`localhost:14550`. Both containers use host networking, so no port mapping is
+needed.
 
-If you have an NVIDIA GPU, enable hardware-accelerated Gazebo rendering:
+## NVIDIA GPU Setup (required for GUI mode)
+
+GUI mode requires an NVIDIA GPU with the Container Toolkit installed:
 
 ```bash
 sudo bash sim/setup_nvidia_docker.sh
 ```
 
-This installs the NVIDIA Container Toolkit and configures Docker to use CDI
-device passthrough. After running the script, restart the simulation.
+This installs the NVIDIA Container Toolkit, generates a CDI specification, and
+configures Docker to pass through the GPU. After running the script, restart
+Docker and the simulation.
+
+!!! warning "Gazebo GUI crashes with OpenGL error"
+
+    If you see `Failed to create OpenGL context` in the logs, the GPU is not
+    accessible inside the container. Check:
+
+    1. **X11 access** — run `xhost +local:docker` on the host
+    2. **NVIDIA drivers** — run `nvidia-smi` on the host to confirm drivers are loaded
+    3. **Container GPU access** — run `docker exec bennu-px4-sitl nvidia-smi` to verify the GPU is visible inside the container
+    4. **CDI spec** — run `nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml` if the CDI spec is missing
 
 ## Phase 1: Fly in QGC
 
@@ -82,6 +115,18 @@ To inspect available topics:
 docker exec -it bennu-ros2-dev bash
 ros2 topic list
 ```
+
+## Access the PX4 Console
+
+To interact with the PX4 shell (`pxh>`), open a separate terminal and exec
+into the running container:
+
+```bash
+docker exec -it bennu-px4-sitl bash -c '/opt/px4/build/px4_sitl_default/bin/px4-mavlink-shell'
+```
+
+Alternatively, use QGroundControl's built-in MAVLink console
+(**Analyze > MAVLink Console**).
 
 ## Stop the Simulation
 
