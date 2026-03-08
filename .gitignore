@@ -1,0 +1,29 @@
+# Build artifacts
+drone/ros2_ws/build/
+drone/ros2_ws/install/
+drone/ros2_ws/log/
+ground/ros2_ground_ws/build/
+ground/ros2_ground_ws/install/
+ground/ros2_ground_ws/log/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+
+# Images captured during flights (too large for git)
+ground/odm/datasets/
+ground/odm/results/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Secrets
+*.env
