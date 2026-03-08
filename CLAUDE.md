@@ -32,5 +32,10 @@
 - Transfer images: `./ground/transfer/sync_images.sh`
 - Start sim: `cd sim && docker compose -f docker-compose.sim.yml up`
 
+## Workflow Rules
+- Never include Co-Authored-By Claude in commit messages
+- Commit and push after every task
+- When a plan is completed: convert it to an ADR, design document, and/or mkdocs page, then delete the plan file — completed plans should not linger
+
 ## Design Doc
-See `docs/plans/2026-03-08-drone-photogrammetry-design.md`
+See `docs/plans/2026-03-08-drone-platform-readiness-design.md`
