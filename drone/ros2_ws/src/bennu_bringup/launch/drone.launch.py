@@ -3,14 +3,23 @@
 Starts:
   1. Micro XRCE-DDS agent (PX4 bridge)
   2. Camera capture node
+
+Supports both real hardware (serial) and simulation (UDP).
 """
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess, DeclareLaunchArgument
+from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 
 def generate_launch_description():
+    use_sim_arg = DeclareLaunchArgument(
+        "use_sim",
+        default_value="false",
+        description="Use simulation mode (UDP instead of serial)",
+    )
+
     output_dir_arg = DeclareLaunchArgument(
         "output_dir",
         default_value="/home/pi/captures",
@@ -29,19 +38,32 @@ def generate_launch_description():
         description="Baud rate for PX4 serial connection",
     )
 
-    # Start Micro XRCE-DDS agent
-    dds_agent = ExecuteProcess(
+    # DDS agent for real hardware (serial)
+    dds_agent_serial = ExecuteProcess(
         cmd=[
-            "micro-xrce-dds-agent",
+            "MicroXRCEAgent",
             "serial",
             "--dev", LaunchConfiguration("serial_port"),
             "-b", LaunchConfiguration("baud_rate"),
         ],
         name="uxrce_dds_agent",
         output="screen",
+        condition=UnlessCondition(LaunchConfiguration("use_sim")),
     )
 
-    # Start camera capture node
+    # DDS agent for simulation (UDP)
+    dds_agent_udp = ExecuteProcess(
+        cmd=[
+            "MicroXRCEAgent",
+            "udp4",
+            "-p", "8888",
+        ],
+        name="uxrce_dds_agent",
+        output="screen",
+        condition=IfCondition(LaunchConfiguration("use_sim")),
+    )
+
+    # Camera capture node
     camera_node = Node(
         package="bennu_camera",
         executable="camera_node",
@@ -55,9 +77,11 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        use_sim_arg,
         output_dir_arg,
         serial_port_arg,
         baud_rate_arg,
-        dds_agent,
+        dds_agent_serial,
+        dds_agent_udp,
         camera_node,
     ])
