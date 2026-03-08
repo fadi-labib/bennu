@@ -20,8 +20,8 @@ dev: ## Start dev environment (headless PX4 + ros2-dev shell)
 
 dev-watch: dev ## Start dev + pytest-watch auto-rerun
 	@echo "Starting pytest-watch (Ctrl+C to stop)..."
-	$(DEV_EXEC) "for pkg in /ros2_ws/src/bennu/*/; do pip install -e \$$pkg 2>/dev/null; done; \
-		cd /ros2_ws && ptw --runner 'python -m pytest --tb=short -q' src/bennu/*/test/ tests/"
+	$(DEV_EXEC) "for pkg in /ros2_ws/src/bennu/*/; do pip install --break-system-packages -e \$$pkg 2>/dev/null; done; \
+		cd /ros2_ws && ptw --runner 'python3 -m pytest --tb=short -q' src/bennu/*/test/ tests/"
 
 dev-debug: ## Start debug environment with Gazebo GUI (requires GPU + xhost)
 	$(COMPOSE_DBG) up -d
@@ -29,8 +29,8 @@ dev-debug: ## Start debug environment with Gazebo GUI (requires GPU + xhost)
 
 test-unit: ## Run unit + contract + integration tests (no PX4)
 	$(COMPOSE_DEV) up -d --no-deps ros2-dev
-	$(DEV_EXEC) "cd /ros2_ws && for pkg in src/bennu/*/; do pip install -e \$$pkg 2>/dev/null; done && \
-		python -m pytest src/bennu/*/test/ tests/ -v"
+	$(DEV_EXEC) "cd /ros2_ws && for pkg in src/bennu/*/; do pip install --break-system-packages -e \$$pkg 2>/dev/null; done && \
+		python3 -m pytest src/bennu/*/test/ tests/ -v"
 
 test-sitl: ## Run full mission SIL headless (pulls GHCR images, or: make test-sitl BUILD=1)
 	$(COMPOSE_SIL) up $(if $(BUILD),--build) --abort-on-container-exit --exit-code-from test-runner; \
