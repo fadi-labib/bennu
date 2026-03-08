@@ -5,7 +5,7 @@
 
 ## Tech Stack
 - **Flight Controller:** PX4 v1.15+ on Holybro Pixhawk 6C
-- **Companion Computer:** Raspberry Pi 5 (8GB), Ubuntu 22.04, ROS2 Humble
+- **Companion Computer:** Raspberry Pi 5 (8GB), Ubuntu 24.04, ROS2 Jazzy
 - **PX4-ROS2 Bridge:** uXRCE-DDS (not MAVROS)
 - **Camera:** Raspberry Pi HQ Camera (IMX477) + 6mm CS-mount lens
 - **Ground Station:** QGroundControl + WebODM (Docker)
@@ -30,6 +30,7 @@
 - Start WebODM: `cd ground/odm && docker compose up -d`
 - Flash PX4 params: `./firmware/px4/upload_params.sh`
 - Transfer images: `./ground/transfer/sync_images.sh`
+- Start sim: `cd sim && docker compose -f docker-compose.sim.yml up`
 
 ## Design Doc
 See `docs/plans/2026-03-08-drone-photogrammetry-design.md`

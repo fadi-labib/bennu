@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Set up Raspberry Pi 5 for Bennu drone companion computer
-# Run on a fresh Ubuntu 22.04 Server install on the Pi 5
+# Run on a fresh Ubuntu 24.04 Server install on the Pi 5
 #
 # Prerequisites:
-#   - Ubuntu 22.04 Server flashed to microSD
+#   - Ubuntu 24.04 Server flashed to microSD
 #   - Pi 5 connected to internet via Ethernet or WiFi
 #   - SSH access configured
 #
@@ -30,8 +30,8 @@ sudo apt install -y \
     python3-picamera2 \
     exiftool
 
-# Install ROS 2 Humble
-echo "=== Installing ROS 2 Humble ==="
+# Install ROS 2 Jazzy
+echo "=== Installing ROS 2 Jazzy ==="
 sudo apt install -y software-properties-common
 sudo add-apt-repository universe -y
 sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
@@ -39,10 +39,10 @@ sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" \
     | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
 sudo apt update
-sudo apt install -y ros-humble-ros-base ros-dev-tools
+sudo apt install -y ros-jazzy-ros-base ros-dev-tools
 
 # Source ROS 2 in bashrc
-echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc
 
 # Install Micro XRCE-DDS Agent
 echo "=== Installing Micro XRCE-DDS Agent ==="
