@@ -207,7 +207,7 @@ def test_images_csv_columns_match_schema()     # CSV header matches schema
 
 **Your Audit:**
 1. Read `.github/workflows/ci.yml` — verify it runs on push+PR to main
-2. Run locally: `pip install -r requirements-dev.txt && ruff check . && python -m pytest tests/ -v`
+2. Run locally: `pip install -r requirements-dev.txt && ruff check . && python -m pytest drone/ros2_ws/src/*/test/ tests/ -v`
 3. Push a branch, open a draft PR — verify CI runs
 
 **Accept:**
@@ -786,12 +786,11 @@ def test_waypoint_progress()                # advance_waypoint increments, progr
 | 2: Sensor Config | 12-13 | Sensor configs, calibration data |
 | 3: Survey Intelligence | 14-18 | Grid planner, terrain following, coverage, mission execution, repeat |
 
-**After all tasks, the drone can:**
+**After all tasks, the drone software can:**
 1. Plan a survey grid for any polygon AOI
 2. Adjust altitudes for terrain
-3. Execute a planned mission (upload waypoints, fly, trigger captures)
-4. Capture images with quality scoring (blur, exposure)
-5. Generate full metadata (18 columns including RTK, GSD, capture_offset_ms)
-6. Package a signed, schema-validated mission bundle
-7. Track coverage via image footprints and identify gaps
-8. Repeat missions for change detection
+3. Manage a mission state machine (arm → takeoff → waypoints → RTL → land) — full PX4 integration validated in SITL
+4. Score image quality (blur, exposure) and tag with 18-column metadata
+5. Package a signed, schema-validated mission bundle with quality reports
+6. Track coverage via image footprints and identify gaps
+7. Repeat missions for change detection
