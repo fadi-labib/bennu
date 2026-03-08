@@ -1,0 +1,25 @@
+{
+    "name": "Bennu ROS2 Dev",
+    "dockerComposeFile": ["../sim/docker-compose.sim.yml"],
+    "service": "ros2-dev",
+    "workspaceFolder": "/ros2_ws",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-iot.vscode-ros",
+                "redhat.vscode-xml",
+                "redhat.vscode-yaml"
+            ],
+            "settings": {
+                "python.analysis.extraPaths": [
+                    "/opt/ros/jazzy/lib/python3.12/dist-packages",
+                    "/ros2_ws/install/bennu_camera/lib/python3.12/dist-packages",
+                    "/ros2_ws/install/px4_msgs/lib/python3.12/dist-packages"
+                ]
+            }
+        }
+    },
+    "remoteUser": "root"
+}
