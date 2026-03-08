@@ -1,0 +1,11 @@
+{
+    "dsm": true,
+    "dtm": true,
+    "orthophoto-resolution": 2.0,
+    "feature-quality": "high",
+    "pc-quality": "high",
+    "mesh-octree-depth": 11,
+    "min-num-features": 10000,
+    "matcher-neighbors": 8,
+    "use-3dmesh": true
+}
