@@ -1,0 +1,11 @@
+# Companion computer (Pi 5) connection via TELEM2
+# Protocol: uXRCE-DDS over serial
+
+# TELEM2 port config
+MAV_1_CONFIG: 102            # TELEM2
+SER_TEL2_BAUD: 921600        # 921600 baud for uXRCE-DDS
+MAV_1_MODE: 2                # Onboard mode
+
+# uXRCE-DDS client
+UXRCE_DDS_CFG: 102           # Enable uXRCE-DDS on TELEM2
+UXRCE_DDS_AG_IP: 0           # Not used for serial

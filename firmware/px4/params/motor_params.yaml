@@ -1,0 +1,21 @@
+# Motor and ESC configuration for Bennu
+# Motors: T-Motor Velox V2207.5 1950KV
+# ESC: Holybro Tekko32 F4 4-in-1 50A
+# Props: HQProp 7x3.5x3
+
+# DShot protocol
+DSHOT_CONFIG: 600           # DShot600
+
+# Motor ordering (PX4 standard quad X)
+# Motor 1: Front Right (CCW)
+# Motor 2: Rear Left (CCW)
+# Motor 3: Front Left (CW)
+# Motor 4: Rear Right (CW)
+
+# Idle throttle
+MOT_ORDERING: 0            # PX4 default ordering
+THR_MDL_FAC: 0.3           # Thrust model factor (tune after first flights)
+
+# PWM limits (if using PWM instead of DShot)
+PWM_MAIN_MIN: 1000
+PWM_MAIN_MAX: 2000
