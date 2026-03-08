@@ -50,6 +50,11 @@ RUN git clone --depth 1 --branch v1.16.1 \
 # Install all PX4 Python build dependencies from its own requirements
 RUN pip3 install --break-system-packages -r /opt/px4/Tools/setup/requirements.txt
 
+# Patch: shallow clone lacks NuttX tags, causing px_update_git_header.py to crash
+# with IndexError on `re.findall(...)[-1]`. Replace the crash with a fallback value.
+RUN sed -i 's/nuttx_git_tag = re.findall.*\[-1\].*/nuttx_git_tag = (re.findall(r"nuttx-[0-9]+\\.[0-9]+\\.[0-9]+", nuttx_git_tags) or ["nuttx-0.0.0"])[-1].replace("nuttx-", "v")/' \
+    /opt/px4/src/lib/version/px_update_git_header.py
+
 # Build PX4 SITL
 WORKDIR /opt/px4
 RUN make px4_sitl_default
