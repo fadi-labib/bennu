@@ -1,0 +1,67 @@
+# PX4 SITL + Gazebo Harmonic
+# Builds PX4-Autopilot for SITL and runs with Gazebo simulation
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+# Base dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    cmake \
+    build-essential \
+    python3 \
+    python3-pip \
+    python3-jinja2 \
+    python3-empy \
+    python3-jsonschema \
+    python3-numpy \
+    python3-toml \
+    python3-packaging \
+    python3-yaml \
+    python3-requests \
+    python3-setuptools \
+    python3-cerberus \
+    python3-coverage \
+    python3-pyulog \
+    ninja-build \
+    curl \
+    wget \
+    lsb-release \
+    gnupg \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Gazebo Harmonic
+RUN curl -fsSL https://packages.osrfoundation.org/gazebo.gpg \
+    -o /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" \
+    | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null \
+    && apt-get update \
+    && apt-get install -y gz-harmonic \
+    && rm -rf /var/lib/apt/lists/*
+
+# Clone PX4-Autopilot
+WORKDIR /opt
+RUN git clone --depth 1 --branch v1.15.2 \
+    https://github.com/PX4/PX4-Autopilot.git px4 \
+    && cd px4 \
+    && git submodule update --init --recursive --depth 1
+
+# Build PX4 SITL
+WORKDIR /opt/px4
+RUN make px4_sitl_default
+
+# Environment
+ENV GZ_SIM_RESOURCE_PATH=/opt/px4/Tools/simulation/gz/models:/opt/px4/Tools/simulation/gz/worlds
+ENV PX4_SYS_AUTOSTART=4001
+ENV PX4_GZ_MODEL=x500
+ENV PX4_GZ_MODEL_POSE="0,0,0.1,0,0,0"
+
+# Expose ports
+# 14540: QGroundControl MAVLink
+# 14580: offboard API
+# 8888: uXRCE-DDS
+EXPOSE 14540/udp 14580/udp 8888/udp
+
+# Entrypoint: run PX4 SITL with Gazebo
+CMD ["bash", "-c", "make px4_sitl gz_x500"]
