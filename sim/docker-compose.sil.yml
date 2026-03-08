@@ -1,0 +1,40 @@
+# Bennu SIL Testing — Headless CI + smoke tests
+# Usage: make test-sitl
+#
+# Uses prebuilt GHCR image with local build fallback.
+# No GPU required. QGroundControl not needed.
+
+services:
+  px4-sitl:
+    image: ghcr.io/fadi-labib/bennu/px4-sitl:latest
+    build:
+      context: ..
+      dockerfile: sim/Dockerfile.px4
+    container_name: bennu-px4-sitl
+    network_mode: host
+    environment:
+      - PX4_SYS_AUTOSTART=4001
+      - PX4_GZ_MODEL=x500
+      - HEADLESS=1
+      - PX4_GZ_STANDALONE=1
+    command: >-
+      bash -c "export HEADLESS=1 &&
+      echo '=== SIL: Headless PX4 SITL ===' &&
+      make px4_sitl gz_x500"
+
+  test-runner:
+    build:
+      context: ..
+      dockerfile: sim/Dockerfile.ros2
+    container_name: bennu-test-runner
+    network_mode: host
+    volumes:
+      - ../drone/ros2_ws/src:/ros2_ws/src/bennu:rw
+      - ../tests:/ros2_ws/tests:rw
+      - ../contract:/ros2_ws/contract:rw
+      - ./scripts:/ros2_ws/scripts:ro
+      - ./scenarios:/ros2_ws/scenarios:ro
+      - ./artifacts:/ros2_ws/artifacts:rw
+    depends_on:
+      - px4-sitl
+    entrypoint: ["bash", "-c", "python3 /ros2_ws/scripts/run_mission.py --scenario /ros2_ws/scenarios/nominal_survey.yaml"]
