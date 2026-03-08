@@ -4,7 +4,7 @@
   <version>0.1.0</version>
   <description>Launch files and config for Bennu drone</description>
   <maintainer email="github@fadilabib.com">Fadi Labib</maintainer>
-  <license>MIT</license>
+  <license>Apache-2.0</license>
 
   <buildtool_depend>ament_python</buildtool_depend>
 

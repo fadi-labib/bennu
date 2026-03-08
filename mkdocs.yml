@@ -81,6 +81,8 @@ nav:
       - Frame Specifications: reference/frame-specifications.md
       - PX4 Parameters: reference/px4-parameters.md
       - ROS2 Interfaces: reference/ros2-interfaces.md
+      - Power Architecture: reference/power-architecture.md
+      - Vibration Damping: reference/vibration-damping.md
   - Decisions:
       - decisions/index.md
       - ADR-001 PX4 over ArduPilot: decisions/001-px4-over-ardupilot.md

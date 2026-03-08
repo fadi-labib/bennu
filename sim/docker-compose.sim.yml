@@ -1,12 +1,14 @@
 # Bennu SITL Simulation Stack
-# Usage: cd sim && docker compose -f docker-compose.sim.yml up
+# Usage:
+#   cd sim && docker compose -f docker-compose.sim.yml up                    (headless)
+#   cd sim && docker compose -f docker-compose.sim.yml -f gpu.yml up         (with Gazebo GUI)
 #
 # Starts PX4 SITL with Gazebo Harmonic and ROS2 Jazzy with uXRCE-DDS.
-# Connect QGroundControl on host to localhost:14540.
+# QGroundControl auto-connects on localhost (host networking).
 #
-# Prerequisites:
-#   - NVIDIA Container Toolkit installed (with CDI spec generated)
-#   - xhost +local:docker (for Gazebo GUI)
+# The base file runs headless (no GPU required). For the Gazebo 3D GUI,
+# layer gpu.yml which adds NVIDIA GPU passthrough and X11 forwarding.
+# See gpu.yml header for prerequisites.
 
 services:
   px4-sitl:
@@ -14,41 +16,23 @@ services:
       context: ..
       dockerfile: sim/Dockerfile.px4
     container_name: bennu-px4-sitl
+    network_mode: host
     environment:
-      - DISPLAY=${DISPLAY}
-      - QT_QPA_PLATFORM=xcb
       - PX4_SYS_AUTOSTART=4001
       - PX4_GZ_MODEL=x500
-      - __GLX_VENDOR_LIBRARY_NAME=nvidia
-      - __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-    ports:
-      - "14540:14540/udp"
-      - "14580:14580/udp"
-    networks:
-      - bennu-sim
-    devices:
-      - nvidia.com/gpu=all
+      - BENNU_GUI=0
+    # HEADLESS=1 tells Gazebo to run physics-only without the GUI window
+    command: ["bash", "-c", "if [ \"$$BENNU_GUI\" = \"1\" ]; then echo '=== Gazebo GUI: ENABLED ==='; unset HEADLESS; else echo '=== Gazebo GUI: DISABLED (layer gpu.yml to enable) ==='; export HEADLESS=1; fi && make px4_sitl gz_x500"]
 
   ros2-dev:
     build:
       context: ..
       dockerfile: sim/Dockerfile.ros2
     container_name: bennu-ros2-dev
-    environment:
-      - DISPLAY=${DISPLAY}
-      - QT_QPA_PLATFORM=xcb
+    network_mode: host
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ../drone/ros2_ws/src:/ros2_ws/src/bennu:rw
     depends_on:
       - px4-sitl
-    networks:
-      - bennu-sim
     stdin_open: true
     tty: true
-
-networks:
-  bennu-sim:
-    driver: bridge
