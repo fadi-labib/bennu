@@ -1,0 +1,44 @@
+name: Build Docker Images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'sim/Dockerfile.*'
+  schedule:
+    - cron: '0 4 * * 0'  # Weekly Sunday 4am UTC
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  PX4_IMAGE: ghcr.io/fadi-labib/bennu/px4-sitl
+  ROS2_IMAGE: ghcr.io/fadi-labib/bennu/ros2-dev
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: sim/Dockerfile.px4
+          push: true
+          tags: ${{ env.PX4_IMAGE }}:v1.16.1,${{ env.PX4_IMAGE }}:latest
+
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: sim/Dockerfile.ros2
+          push: true
+          tags: ${{ env.ROS2_IMAGE }}:jazzy,${{ env.ROS2_IMAGE }}:latest
