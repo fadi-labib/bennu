@@ -27,8 +27,8 @@ dev-debug: ## Start debug environment with Gazebo GUI (requires GPU + xhost)
 	$(COMPOSE_DBG) up -d
 	@echo "Debug environment ready with Gazebo GUI."
 
-test-unit: ## Run unit + contract + integration tests (starts PX4 via depends_on)
-	$(COMPOSE_DEV) up -d ros2-dev
+test-unit: ## Run unit + contract + integration tests (no PX4)
+	$(COMPOSE_DEV) up -d --no-deps ros2-dev
 	$(DEV_EXEC) "cd /ros2_ws && pip install -e src/bennu/* 2>/dev/null && \
 		python -m pytest src/bennu/*/test/ tests/ -v"
 
@@ -38,7 +38,7 @@ test-sitl: ## Run full mission SIL headless
 
 test-scenarios: ## Run scenario matrix
 	$(COMPOSE_SIL) run --rm test-runner \
-		python3 /ros2_ws/scripts/run_scenarios.py --dir /ros2_ws/scenarios/
+		python3 /ros2_ws/scripts/run_scenarios.py --dir /ros2_ws/scenarios
 
 test-all: test-unit ## Run unit + sitl tests
 	$(COMPOSE_DEV) down -v 2>/dev/null || true

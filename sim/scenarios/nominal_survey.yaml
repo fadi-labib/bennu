@@ -1,0 +1,17 @@
+# Nominal survey mission — stub scenario for infrastructure testing
+# Full scenario schema arrives in Phase 2 (Task 8)
+name: nominal_survey
+description: Basic square survey pattern at 30m altitude
+waypoints:
+  - lat: 47.397742
+    lon: 8.545594
+    alt: 30
+  - lat: 47.397842
+    lon: 8.545594
+    alt: 30
+  - lat: 47.397842
+    lon: 8.546594
+    alt: 30
+  - lat: 47.397742
+    lon: 8.546594
+    alt: 30
