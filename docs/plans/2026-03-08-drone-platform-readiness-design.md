@@ -314,7 +314,7 @@ drone/ros2_ws/src/
 ├── bennu_mission/                 # Mission execution + packaging
 │   ├── mission_node.py            # Waypoint execution via uXRCE-DDS
 │   ├── repeat_mission.py          # Re-fly same grid for change detection
-│   ├── coverage_tracker.py        # Track captured vs planned, find gaps
+│   ├── coverage_tracker.py        # Image-footprint-based coverage, find gaps
 │   └── mission_manifest.py        # Generate manifest.json + images.csv
 │
 ├── bennu_dataset/                 # Bundle packaging + export
@@ -340,18 +340,19 @@ drone/ros2_ws/src/
 
 ### Capture Pipeline (Per Trigger Event)
 
+**v1 (RGB only — Config C / single-sensor):**
+
 ```
 PX4 camera trigger (distance-based)
     │
     ▼
-sync_manager receives trigger timestamp
-    │
-    ├──► camera_node captures RGB
-    ├──► nir_node captures NIR (if Config A)
-    │    or thermal_node captures thermal (if Config B)
+camera_node receives trigger timestamp
     │
     ▼
-quality.py scores each image
+camera_node captures RGB image
+    │
+    ▼
+quality.py scores image
     │  - Laplacian variance (blur detection)
     │  - Histogram analysis (exposure check)
     │  - Composite 0.0-1.0 score
@@ -368,12 +369,20 @@ geotag.py writes extended metadata
     │
     ▼
 coverage_tracker updates progress
-    │  - Mark grid cell as captured
+    │  - Mark grid cell as covered (image footprint)
     │  - Flag if quality below threshold
     │
     ▼
-Images saved: {mission_id}/images/{sequence:04d}_{sensor}.{ext}
+Image saved: {mission_id}/images/{sequence:04d}_rgb.jpg
 ```
+
+**Future multi-sensor (deferred: needs hardware):**
+
+When NIR (Config A) or thermal (Config B) sensors are added, `sync_manager.py`
+will coordinate multi-camera trigger sequencing. Each additional sensor captures
+with a recorded `capture_offset_ms` from the trigger timestamp. The v1 pipeline
+above remains the core path; multi-sensor adds parallel capture branches after
+the trigger event.
 
 ### Mission End Pipeline
 
@@ -450,15 +459,17 @@ When LTE/MQTT telemetry is added:
 
 Tests are structured in two tiers:
 
-1. **Package tests** (`colcon test`): ROS2-aware tests inside each package's `test/`
-   directory. These validate code through proper package installation and discovery.
+1. **Package tests** (pytest): Pure Python tests inside each package's `test/`
+   directory. CI installs packages with `pip install -e` and runs pytest across
+   all `<package>/test/` directories. In a ROS2 environment, `colcon test` also
+   discovers and runs these tests.
 2. **Contract tests** (top-level `tests/`): Schema validation and integration tests
    that span multiple packages. These use `pip install -e` for package imports,
    not raw PYTHONPATH hacks.
 
 | Test Type | Scope | Tooling | Location | When |
 |---|---|---|---|---|
-| Unit | Geotag math, quality scoring, signer | pytest via colcon test | `<package>/test/` | CI on every PR |
+| Unit | Geotag math, quality scoring, signer | pytest | `<package>/test/` | CI on every PR |
 | Schema conformance | manifest.json + images.csv validate against contract schema | jsonschema + pytest | `tests/contract/` | CI on every PR |
 | Bundle integration | End-to-end bundle generation + validation | pytest | `tests/integration/` | CI on every PR |
 | SITL integration | Full capture pipeline in Gazebo sim | Docker Compose sim stack | `tests/sitl/` | CI (nightly or per-PR) |
