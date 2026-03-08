@@ -1,0 +1,90 @@
+site_name: Bennu
+site_description: DIY Photogrammetry Drone — PX4 + ROS2 + OpenDroneMap
+site_url: https://fadi-labib.github.io/bennu/
+repo_url: https://github.com/fadi-labib/bennu
+repo_name: fadi-labib/bennu
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep orange
+      accent: orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep orange
+      accent: orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_mermaid
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.mark
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - blog:
+      blog_dir: blog
+
+nav:
+  - Home: index.md
+  - Tutorials:
+      - tutorials/index.md
+      - Frame Assembly: tutorials/frame-assembly.md
+  - How-to Guides:
+      - how-to/index.md
+      - Flash PX4 Parameters: how-to/flash-px4-params.md
+      - Run the Simulation: how-to/run-simulation.md
+      - Transfer Images: how-to/transfer-images.md
+      - Start WebODM: how-to/start-webodm.md
+  - Concepts:
+      - concepts/index.md
+      - System Architecture: concepts/system-architecture.md
+      - Photogrammetry Pipeline: concepts/photogrammetry-pipeline.md
+      - Simulation Stack: concepts/simulation-stack.md
+  - Reference:
+      - reference/index.md
+      - Bill of Materials: reference/bill-of-materials.md
+      - Wiring Diagram: reference/wiring-diagram.md
+      - Frame Specifications: reference/frame-specifications.md
+      - PX4 Parameters: reference/px4-parameters.md
+      - ROS2 Interfaces: reference/ros2-interfaces.md
+  - Decisions:
+      - decisions/index.md
+      - ADR-001 PX4 over ArduPilot: decisions/001-px4-over-ardupilot.md
+      - ADR-002 Pi 5 Companion: decisions/002-pi5-companion-computer.md
+      - ADR-003 Rolling Shutter Camera: decisions/003-rolling-shutter-camera.md
+      - ADR-004 uXRCE-DDS over MAVROS: decisions/004-uxrce-dds-over-mavros.md
+  - Build Log: blog/index.md
