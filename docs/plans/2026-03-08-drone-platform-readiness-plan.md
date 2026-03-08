@@ -4,7 +4,7 @@
 
 **Goal:** Evolve Bennu from a photogrammetry prototype into a production-grade data acquisition system that produces versioned, signed mission bundles consumable by an independent geospatial analysis platform.
 
-**Architecture:** Contract-first development. Define the mission bundle schema, then build the drone-side pipeline that produces conformant bundles. Each phase adds capabilities (quality gates, multi-sensor, survey intelligence) while maintaining schema conformance. All new code lives in ROS2 Python packages under `drone/ros2_ws/src/`.
+**Architecture:** Contract-first development. Define the mission bundle schema, then build the drone-side pipeline that produces conformant bundles. Each phase adds capabilities (quality gates, sensor configuration, survey intelligence) while maintaining schema conformance. All new code lives in ROS2 Python packages under `drone/ros2_ws/src/`. Tests use `colcon test` for package-level tests and `pip install -e` for cross-package integration tests — never raw PYTHONPATH hacks.
 
 **Tech Stack:** Python 3.12, ROS2 Jazzy, PX4 v1.16+, uXRCE-DDS, pytest, jsonschema, Ed25519 (PyNaCl), Gazebo Harmonic (SITL)
 
@@ -18,13 +18,19 @@
 
 **Files:**
 - Create: `contract/v1/manifest.schema.json`
-- Create: `contract/v1/images.schema.csv`
+- Create: `contract/v1/images.schema.json` (CSV column definitions as JSON Schema)
 - Create: `contract/v1/README.md`
 - Create: `contract/v1/example/manifest.json`
 - Create: `contract/v1/example/images.csv`
 - Test: `tests/contract/test_schema_validation.py`
 
 **Context:** The mission bundle contract is the ONLY coupling point between the drone and the platform. This schema defines what the drone must produce. Schema authority will eventually live in the platform repo; for now we bootstrap it here.
+
+**Important schema decisions:**
+- `survey` object is **optional** (omitted for manual flights, test flights, non-grid missions)
+- `quality_summary.coverage_pct` is **nullable** (null when no survey grid defined)
+- `checksums_digest` is **required** (SHA-256 of checksums.sha256 file — integrity chain)
+- `images.schema.json` defines CSV column names, types, and constraints for machine validation
 
 **Step 1: Write the failing test**
 
@@ -52,6 +58,29 @@ def test_contract_version_is_v1():
     example = json.loads((CONTRACT_DIR / "example" / "manifest.json").read_text())
     assert example["contract_version"] == "v1"
     assert schema["properties"]["contract_version"]["const"] == "v1"
+
+def test_manifest_without_survey_validates():
+    """survey is optional — manual/test flights omit it."""
+    schema = json.loads((CONTRACT_DIR / "manifest.schema.json").read_text())
+    example = json.loads((CONTRACT_DIR / "example" / "manifest.json").read_text())
+    example.pop("survey", None)
+    example["quality_summary"]["coverage_pct"] = None
+    jsonschema.validate(example, schema)
+
+def test_checksums_digest_required():
+    schema = json.loads((CONTRACT_DIR / "manifest.schema.json").read_text())
+    example = json.loads((CONTRACT_DIR / "example" / "manifest.json").read_text())
+    del example["checksums_digest"]
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate(example, schema)
+
+def test_images_csv_columns_match_schema():
+    """Validate images.csv column names against images.schema.json."""
+    csv_schema = json.loads((CONTRACT_DIR / "images.schema.json").read_text())
+    example_csv = (CONTRACT_DIR / "example" / "images.csv").read_text()
+    header = example_csv.strip().split("\n")[0].split(",")
+    expected_columns = csv_schema["columns"]
+    assert header == [col["name"] for col in expected_columns]
 ```
 
 **Step 2: Run test to verify it fails**
@@ -62,21 +91,22 @@ Expected: FAIL (files do not exist yet)
 **Step 3: Create the JSON schema**
 
 Create `contract/v1/manifest.schema.json` implementing the manifest.json structure from the design doc. The schema must include:
-- `contract_version` (const "v1")
+- `contract_version` (const "v1") — required
 - `mission_id`, `drone_id` (required strings)
-- `drone_hardware` object (flight_controller, px4_version, gps_model, sensors array)
-- `capture` object (start_time, end_time, image_count, sensor_config, trigger_mode, trigger_distance_m)
-- `survey` object (site_id, aoi_geojson, planned_altitude_m, planned_overlap_front, planned_overlap_side, planned_gsd_cm)
-- `quality_summary` object (images_total, images_passed, images_failed, failure_reasons, rtk_fixed_pct, coverage_pct)
+- `drone_hardware` object (flight_controller, px4_version, gps_model, sensors array) — required
+- `capture` object (start_time, end_time, image_count, sensor_config, trigger_mode, trigger_distance_m) — required
+- `survey` object (site_id, aoi_geojson, planned_altitude_m, planned_overlap_front, planned_overlap_side, planned_gsd_cm) — **optional** (omitted for manual/test flights)
+- `quality_summary` object (images_total, images_passed, images_failed, failure_reasons, rtk_fixed_pct, coverage_pct) — required, but `coverage_pct` is **nullable**
+- `checksums_digest` (required string) — SHA-256 of the checksums.sha256 file
 - `signature` (required string)
 
-Create `contract/v1/example/manifest.json` with a valid example matching the design doc.
+Create `contract/v1/example/manifest.json` with a valid example matching the design doc (include `checksums_digest` field).
 
-Create `contract/v1/images.schema.csv` documenting the per-image CSV columns from the design doc (sequence, filename, sensor, timestamp_utc, lat, lon, alt_msl, alt_agl, heading_deg, pitch_deg, roll_deg, rtk_fix_type, position_accuracy_m, gsd_cm, quality_score, quality_flags, ambient_light_lux).
+Create `contract/v1/images.schema.json` — a JSON Schema defining the CSV columns as a machine-validatable schema. Each column entry has `name`, `type` (string/int/float/ISO8601), and `nullable` (boolean). Columns: sequence, filename, sensor, timestamp_utc, lat, lon, alt_msl, alt_agl, heading_deg, pitch_deg, roll_deg, rtk_fix_type, position_accuracy_m, gsd_cm, quality_score, quality_flags, ambient_light_lux, capture_offset_ms.
 
-Create `contract/v1/example/images.csv` with 3 example rows.
+Create `contract/v1/example/images.csv` with 3 example rows matching the schema.
 
-Create `contract/v1/README.md` with contract rules (semver, backward compat, migration policy).
+Create `contract/v1/README.md` with contract rules (semver, backward compat, migration policy, canonical JSON serialization for signing).
 
 **Step 4: Run tests to verify they pass**
 
@@ -195,7 +225,15 @@ git commit -m "ci: add lint and test pipeline with ruff and pytest"
 - `CONTRIBUTING.md`: Brief contributor guide (fork, branch, PR, tests must pass, code review required)
 - `SECURITY.md`: Responsible disclosure policy (email, response time commitment)
 
-**Step 2: Commit**
+**Step 2: Update existing package.xml license fields**
+
+Existing ROS2 packages declare `MIT` in their `package.xml` and `setup.py`. Update all
+to `Apache-2.0` for consistency with the repo-level LICENSE:
+- `drone/ros2_ws/src/bennu_camera/package.xml` — change `<license>MIT</license>` to `<license>Apache-2.0</license>`
+- `drone/ros2_ws/src/bennu_camera/setup.py` — change `license='MIT'` to `license='Apache-2.0'`
+- `drone/ros2_ws/src/bennu_bringup/package.xml` — same change
+
+**Step 3: Commit**
 
 ```bash
 git add LICENSE CONTRIBUTING.md SECURITY.md
@@ -283,7 +321,7 @@ Create standard ROS2 Python package boilerplate (package.xml, setup.py, setup.cf
 
 **Step 4: Run tests to verify they pass**
 
-Run: `cd /home/fadi/projects/bennu && PYTHONPATH=drone/ros2_ws/src/bennu_core python -m pytest tests/unit/test_drone_identity.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_core && python -m pytest tests/unit/test_drone_identity.py -v`
 Expected: 2 PASS
 
 **Step 5: Commit**
@@ -323,15 +361,24 @@ from bennu_dataset.signer import ManifestSigner
 def test_sign_and_verify():
     signer = ManifestSigner.generate()
     manifest = {"contract_version": "v1", "mission_id": "test-001"}
-    signature = signer.sign(json.dumps(manifest, sort_keys=True))
-    assert signer.verify(json.dumps(manifest, sort_keys=True), signature)
+    canonical = signer.canonicalize(manifest)
+    signature = signer.sign(canonical)
+    assert signer.verify(canonical, signature)
+
+def test_canonicalize_is_deterministic():
+    signer = ManifestSigner.generate()
+    m1 = {"b": 2, "a": 1}
+    m2 = {"a": 1, "b": 2}
+    assert signer.canonicalize(m1) == signer.canonicalize(m2)
+    assert signer.canonicalize(m1) == '{"a":1,"b":2}'
 
 def test_verify_rejects_tampered():
     signer = ManifestSigner.generate()
     manifest = {"contract_version": "v1", "mission_id": "test-001"}
-    signature = signer.sign(json.dumps(manifest, sort_keys=True))
-    tampered = {"contract_version": "v1", "mission_id": "TAMPERED"}
-    assert not signer.verify(json.dumps(tampered, sort_keys=True), signature)
+    canonical = signer.canonicalize(manifest)
+    signature = signer.sign(canonical)
+    tampered = signer.canonicalize({"contract_version": "v1", "mission_id": "TAMPERED"})
+    assert not signer.verify(tampered, signature)
 
 def test_export_and_import_keys(tmp_path):
     signer = ManifestSigner.generate()
@@ -378,6 +425,12 @@ class ManifestSigner:
         Path(key_path).write_bytes(bytes(self._signing_key))
         Path(pub_path).write_bytes(bytes(self._verify_key))
 
+    @staticmethod
+    def canonicalize(manifest: dict) -> str:
+        """Canonical JSON: sorted keys, compact separators. Deterministic across implementations."""
+        import json
+        return json.dumps(manifest, sort_keys=True, separators=(",", ":"))
+
     def sign(self, data: str) -> str:
         signed = self._signing_key.sign(data.encode())
         return base64.b64encode(signed.signature).decode()
@@ -395,7 +448,7 @@ Create standard ROS2 Python package boilerplate for bennu_dataset.
 
 **Step 5: Run tests to verify they pass**
 
-Run: `cd /home/fadi/projects/bennu && pip install pynacl && PYTHONPATH=drone/ros2_ws/src/bennu_dataset python -m pytest tests/unit/test_signer.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install pynacl && pip install -e drone/ros2_ws/src/bennu_dataset && python -m pytest tests/unit/test_signer.py -v`
 Expected: 3 PASS
 
 **Step 6: Commit**
@@ -488,7 +541,7 @@ Add `opencv-python-headless>=4.8` and `numpy>=1.26` to `requirements-dev.txt`.
 
 **Step 4: Run tests to verify they pass**
 
-Run: `cd /home/fadi/projects/bennu && PYTHONPATH=drone/ros2_ws/src/bennu_camera python -m pytest tests/unit/test_quality.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_camera && python -m pytest tests/unit/test_quality.py -v`
 Expected: 5 PASS
 
 **Step 5: Commit**
@@ -555,7 +608,7 @@ def test_gsd_scales_with_altitude():
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd /home/fadi/projects/bennu && PYTHONPATH=drone/ros2_ws/src/bennu_camera python -m pytest tests/unit/test_geotag.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_camera && python -m pytest tests/unit/test_geotag.py -v`
 Expected: FAIL
 
 **Step 3: Implement enhanced geotag module**
@@ -566,7 +619,7 @@ Keep existing EXIF writing functions. Add the new metadata structures alongside.
 
 **Step 4: Run tests to verify they pass**
 
-Run: `cd /home/fadi/projects/bennu && PYTHONPATH=drone/ros2_ws/src/bennu_camera python -m pytest tests/unit/test_geotag.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_camera && python -m pytest tests/unit/test_geotag.py -v`
 Expected: 3 PASS
 
 **Step 5: Commit**
@@ -711,7 +764,7 @@ The generator:
 
 **Step 4: Run tests to verify they pass**
 
-Run: `cd /home/fadi/projects/bennu && PYTHONPATH=drone/ros2_ws/src/bennu_core:drone/ros2_ws/src/bennu_camera:drone/ros2_ws/src/bennu_mission python -m pytest tests/unit/test_mission_manifest.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_core -e drone/ros2_ws/src/bennu_camera -e drone/ros2_ws/src/bennu_mission && python -m pytest tests/unit/test_mission_manifest.py -v`
 Expected: 3 PASS
 
 **Step 5: Commit**
@@ -796,7 +849,7 @@ def test_checksums_are_valid(tmp_path):
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd /home/fadi/projects/bennu && PYTHONPATH=drone/ros2_ws/src/bennu_dataset python -m pytest tests/unit/test_packager.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_dataset && python -m pytest tests/unit/test_packager.py -v`
 Expected: FAIL
 
 **Step 3: Implement BundlePackager**
@@ -812,7 +865,7 @@ The packager:
 
 **Step 4: Run tests to verify they pass**
 
-Run: `cd /home/fadi/projects/bennu && PYTHONPATH=drone/ros2_ws/src/bennu_dataset python -m pytest tests/unit/test_packager.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_dataset && python -m pytest tests/unit/test_packager.py -v`
 Expected: 2 PASS
 
 **Step 5: Commit**
@@ -930,7 +983,7 @@ def test_full_bundle_pipeline(tmp_path):
 
 **Step 2: Run the integration test**
 
-Run: `cd /home/fadi/projects/bennu && PYTHONPATH=drone/ros2_ws/src/bennu_core:drone/ros2_ws/src/bennu_camera:drone/ros2_ws/src/bennu_dataset:drone/ros2_ws/src/bennu_mission python -m pytest tests/integration/test_bundle_e2e.py -v`
+Run: `cd /home/fadi/projects/bennu && pip install -e drone/ros2_ws/src/bennu_core -e drone/ros2_ws/src/bennu_camera -e drone/ros2_ws/src/bennu_dataset -e drone/ros2_ws/src/bennu_mission && python -m pytest tests/integration/test_bundle_e2e.py -v`
 Expected: 1 PASS
 
 **Step 3: Commit**
@@ -952,7 +1005,7 @@ git commit -m "test: add end-to-end bundle generation integration test"
 
 ---
 
-## Phase 2: Multi-Sensor Support
+## Phase 2: Sensor Configuration & Calibration
 
 ### Task 12: Sensor Configuration System
 
