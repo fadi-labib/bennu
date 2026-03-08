@@ -29,15 +29,7 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     devices:
       - nvidia.com/gpu=all
-    command: >
-      bash -c '
-      if [ "$HEADLESS" = "1" ]; then
-        echo "=== Gazebo GUI: DISABLED (set BENNU_GAZEBO_GUI=1 to enable) ==="
-      else
-        echo "=== Gazebo GUI: ENABLED ==="
-      fi
-      make px4_sitl gz_x500
-      '
+    command: ["bash", "-c", "if [ \"$$HEADLESS\" = \"1\" ]; then echo '=== Gazebo GUI: DISABLED (set BENNU_GAZEBO_GUI=1 to enable) ==='; else echo '=== Gazebo GUI: ENABLED ==='; fi && make px4_sitl gz_x500"]
 
   ros2-dev:
     build:
