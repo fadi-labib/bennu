@@ -9,15 +9,14 @@ services:
     build:
       context: ..
       dockerfile: sim/Dockerfile.px4
-    container_name: bennu-px4-sitl
+    container_name: bennu-px4-sitl-dev
     network_mode: host
     environment:
       - PX4_SYS_AUTOSTART=4001
       - PX4_GZ_MODEL=x500
       - HEADLESS=1
     command: >-
-      bash -c "export HEADLESS=1 &&
-      echo '=== Gazebo GUI: DISABLED (use make dev-debug for GUI) ===' &&
+      bash -c "echo '=== Gazebo GUI: DISABLED (use make dev-debug for GUI) ===' &&
       make px4_sitl gz_x500"
 
   ros2-dev:

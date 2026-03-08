@@ -47,7 +47,7 @@ PX4 SITL runs its built-in uXRCE-DDS client over UDP port 8888. The uXRCE-DDS Ag
 
 ### Container Networking
 
-Both containers use host networking (`network_mode: host`), so they communicate via localhost --- no port mapping or service-name resolution needed. GPU passthrough for hardware-accelerated Gazebo rendering is available as a separate compose profile (`docker-compose.debug.yml`).
+Both containers use host networking (`network_mode: host`), so they communicate via localhost --- no port mapping or service-name resolution needed. GPU passthrough for hardware-accelerated Gazebo rendering is available as a separate compose file (`docker-compose.debug.yml`).
 
 ## Simulation Diagram
 
