@@ -54,21 +54,32 @@ fi
 
 # Validate MAVLink connection
 echo "Connecting to flight controller at $PORT ($BAUD baud)..."
-if ! python3 -c "
-from pymavlink import mavutil
+if ! python3 - "$PORT" "$BAUD" << 'PYEOF'
 import sys
+port = sys.argv[1]
+baud = int(sys.argv[2])
 try:
-    master = mavutil.mavlink_connection('$PORT', baud=$BAUD)
-    hb = master.wait_heartbeat(timeout=10)
-    if hb:
-        print(f'Connected: autopilot type {hb.autopilot}, system {hb.get_srcSystem()}')
-    else:
-        print('Error: No heartbeat received within 10 seconds', file=sys.stderr)
-        sys.exit(1)
-except Exception as e:
-    print(f'Error: Cannot connect to {\"$PORT\"}: {e}', file=sys.stderr)
+    from pymavlink import mavutil
+except ImportError:
+    print('Error: pymavlink not installed. Run: pip install pymavlink', file=sys.stderr)
     sys.exit(1)
-" 2>&1; then
+try:
+    master = mavutil.mavlink_connection(port, baud=baud)
+except PermissionError:
+    print(f'Error: Permission denied on {port}. Try: sudo usermod -aG dialout $USER', file=sys.stderr)
+    sys.exit(1)
+except Exception as e:
+    print(f'Error: Cannot open {port}: {e}', file=sys.stderr)
+    sys.exit(1)
+hb = master.wait_heartbeat(timeout=10)
+if hb:
+    print(f'Connected: autopilot type {hb.autopilot}, system {hb.get_srcSystem()}')
+    master.close()
+else:
+    print('Error: No heartbeat received within 10 seconds', file=sys.stderr)
+    sys.exit(1)
+PYEOF
+then
     echo ""
     echo "Could not connect to flight controller."
     echo "Check that:"
@@ -79,8 +90,8 @@ except Exception as e:
 fi
 echo ""
 
-SUCCESS=0
-FAILED=0
+TOTAL_SUCCESS=0
+TOTAL_FAILED=0
 SKIPPED=0
 
 for param_file in "${PARAM_FILES[@]}"; do
@@ -97,44 +108,75 @@ for param_file in "${PARAM_FILES[@]}"; do
 
     echo "--- Applying: $param_file ---"
 
-    # Parse YAML and set each parameter via mavlink shell
-    # Format: PARAM_NAME: value  or  PARAM_NAME: value  # comment
-    grep -v '^#' "$filepath" | grep -v '^$' | while IFS=': ' read -r param value rest; do
-        # Strip trailing comments
-        value=$(echo "$value" | sed 's/#.*//' | xargs)
-        if [ -n "$param" ] && [ -n "$value" ]; then
-            echo "  SET $param = $value"
-            if python3 -c "
-import sys
+    # Upload all parameters in a single MAVLink session via pymavlink
+    # This avoids opening/closing the serial port per parameter
+    RESULT=$(python3 - "$PORT" "$BAUD" "$filepath" << 'PYEOF'
+import sys, re
+
+port = sys.argv[1]
+baud = int(sys.argv[2])
+filepath = sys.argv[3]
+
 from pymavlink import mavutil
-master = mavutil.mavlink_connection('$PORT', baud=$BAUD)
+
+master = mavutil.mavlink_connection(port, baud=baud)
 master.wait_heartbeat(timeout=10)
-master.param_set_send('$param', float('$value'))
-ack = master.recv_match(type='PARAM_VALUE', blocking=True, timeout=5)
-if ack:
-    print(f'    OK: {ack.param_id} = {ack.param_value}')
-else:
-    print(f'    TIMEOUT: $param', file=sys.stderr)
-    sys.exit(1)
-" 2>&1; then
-                SUCCESS=$((SUCCESS + 1))
-            else
-                echo "    FAILED: $param"
-                FAILED=$((FAILED + 1))
-            fi
-        fi
-    done
+
+success = 0
+failed = 0
+
+with open(filepath) as f:
+    for line in f:
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+        # Parse "PARAM_NAME: value  # optional comment"
+        match = re.match(r'^(\w+)\s*:\s*([^#]+)', line)
+        if not match:
+            continue
+        param = match.group(1).strip()
+        value_str = match.group(2).strip()
+        try:
+            value = float(value_str)
+        except ValueError:
+            print(f'  SKIP {param} (non-numeric: {value_str})')
+            continue
+
+        print(f'  SET {param} = {value}')
+        master.param_set_send(param, value)
+        ack = master.recv_match(type='PARAM_VALUE', blocking=True, timeout=5)
+        if ack:
+            print(f'    OK: {ack.param_id.rstrip(chr(0))} = {ack.param_value}')
+            success += 1
+        else:
+            print(f'    TIMEOUT: {param}', file=sys.stderr)
+            failed += 1
+
+master.close()
+# Print machine-readable counts on the last line
+print(f'__COUNTS__ {success} {failed}')
+PYEOF
+    )
+
+    echo "$RESULT" | grep -v '^__COUNTS__'
+
+    # Extract counts from the Python output
+    COUNTS=$(echo "$RESULT" | grep '^__COUNTS__' || echo "__COUNTS__ 0 0")
+    FILE_SUCCESS=$(echo "$COUNTS" | awk '{print $2}')
+    FILE_FAILED=$(echo "$COUNTS" | awk '{print $3}')
+    TOTAL_SUCCESS=$((TOTAL_SUCCESS + FILE_SUCCESS))
+    TOTAL_FAILED=$((TOTAL_FAILED + FILE_FAILED))
     echo ""
 done
 
 echo "=== Summary ==="
-echo "  Set:     $SUCCESS"
-echo "  Failed:  $FAILED"
+echo "  Set:     $TOTAL_SUCCESS"
+echo "  Failed:  $TOTAL_FAILED"
 echo "  Skipped: $SKIPPED files"
 
-if [ "$FAILED" -gt 0 ]; then
+if [ "$TOTAL_FAILED" -gt 0 ]; then
     echo ""
-    echo "WARNING: $FAILED parameter(s) failed to set."
+    echo "WARNING: $TOTAL_FAILED parameter(s) failed to set."
     exit 1
 fi
 

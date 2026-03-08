@@ -55,6 +55,6 @@ graph TD
 - Always use a battery voltage checker before flight
 - PX4 monitors voltage via the Pixhawk power module
 - Failsafe thresholds configured in `base_params.yaml`:
-    - Low: 25% → RTL warning
-    - Critical: 15% → RTL
+    - Low: 25% → Return to launch
+    - Critical: 15% → Return to launch
     - Emergency: 10% → Land immediately

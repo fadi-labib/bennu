@@ -26,7 +26,7 @@ graph LR
     subgraph Host
         QGC[QGroundControl]
     end
-    PX4 -->|"UDP 14540"| QGC
+    PX4 -->|"MAVLink<br/>UDP 14550"| QGC
     PX4 <-->|"UDP 8888"| XRCE
 ```
 
