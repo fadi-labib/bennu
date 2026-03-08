@@ -39,22 +39,15 @@ RUN curl -fsSL https://packages.osrfoundation.org/gazebo.gpg \
     && apt-get install -y gz-harmonic \
     && rm -rf /var/lib/apt/lists/*
 
-# Clone PX4-Autopilot (shallow clone for speed)
+# Clone PX4-Autopilot v1.16.1 (latest stable)
 WORKDIR /opt
-RUN git clone --depth 1 --branch v1.15.2 \
+RUN git clone --depth 1 --branch v1.16.1 \
     https://github.com/PX4/PX4-Autopilot.git px4 \
     && cd px4 \
     && git submodule update --init --recursive --depth 1
 
 # Install all PX4 Python build dependencies from its own requirements
 RUN pip3 install --break-system-packages -r /opt/px4/Tools/setup/requirements.txt
-
-# Patch version script to handle missing nuttx tags in shallow clones.
-# The script crashes with IndexError when no nuttx-* tags exist.
-RUN sed -i 's/nuttx_git_tag = re\.findall/nuttx_git_tag = (re.findall/' \
-    /opt/px4/src/lib/version/px_update_git_header.py \
-    && sed -i "s/nuttx_git_tags)\[-1\]/nuttx_git_tags) or ['nuttx-0.0.0'])[-1]/" \
-    /opt/px4/src/lib/version/px_update_git_header.py
 
 # Build PX4 SITL
 WORKDIR /opt/px4
