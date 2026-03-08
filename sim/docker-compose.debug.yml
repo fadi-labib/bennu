@@ -8,6 +8,8 @@
 #
 # Same as dev but with GPU passthrough and Gazebo GUI enabled.
 
+name: bennu-debug
+
 services:
   px4-sitl:
     build:
