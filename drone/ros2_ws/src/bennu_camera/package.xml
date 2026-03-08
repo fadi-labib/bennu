@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>bennu_camera</name>
+  <version>0.1.0</version>
+  <description>Camera capture and geotagging for Bennu drone</description>
+  <maintainer email="github@fadilabib.com">Fadi Labib</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>px4_msgs</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+</package>
