@@ -1,7 +1,7 @@
 # Drone/Satellite Image Analysis OSS Platform Plan
 
-**Date:** 2026-03-08  
-**Status:** Proposed
+**Date:** 2026-03-08
+**Status:** Superseded by `2026-03-08-drone-platform-readiness-design.md` — platform moved to separate repo per proposal
 
 ## Goal
 

@@ -1,5 +1,14 @@
 # Review Fix Plan — All 17 Findings
 
+**Status:** Partially superseded
+
+> Findings 7-17 (architecture, dependency governance, process gaps) are now covered by
+> `2026-03-08-drone-platform-readiness-plan.md` — compatibility matrix (Task 2),
+> CI pipeline (Task 3), governance files (Task 4), phase exit gates, and testing strategy.
+>
+> **Findings 1-6 remain OPEN** — these are code/config bugs that need standalone fixes
+> before or alongside platform readiness work. Finding 1 (failsafe) is safety-critical.
+
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** Fix all 17 findings from `docs/reviews/2026-03-08-project-architecture-review.md`

@@ -1,7 +1,7 @@
 # Proposal: Bennu Drone + Independent OSS Geospatial Platform
 
-**Date:** 2026-03-08  
-**Status:** Proposed  
+**Date:** 2026-03-08
+**Status:** Superseded by `2026-03-08-drone-platform-readiness-design.md`
 **Decision Type:** Strategic + Technical
 
 ## 1) Vision
