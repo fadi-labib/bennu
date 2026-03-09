@@ -44,6 +44,12 @@ def generate_launch_description():
         description="XRCE-DDS agent binary name (MicroXRCEAgent or micro_ros_agent)",
     )
 
+    camera_backend_arg = DeclareLaunchArgument(
+        "camera_backend",
+        default_value="libcamera",
+        description="Camera capture backend (libcamera, placeholder)",
+    )
+
     # DDS agent for real hardware (serial)
     dds_agent_serial = ExecuteProcess(
         cmd=[
@@ -78,6 +84,7 @@ def generate_launch_description():
             {"output_dir": LaunchConfiguration("output_dir")},
             {"image_width": 4056},
             {"image_height": 3040},
+            {"camera_backend": LaunchConfiguration("camera_backend")},
         ],
         output="screen",
     )
@@ -88,6 +95,7 @@ def generate_launch_description():
         serial_port_arg,
         baud_rate_arg,
         dds_agent_binary_arg,
+        camera_backend_arg,
         dds_agent_serial,
         dds_agent_udp,
         camera_node,
