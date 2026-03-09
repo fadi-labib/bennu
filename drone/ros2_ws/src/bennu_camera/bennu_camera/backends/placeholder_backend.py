@@ -1,9 +1,16 @@
+import logging
 from pathlib import Path
 from bennu_camera.capture_backend import CaptureBackend
 
+logger = logging.getLogger(__name__)
+
 
 class PlaceholderBackend(CaptureBackend):
-    """Generates minimal valid JPEG files for simulation."""
+    """Generates minimal valid 1x1 JPEG files for simulation.
+
+    Width and height parameters are accepted for interface compatibility
+    but are not reflected in the output image.
+    """
 
     MINIMAL_JPEG = bytes([
         0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46,
@@ -28,9 +35,13 @@ class PlaceholderBackend(CaptureBackend):
     ])
 
     def capture(self, filepath: Path, width: int, height: int) -> bool:
-        filepath.parent.mkdir(parents=True, exist_ok=True)
-        filepath.write_bytes(self.MINIMAL_JPEG)
-        return True
+        try:
+            filepath.parent.mkdir(parents=True, exist_ok=True)
+            filepath.write_bytes(self.MINIMAL_JPEG)
+            return True
+        except OSError as e:
+            logger.error("Placeholder capture failed writing %s: %s", filepath, e)
+            return False
 
     @property
     def name(self) -> str:

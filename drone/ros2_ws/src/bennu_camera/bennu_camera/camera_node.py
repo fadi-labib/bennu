@@ -114,7 +114,10 @@ class CameraNode(Node):
 
         success = self._backend.capture(Path(filepath), self.width, self.height)
         if not success:
-            self.get_logger().error(f"Capture failed via {self._backend.name}")
+            self.get_logger().error(
+                f"Capture #{self._capture_count} failed via {self._backend.name} "
+                f"(target: {filepath}, {self.width}x{self.height})"
+            )
             return
 
         # Write GPS EXIF
