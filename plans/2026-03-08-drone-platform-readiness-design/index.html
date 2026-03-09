@@ -1,0 +1,3325 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="DIY Photogrammetry Drone — PX4 + ROS2 + OpenDroneMap">
+      
+      
+      
+        <link rel="canonical" href="https://fadi-labib.github.io/bennu/plans/2026-03-08-drone-platform-readiness-design/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../2026-03-08-drone-platform-readiness-plan/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.4">
+    
+    
+      
+        <title>Platform Readiness Design - Bennu</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-orange" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#drone-platform-readiness-design" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Bennu" class="md-header__button md-logo" aria-label="Bennu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Bennu
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Platform Readiness Design
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-orange" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-orange" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fadi-labib/bennu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fadi-labib/bennu
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../how-to/" class="md-tabs__link">
+          
+  
+  
+  How-to Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../concepts/" class="md-tabs__link">
+          
+  
+  
+  Concepts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../decisions/" class="md-tabs__link">
+          
+  
+  
+  Decisions
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Plans
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../blog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Build Log
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Bennu" class="md-nav__button md-logo" aria-label="Bennu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Bennu
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fadi-labib/bennu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fadi-labib/bennu
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/frame-assembly/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frame Assembly
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How-to Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    How-to Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How-to Guides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/flash-px4-params/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Flash PX4 Parameters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/run-simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run the Simulation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/transfer-images/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transfer Images
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/start-webodm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start WebODM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/system-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/photogrammetry-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Photogrammetry Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/simulation-stack/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Simulation Stack
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/bill-of-materials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bill of Materials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/wiring-diagram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wiring Diagram
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/frame-specifications/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frame Specifications
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/px4-parameters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PX4 Parameters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ros2-interfaces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS2 Interfaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ros2-ecosystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS2 Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/power-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Power Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/vibration-damping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibration Damping
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Decisions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Decision Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/001-px4-over-ardupilot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 PX4 over ArduPilot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/002-pi5-companion-computer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002 Pi 5 Companion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/003-rolling-shutter-camera/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003 Rolling Shutter Camera
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/004-uxrce-dds-over-mavros/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004 uXRCE-DDS over MAVROS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/005-ros2-oss-package-adoption/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005 ROS2 OSS Package Adoption
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plans
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Plans
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plans &amp; Design Documents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform Readiness Design
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform Readiness Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#strategic-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategic Context
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Strategic Context">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#competitive-landscape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Competitive Landscape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-we-compete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where We Compete
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#system-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        System Boundaries
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="System Boundaries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bennu-this-repo-data-acquisition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bennu (this repo) — Data Acquisition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#platform-separate-repo-analysis-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Platform (separate repo) — Analysis &amp; Decision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coupling-point-mission-bundle-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coupling Point: Mission Bundle Contract
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Contract
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Contract">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bundle-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bundle Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manifestjson-mission-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        manifest.json (Mission-Level)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#imagescsv-per-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        images.csv (Per-Image)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contract-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contract Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#drone-hardware-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drone Hardware Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Drone Hardware Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-platform-always-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Platform (Always Present)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensor-configurations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sensor Configurations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terrain-following" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terrain Following
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accuracy-budget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accuracy Budget
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-sensor-synchronization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Sensor Synchronization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#drone-software-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drone Software Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Drone Software Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ros2-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ROS2 Packages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capture-pipeline-per-trigger-event" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Capture Pipeline (Per Trigger Event)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mission-end-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mission End Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#signed-manifests-not-immutable-audit-trail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signed Manifests (Not "Immutable Audit Trail")
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#telemetry-security-deferred-to-phase-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Telemetry Security (Deferred to Phase 5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing Strategy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#risks-and-mitigations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risks and Mitigations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-systems-engineering-artifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Future Systems-Engineering Artifacts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Success Metrics
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-03-08-drone-platform-readiness-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform Readiness Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-03-08-simulation-first-sil-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Simulation-First SIL Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-03-08-simulation-first-sil-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Simulation-First SIL Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#strategic-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategic Context
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Strategic Context">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#competitive-landscape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Competitive Landscape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-we-compete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where We Compete
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#system-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        System Boundaries
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="System Boundaries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bennu-this-repo-data-acquisition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bennu (this repo) — Data Acquisition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#platform-separate-repo-analysis-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Platform (separate repo) — Analysis &amp; Decision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coupling-point-mission-bundle-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coupling Point: Mission Bundle Contract
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Contract
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Contract">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bundle-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bundle Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manifestjson-mission-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        manifest.json (Mission-Level)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#imagescsv-per-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        images.csv (Per-Image)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contract-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contract Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#drone-hardware-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drone Hardware Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Drone Hardware Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-platform-always-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Platform (Always Present)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensor-configurations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sensor Configurations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terrain-following" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terrain Following
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accuracy-budget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accuracy Budget
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-sensor-synchronization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Sensor Synchronization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#drone-software-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drone Software Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Drone Software Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ros2-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ROS2 Packages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capture-pipeline-per-trigger-event" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Capture Pipeline (Per Trigger Event)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mission-end-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mission End Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#signed-manifests-not-immutable-audit-trail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signed Manifests (Not "Immutable Audit Trail")
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#telemetry-security-deferred-to-phase-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Telemetry Security (Deferred to Phase 5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing Strategy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#risks-and-mitigations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risks and Mitigations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-systems-engineering-artifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Future Systems-Engineering Artifacts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Success Metrics
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="drone-platform-readiness-design">Drone Platform-Readiness Design<a class="headerlink" href="#drone-platform-readiness-design" title="Permanent link">&para;</a></h1>
+<p><strong>Date:</strong> 2026-03-08
+<strong>Status:</strong> Proposed</p>
+<h2 id="goal">Goal<a class="headerlink" href="#goal" title="Permanent link">&para;</a></h2>
+<p>Evolve Bennu from a photogrammetry prototype into a production-grade data
+acquisition system that can feed an independent geospatial analysis platform.
+The platform is a separate, proprietary product built on OSS. Bennu is the
+open-source reference drone.</p>
+<h2 id="strategic-context">Strategic Context<a class="headerlink" href="#strategic-context" title="Permanent link">&para;</a></h2>
+<h3 id="competitive-landscape">Competitive Landscape<a class="headerlink" href="#competitive-landscape" title="Permanent link">&para;</a></h3>
+<p>DJI dominates the commercial drone survey market with tight vertical integration
+(Mavic 3M → SmartFarm → AGRAS sprayers). Key specs for the Mavic 3M benchmark:</p>
+<ul>
+<li>20MP RGB + 4× 5MP multispectral (Green, Red, Red Edge, NIR)</li>
+<li>Built-in RTK (1cm + 1ppm horizontal)</li>
+<li>43 min flight time, 200 ha/flight</li>
+<li>Incident light sensor for radiometric calibration</li>
+<li>Terrain following</li>
+<li>~$6,000-8,000</li>
+</ul>
+<p>DJI SmartFarm provides NDVI mapping, AI crop health, variable-rate prescription
+maps, and yield estimation — all locked to DJI hardware, agriculture-only,
+cloud-hosted.</p>
+<h3 id="where-we-compete">Where We Compete<a class="headerlink" href="#where-we-compete" title="Permanent link">&para;</a></h3>
+<p>We do not compete on hardware specs. We compete on:</p>
+<ol>
+<li><strong>Vendor neutrality</strong> — platform works with any drone that produces conformant bundles.</li>
+<li><strong>Domain breadth</strong> — infrastructure, construction, environmental, forestry — not just ag.</li>
+<li><strong>Data sovereignty</strong> — self-hosted, air-gapped capable.</li>
+<li><strong>Custom ML</strong> — bring your own models (TorchGeo, TerraTorch, SAM).</li>
+<li><strong>Cost</strong> — ~$900-1,100 drone vs $6-8K, free OSS vs platform fees.</li>
+<li><strong>Transparency</strong> — open algorithms, reproducible analysis, auditable pipelines.</li>
+</ol>
+<p>DJI is banned or restricted by government agencies in several countries. An open,
+self-hosted alternative has genuine demand for government, military, infrastructure,
+and critical asset inspection.</p>
+<h2 id="system-boundaries">System Boundaries<a class="headerlink" href="#system-boundaries" title="Permanent link">&para;</a></h2>
+<h3 id="bennu-this-repo-data-acquisition">Bennu (this repo) — Data Acquisition<a class="headerlink" href="#bennu-this-repo-data-acquisition" title="Permanent link">&para;</a></h3>
+<p>Owns: flight stack, onboard capture, sensor integration, mission execution,
+quality checks, dataset packaging, mission bundle export (offline-first).</p>
+<p>Does not own: platform backend, catalog/database, dashboards, user management,
+ML training, analytics.</p>
+<h3 id="platform-separate-repo-analysis-decision">Platform (separate repo) — Analysis &amp; Decision<a class="headerlink" href="#platform-separate-repo-analysis-decision" title="Permanent link">&para;</a></h3>
+<p>Owns: ingestion, object storage, STAC catalog, PostGIS, APIs, workflow
+orchestration, ML inference, map UI, alerting, auth/RBAC/audit, SLO operations.</p>
+<h3 id="coupling-point-mission-bundle-contract">Coupling Point: Mission Bundle Contract<a class="headerlink" href="#coupling-point-mission-bundle-contract" title="Permanent link">&para;</a></h3>
+<p>The ONLY integration point is a versioned mission bundle (see Data Contract below).
+Either side can change internals without breaking the other, as long as the
+contract is honored.</p>
+<h2 id="data-contract">Data Contract<a class="headerlink" href="#data-contract" title="Permanent link">&para;</a></h2>
+<p>The mission bundle is the mandatory first deliverable. Schema authority lives in
+the platform repo. The drone repo imports the schema version and runs conformance
+tests in CI.</p>
+<h3 id="bundle-structure">Bundle Structure<a class="headerlink" href="#bundle-structure" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>{mission_id}/
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── contract_version          # &quot;v1&quot;
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── manifest.json             # Mission-level metadata (signed)
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>├── images/
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│   ├── 0001_rgb.jpg
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   ├── 0001_nir.jpg          # (if multispectral config)
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│   ├── 0001_thermal.tiff     # (if thermal config)
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   └── ...
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>├── metadata/
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│   ├── images.csv            # Per-image metadata table
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│   └── calibration.csv       # Ambient light / panel readings (if applicable)
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>├── telemetry/
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│   └── flight.ulg            # PX4 flight log
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>├── quality/
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>│   └── report.json           # Per-image quality scores + summary
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>└── checksums.sha256           # SHA-256 of all files
+</code></pre></div>
+<h3 id="manifestjson-mission-level">manifest.json (Mission-Level)<a class="headerlink" href="#manifestjson-mission-level" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;contract_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v1&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&quot;mission_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-03-15-site-alpha-003&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">&quot;drone_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bennu-001&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">&quot;drone_hardware&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="nt">&quot;flight_controller&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pixhawk6C&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="nt">&quot;px4_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.16.1&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nt">&quot;gps_model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;F9P&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="nt">&quot;sensors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;rgb:IMX477&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;nir:IMX708_NoIR&quot;</span><span class="p">]</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="p">},</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span><span class="nt">&quot;capture&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="nt">&quot;start_time&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-03-15T10:32:00Z&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="nt">&quot;end_time&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-03-15T10:47:00Z&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="nt">&quot;image_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span><span class="nt">&quot;sensor_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;survey&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">    </span><span class="nt">&quot;trigger_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;distance&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">    </span><span class="nt">&quot;trigger_distance_m&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">  </span><span class="p">},</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">  </span><span class="nt">&quot;survey&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">    </span><span class="nt">&quot;site_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;site-alpha&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">    </span><span class="nt">&quot;aoi_geojson&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">    </span><span class="nt">&quot;planned_altitude_m&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">80</span><span class="p">,</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">    </span><span class="nt">&quot;planned_overlap_front&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.75</span><span class="p">,</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">    </span><span class="nt">&quot;planned_overlap_side&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.65</span><span class="p">,</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">    </span><span class="nt">&quot;planned_gsd_cm&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2.1</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">  </span><span class="p">},</span>
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">  </span><span class="nt">&quot;quality_summary&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">    </span><span class="nt">&quot;images_total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">    </span><span class="nt">&quot;images_passed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">117</span><span class="p">,</span>
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="w">    </span><span class="nt">&quot;images_failed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="w">    </span><span class="nt">&quot;failure_reasons&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;blur&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;exposure&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">},</span>
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="w">    </span><span class="nt">&quot;rtk_fixed_pct&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.95</span><span class="p">,</span>
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a><span class="w">    </span><span class="nt">&quot;coverage_pct&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.98</span>
+<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a><span class="w">  </span><span class="p">},</span>
+<a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a><span class="w">  </span><span class="nt">&quot;checksums_digest&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sha256-of-checksums.sha256-file&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a><span class="w">  </span><span class="nt">&quot;signature&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;base64-encoded-ed25519-signature&quot;</span>
+<a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Required vs optional fields:</strong>
+- Required: <code>contract_version</code>, <code>mission_id</code>, <code>drone_id</code>, <code>drone_hardware</code>, <code>capture</code>,
+  <code>quality_summary</code> (with <code>coverage_pct</code> nullable), <code>checksums_digest</code>, <code>signature</code>
+- Optional: <code>survey</code> (omitted for manual flights, test flights, non-grid missions)</p>
+<h3 id="imagescsv-per-image">images.csv (Per-Image)<a class="headerlink" href="#imagescsv-per-image" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sequence</td>
+<td>int</td>
+<td>Capture sequence number</td>
+</tr>
+<tr>
+<td>filename</td>
+<td>string</td>
+<td>Image filename</td>
+</tr>
+<tr>
+<td>sensor</td>
+<td>string</td>
+<td>rgb, nir, thermal</td>
+</tr>
+<tr>
+<td>timestamp_utc</td>
+<td>ISO8601</td>
+<td>Capture time (PX4 trigger clock)</td>
+</tr>
+<tr>
+<td>lat</td>
+<td>float</td>
+<td>WGS84 latitude</td>
+</tr>
+<tr>
+<td>lon</td>
+<td>float</td>
+<td>WGS84 longitude</td>
+</tr>
+<tr>
+<td>alt_msl</td>
+<td>float</td>
+<td>Altitude above mean sea level (m)</td>
+</tr>
+<tr>
+<td>alt_agl</td>
+<td>float</td>
+<td>Altitude above ground level (m), estimated</td>
+</tr>
+<tr>
+<td>heading_deg</td>
+<td>float</td>
+<td>Camera heading (0-360)</td>
+</tr>
+<tr>
+<td>pitch_deg</td>
+<td>float</td>
+<td>Camera pitch</td>
+</tr>
+<tr>
+<td>roll_deg</td>
+<td>float</td>
+<td>Camera roll</td>
+</tr>
+<tr>
+<td>rtk_fix_type</td>
+<td>string</td>
+<td>RTK_FIXED, RTK_FLOAT, DGPS, AUTONOMOUS</td>
+</tr>
+<tr>
+<td>position_accuracy_m</td>
+<td>float</td>
+<td>Estimated horizontal accuracy</td>
+</tr>
+<tr>
+<td>gsd_cm</td>
+<td>float</td>
+<td>Calculated ground sample distance</td>
+</tr>
+<tr>
+<td>quality_score</td>
+<td>float</td>
+<td>0.0-1.0 composite quality score</td>
+</tr>
+<tr>
+<td>quality_flags</td>
+<td>string</td>
+<td>Comma-separated: ok, blur, overexposed, underexposed</td>
+</tr>
+<tr>
+<td>ambient_light_lux</td>
+<td>float</td>
+<td>BH1750 reading (if sensor present), nullable</td>
+</tr>
+<tr>
+<td>capture_offset_ms</td>
+<td>float</td>
+<td>Offset from trigger timestamp for this sensor (multi-sensor sync), nullable</td>
+</tr>
+</tbody>
+</table>
+<h3 id="contract-rules">Contract Rules<a class="headerlink" href="#contract-rules" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Semantic versioning (v1, v1.1, v2)</li>
+<li>Strict JSON Schema validation in CI for <code>manifest.json</code> (both repos)</li>
+<li>CSV validation: column names, types, and row count checked via schema definition
+  in <code>contract/v1/images.schema.json</code> (defines columns, types, constraints)</li>
+<li>Minor versions add optional fields only (backward compatible)</li>
+<li>Major versions may remove or change fields (migration notes required)</li>
+<li>Schema authority: contract schema lives in a shared artifact (git submodule or
+  versioned release). The drone repo pins a contract version tag and runs
+  conformance tests. The platform repo is the schema author.</li>
+</ul>
+<h2 id="drone-hardware-architecture">Drone Hardware Architecture<a class="headerlink" href="#drone-hardware-architecture" title="Permanent link">&para;</a></h2>
+<h3 id="core-platform-always-present">Core Platform (Always Present)<a class="headerlink" href="#core-platform-always-present" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Current</th>
+<th>Upgraded</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Companion computer</td>
+<td>Pi 5 (8GB)</td>
+<td>Same</td>
+<td>ROS2, sensor management, packaging</td>
+</tr>
+<tr>
+<td>Flight controller</td>
+<td>Pixhawk 6C</td>
+<td>Same</td>
+<td>PX4, stabilization, nav, triggers</td>
+</tr>
+<tr>
+<td>GPS</td>
+<td>Holybro M9N</td>
+<td>Holybro H-RTK F9P</td>
+<td>Positioning (1.5m → conditional cm)</td>
+</tr>
+<tr>
+<td>Barometer</td>
+<td>Pixhawk built-in</td>
+<td>Same</td>
+<td>Altitude reference</td>
+</tr>
+<tr>
+<td>Camera (RGB)</td>
+<td>Pi HQ Camera IMX477</td>
+<td>Same</td>
+<td>12.3MP primary capture</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sensor-configurations">Sensor Configurations<a class="headerlink" href="#sensor-configurations" title="Permanent link">&para;</a></h3>
+<p>Each configuration is a physical mount + ROS2 driver. The drone carries one
+config per flight.</p>
+<p><strong>Config A: Survey (RGB + Proxy NIR)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Sensor</th>
+<th>Part</th>
+<th>Cost</th>
+<th>Weight</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RGB camera</td>
+<td>Pi HQ Camera (IMX477)</td>
+<td>existing</td>
+<td>existing</td>
+</tr>
+<tr>
+<td>NIR camera</td>
+<td>Pi Camera Module 3 NoIR</td>
+<td>~$35</td>
+<td>~5g</td>
+</tr>
+<tr>
+<td>Blue filter</td>
+<td>Roscolux #2007 on NoIR lens</td>
+<td>~$5</td>
+<td>&lt;1g</td>
+</tr>
+<tr>
+<td>Ambient light</td>
+<td>BH1750 (I2C)</td>
+<td>~$3</td>
+<td>~2g</td>
+</tr>
+</tbody>
+</table>
+<p>Produces: RGB images + broadband NIR images + ambient light readings.
+Capability: <strong>Proxy NDVI only (trend/change detection)</strong>. Not science-grade.</p>
+<p>Limitations (documented, not hidden):
+- NoIR gives one broad NIR band (~700-1000nm), not narrow-band like Mavic 3M.
+- BH1750 measures photopic lux, not spectral irradiance. Cannot normalize
+  reflectance per band. Useful only as a relative brightness reference
+  across captures within a single flight.
+- Proxy NDVI answers "is this area greener than last week?" not "what is the
+  absolute chlorophyll content?"
+- For science-grade multispectral: requires dedicated camera (Micasense RedEdge,
+  ~$2,000, ~150g, needs frame upgrade).</p>
+<p><strong>Config B: Inspection (RGB + Thermal)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Sensor</th>
+<th>Part</th>
+<th>Cost</th>
+<th>Weight</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RGB camera</td>
+<td>Pi HQ Camera (IMX477)</td>
+<td>existing</td>
+<td>existing</td>
+</tr>
+<tr>
+<td>Thermal camera</td>
+<td>FLIR Lepton 3.5 (160×120)</td>
+<td>~$200</td>
+<td>~5g (module)</td>
+</tr>
+<tr>
+<td>Breakout board</td>
+<td>PureThermal 3 (USB)</td>
+<td>~$50</td>
+<td>~10g</td>
+</tr>
+</tbody>
+</table>
+<p>Produces: RGB images + radiometric thermal images (TIFF).
+Capability: Hotspot detection, thermal anomaly mapping, temperature measurement.
+Use cases: Solar panel inspection, building envelope, infrastructure, SAR.</p>
+<p><strong>Config C: Mapping (RGB High-Overlap)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Sensor</th>
+<th>Part</th>
+<th>Cost</th>
+<th>Weight</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RGB camera</td>
+<td>Pi HQ Camera (IMX477)</td>
+<td>existing</td>
+<td>existing</td>
+</tr>
+</tbody>
+</table>
+<p>Produces: High-overlap RGB images for photogrammetry.
+Capability: 3D reconstruction, orthomosaic, volumetric measurement.
+Use cases: Construction progress, terrain mapping, stockpile measurement.</p>
+<h3 id="terrain-following">Terrain Following<a class="headerlink" href="#terrain-following" title="Permanent link">&para;</a></h3>
+<p>DEM-based terrain following is the v1 approach (pure software, no extra hardware):</p>
+<ul>
+<li>Pre-load a DEM (SRTM 30m, or local DTM if available) for the survey area.</li>
+<li><code>terrain_follow.py</code> adjusts planned waypoint altitudes based on DEM elevation
+  under each waypoint.</li>
+<li>Accuracy: ±5-30m depending on DEM source (SRTM) or ±1-2m (local survey DTM).</li>
+<li>GSD variation within a flight is bounded by DEM accuracy.</li>
+</ul>
+<p>For real-time AGL at mapping altitude (50-120m), the appropriate sensor is a
+Lightware SF11/C laser altimeter (~$300, ~35g, 120m range). This is an optional
+upgrade, not a v1 requirement.</p>
+<p>VL53L1X (4m max range) is NOT suitable for outdoor AGL at mapping altitudes.</p>
+<h3 id="accuracy-budget">Accuracy Budget<a class="headerlink" href="#accuracy-budget" title="Permanent link">&para;</a></h3>
+<p>RTK GPS accuracy depends on conditions. Honest claims:</p>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Horizontal Accuracy</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RTK Fixed, slow flight (2 m/s), lever-arm calibrated</td>
+<td>5-10 cm</td>
+<td>Best case</td>
+</tr>
+<tr>
+<td>RTK Fixed, survey speed (5 m/s), no lever-arm cal</td>
+<td>15-30 cm</td>
+<td>Typical survey</td>
+</tr>
+<tr>
+<td>RTK Float</td>
+<td>30-100 cm</td>
+<td>Degraded correction</td>
+</tr>
+<tr>
+<td>DGPS / SBAS</td>
+<td>50-150 cm</td>
+<td>No RTK base</td>
+</tr>
+<tr>
+<td>Autonomous GPS (current M9N)</td>
+<td>150-300 cm</td>
+<td>Current Bennu</td>
+</tr>
+</tbody>
+</table>
+<p>Additional error sources for image geotagging:
+- Trigger latency: ~10-50ms (Pi 5 libcamera-still) → 5-25cm at 5 m/s
+- Rolling shutter: top-to-bottom exposure sweep adds position smear
+- Lever-arm offset: GPS antenna to camera lens, must be measured and documented
+- No mid-exposure position interpolation in v1</p>
+<p>Every image is tagged with <code>rtk_fix_type</code> and <code>position_accuracy_m</code> so the
+platform knows the confidence level. "Survey-grade" is never claimed without
+qualifying conditions.</p>
+<h3 id="multi-sensor-synchronization">Multi-Sensor Synchronization<a class="headerlink" href="#multi-sensor-synchronization" title="Permanent link">&para;</a></h3>
+<p>Pi 5 has two CSI ports but no hardware-synchronized trigger. Software-triggered
+dual capture has 10-50ms latency between cameras. At 5 m/s, that is 5-25cm
+spatial misalignment between RGB and NIR.</p>
+<p>v1 strategy:
+- PX4 <code>camera_trigger</code> timestamp is authoritative capture time.
+- Both cameras are triggered in sequence; offset is recorded per capture pair.
+- Platform handles band alignment in post-processing using position + offset.
+- Hardware trigger sync (GPIO from Pixhawk → CSI trigger pins) is a future
+  hardware revision.</p>
+<h2 id="drone-software-architecture">Drone Software Architecture<a class="headerlink" href="#drone-software-architecture" title="Permanent link">&para;</a></h2>
+<h3 id="ros2-packages">ROS2 Packages<a class="headerlink" href="#ros2-packages" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>drone/ros2_ws/src/
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>├── bennu_core/                    # Drone identity + health monitoring
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>│   ├── drone_identity.py          # Drone ID, hardware manifest, key management
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>│   └── health_monitor.py          # Battery, GPS quality, sensor health
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>│
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>├── bennu_camera/                  # Capture + quality (enhanced existing)
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>│   ├── camera_node.py             # RGB capture (existing, enhanced with attitude)
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>│   ├── nir_node.py                # NIR camera capture (Config A) [deferred: needs hardware]
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>│   ├── thermal_node.py            # FLIR Lepton driver (Config B) [deferred: needs hardware]
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>│   ├── sync_manager.py            # Multi-sensor trigger coordination [deferred: needs hardware]
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>│   ├── calibration.py             # Light sensor + panel capture
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>│   ├── quality.py                 # Blur, exposure, histogram scoring
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>│   └── geotag.py                  # Enhanced: attitude, RTK fix, GSD, accuracy
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>│
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>├── bennu_survey/                  # Mission planning
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>│   ├── grid_planner.py            # Survey grid from polygon + overlap + GSD
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>│   ├── corridor_planner.py        # Linear path (powerlines, roads)
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>│   ├── orbit_planner.py           # Point-of-interest orbit (structures)
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>│   ├── terrain_follow.py          # DEM-based altitude adjustment
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>│   └── config/sites/              # GeoJSON site definitions
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>│
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>├── bennu_mission/                 # Mission execution + packaging
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>│   ├── mission_node.py            # Waypoint execution via uXRCE-DDS
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>│   ├── repeat_mission.py          # Re-fly same grid for change detection
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>│   ├── coverage_tracker.py        # Image-footprint-based coverage, find gaps
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>│   └── mission_manifest.py        # Generate manifest.json + images.csv
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>│
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>├── bennu_dataset/                 # Bundle packaging + export
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>│   ├── packager.py                # Assemble mission bundle structure
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>│   ├── signer.py                  # Ed25519 manifest signing
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a>│   ├── flight_log.py              # Extract PX4 .ulg flight log
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>│   └── transfer.py                # Export: local, rsync, HTTP upload
+<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a>│
+<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a>└── bennu_bringup/                 # Launch configurations
+<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a>    ├── launch/
+<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a>    │   ├── drone.launch.py        # Existing basic launch
+<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a>    │   ├── survey.launch.py       # Grid survey mission
+<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a>    │   ├── inspection.launch.py   # Thermal inspection mission
+<a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a>    │   └── mapping.launch.py      # High-overlap 3D mapping
+<a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a>    └── config/
+<a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a>        ├── camera_params.yaml     # Existing
+<a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a>        ├── survey_params.yaml     # Grid overlap, GSD, altitude
+<a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a>        └── sensor_configs/
+<a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a>            ├── survey.yaml        # Config A: RGB + NIR + light
+<a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a>            ├── inspection.yaml    # Config B: RGB + thermal
+<a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a>            └── mapping.yaml       # Config C: RGB high-res only
+</code></pre></div>
+<h3 id="capture-pipeline-per-trigger-event">Capture Pipeline (Per Trigger Event)<a class="headerlink" href="#capture-pipeline-per-trigger-event" title="Permanent link">&para;</a></h3>
+<p><strong>v1 (RGB only — Config C / single-sensor):</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>PX4 camera trigger (distance-based)
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    │
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    ▼
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>camera_node receives trigger timestamp
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    │
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    ▼
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>camera_node captures RGB image
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    │
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    ▼
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>quality.py scores image
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    │  - Laplacian variance (blur detection)
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    │  - Histogram analysis (exposure check)
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    │  - Composite 0.0-1.0 score
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    │
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>    ▼
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>geotag.py writes extended metadata
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>    │  - Position: lat, lon, alt (from VehicleGlobalPosition)
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>    │  - Attitude: heading, pitch, roll (from VehicleAttitude)
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>    │  - RTK fix type + estimated accuracy
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>    │  - GSD (calculated from altitude + lens + sensor)
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>    │  - Sequence number, mission ID, drone ID
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>    │  - Capture timestamp (PX4 trigger clock)
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>    │  - Quality score + flags
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>    │
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>    ▼
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>coverage_tracker updates progress
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>    │  - Mark grid cell as covered (image footprint)
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>    │  - Flag if quality below threshold
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>    │
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>    ▼
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>Image saved: {mission_id}/images/{sequence:04d}_rgb.jpg
+</code></pre></div>
+<p><strong>Future multi-sensor (deferred: needs hardware):</strong></p>
+<p>When NIR (Config A) or thermal (Config B) sensors are added, <code>sync_manager.py</code>
+will coordinate multi-camera trigger sequencing. Each additional sensor captures
+with a recorded <code>capture_offset_ms</code> from the trigger timestamp. The v1 pipeline
+above remains the core path; multi-sensor adds parallel capture branches after
+the trigger event.</p>
+<h3 id="mission-end-pipeline">Mission End Pipeline<a class="headerlink" href="#mission-end-pipeline" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Mission complete (all waypoints visited or RTL triggered)
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    │
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    ▼
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>coverage_tracker generates coverage report
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    │
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    ▼
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>mission_manifest generates manifest.json + images.csv
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    │  - Aggregates per-image metadata
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    │  - Computes quality summary
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    │  - Includes drone hardware manifest
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>    │
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    ▼
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>flight_log extracts PX4 .ulg file
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>    │
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>    ▼
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>packager assembles bundle directory structure
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>    │
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>    ▼
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>checksums.sha256 computed for all files
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>    │
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>    ▼
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>signer signs manifest.json with drone&#39;s Ed25519 private key
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>    │
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>    ▼
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>Bundle ready for export (local storage, rsync, or HTTP upload)
+</code></pre></div>
+<h2 id="security-model">Security Model<a class="headerlink" href="#security-model" title="Permanent link">&para;</a></h2>
+<h3 id="signed-manifests-not-immutable-audit-trail">Signed Manifests (Not "Immutable Audit Trail")<a class="headerlink" href="#signed-manifests-not-immutable-audit-trail" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Each drone has an Ed25519 keypair provisioned during setup.</li>
+<li>Private key stored on Pi 5 (<code>/etc/bennu/keys/drone.key</code>).</li>
+<li>Public key registered with the platform.</li>
+</ul>
+<p><strong>Signing order (integrity chain):</strong></p>
+<ol>
+<li>Compute SHA-256 of every file in the bundle → write <code>checksums.sha256</code></li>
+<li>Compute SHA-256 of <code>checksums.sha256</code> → set <code>checksums_digest</code> in manifest</li>
+<li>Serialize manifest to canonical JSON (sorted keys, no whitespace: <code>json.dumps(m, sort_keys=True, separators=(',', ':'))</code>)</li>
+<li>Sign the canonical JSON bytes with Ed25519 → set <code>signature</code> in manifest</li>
+<li>Write final <code>manifest.json</code> (includes <code>checksums_digest</code> and <code>signature</code>)</li>
+</ol>
+<p>This creates a Merkle-like chain: signature covers manifest, manifest covers
+checksums file, checksums file covers all content files.</p>
+<p><strong>Canonical serialization:</strong> The signing format is JSON with sorted keys and
+compact separators (<code>json.dumps(obj, sort_keys=True, separators=(',', ':'))</code>).
+This is deterministic across Python implementations. For cross-language
+verification, the platform must use equivalent sorted-key compact JSON. The
+<code>signature</code> field is excluded from the signed payload (sign the manifest dict
+without the <code>signature</code> key, then add it).</p>
+<ul>
+<li>Platform verifies signature on ingest. Reject unsigned or tampered bundles.</li>
+</ul>
+<p>This establishes: "this dataset was produced by drone bennu-001 and has not been
+modified since capture." Full chain of custody (append-only storage, access logs)
+is the platform's responsibility.</p>
+<h3 id="telemetry-security-deferred-to-phase-5">Telemetry Security (Deferred to Phase 5)<a class="headerlink" href="#telemetry-security-deferred-to-phase-5" title="Permanent link">&para;</a></h3>
+<p>When LTE/MQTT telemetry is added:
+- mTLS for drone-to-platform authentication.
+- Telemetry is read-only status data (position, battery, progress). No command
+  path from platform to drone.
+- Offline queue on Pi 5 for connectivity gaps.
+- Threat model: information disclosure only (drone position). No actuator control.</p>
+<h2 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h2>
+<p>Tests are structured in two tiers:</p>
+<ol>
+<li><strong>Package tests</strong> (pytest): Pure Python tests inside each package's <code>test/</code>
+   directory. CI installs packages with <code>pip install -e</code> and runs pytest across
+   all <code>&lt;package&gt;/test/</code> directories. In a ROS2 environment, <code>colcon test</code> also
+   discovers and runs these tests.</li>
+<li><strong>Contract tests</strong> (top-level <code>tests/</code>): Schema validation and integration tests
+   that span multiple packages. These use <code>pip install -e</code> for package imports,
+   not raw PYTHONPATH hacks.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Test Type</th>
+<th>Scope</th>
+<th>Tooling</th>
+<th>Location</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unit</td>
+<td>Geotag math, quality scoring, signer</td>
+<td>pytest</td>
+<td><code>&lt;package&gt;/test/</code></td>
+<td>CI on every PR</td>
+</tr>
+<tr>
+<td>Schema conformance</td>
+<td>manifest.json + images.csv validate against contract schema</td>
+<td>jsonschema + pytest</td>
+<td><code>tests/contract/</code></td>
+<td>CI on every PR</td>
+</tr>
+<tr>
+<td>Bundle integration</td>
+<td>End-to-end bundle generation + validation</td>
+<td>pytest</td>
+<td><code>tests/integration/</code></td>
+<td>CI on every PR</td>
+</tr>
+<tr>
+<td>SITL integration</td>
+<td>Full capture pipeline in Gazebo sim</td>
+<td>Docker Compose sim stack</td>
+<td><code>tests/sitl/</code></td>
+<td>CI (nightly or per-PR)</td>
+</tr>
+<tr>
+<td>HIL (hardware-in-loop)</td>
+<td>Real sensors on bench, no flight</td>
+<td>Manual</td>
+<td>—</td>
+<td>Per-phase gate</td>
+</tr>
+<tr>
+<td>Flight test</td>
+<td>Actual flight, validate bundle end-to-end</td>
+<td>Manual</td>
+<td>—</td>
+<td>Per-phase gate</td>
+</tr>
+</tbody>
+</table>
+<p>Pass/fail thresholds:
+- Unit: 100% pass
+- Schema conformance: 100% pass (contract violations block merge)
+- SITL: Bundle generated with all required fields populated
+- HIL: All sensors produce expected data format
+- Flight: ≥99% images with complete metadata, coverage ≥95% of planned grid</p>
+<h2 id="risks-and-mitigations">Risks and Mitigations<a class="headerlink" href="#risks-and-mitigations" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Over-optimistic sensor assumptions</strong> — Validate each sensor in controlled
+   bench tests before committing to architecture. Document capabilities honestly
+   with measured tolerances, not datasheet specs.</p>
+</li>
+<li>
+<p><strong>Scope creep across drone and platform</strong> — Enforce repo boundaries. The bundle
+   contract is the only coupling point. No direct API calls between repos.</p>
+</li>
+<li>
+<p><strong>Version drift</strong> — Pinned dependencies, compatibility matrix
+   (PX4/ROS2/px4_msgs/XRCE), release notes for every version.</p>
+</li>
+<li>
+<p><strong>Production claims without ops maturity</strong> — SLOs, runbooks, backups, and CI
+   gates required before any "production" label.</p>
+</li>
+<li>
+<p><strong>Multi-sensor sync quality</strong> — Document sync latency per configuration.
+   Platform must handle band alignment in post-processing.</p>
+</li>
+<li>
+<p><strong>RTK availability</strong> — RTK Fixed is not guaranteed (base station distance,
+   sky view, multipath). Every image carries fix type — platform degrades
+   gracefully for non-RTK images.</p>
+</li>
+</ol>
+<h2 id="future-systems-engineering-artifacts">Future Systems-Engineering Artifacts<a class="headerlink" href="#future-systems-engineering-artifacts" title="Permanent link">&para;</a></h2>
+<p>The following artifacts are not required for v1 but should be created as the
+project matures past initial flight testing:</p>
+<ul>
+<li><strong>Safety &amp; hazard register</strong> — Catalog of flight hazards (prop failure, GPS loss,
+  battery failure, flyaway), mitigations, and pre-flight go/no-go checklists.</li>
+<li><strong>Power &amp; mass budget</strong> — Component-level mass breakdown, BEC current draw at
+  peak/cruise, thermal margins, weight budget for sensor payloads.</li>
+<li><strong>Observability design</strong> — ROS2 health/status topics, fault classification
+  (recoverable vs terminal), log retention policy, post-flight diagnostic artifacts.</li>
+<li><strong>Requirement-to-test traceability matrix</strong> — Map each requirement in this design
+  to specific test(s) that verify it.</li>
+<li><strong>Geospatial accuracy strategy</strong> — Baseline absolute accuracy with M9N GPS, upgrade
+  path through RTK/PPK/GCP, and accuracy validation methodology.</li>
+<li><strong>Compatibility matrix</strong> — Pinned versions of PX4, px4_msgs, ROS2 distro, XRCE
+  agent, Docker base images, and tested upgrade paths.</li>
+</ul>
+<h2 id="success-metrics">Success Metrics<a class="headerlink" href="#success-metrics" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Bundle reliability: ≥99% successful bundle generation from completed missions</li>
+<li>Metadata completeness: ≥99% required fields present</li>
+<li>Mission repeatability: overlap/GSD variance within ±10% of planned profile</li>
+<li>Schema conformance: 100% of bundles pass platform schema validator</li>
+<li>Integration reliability: ≥99% successful ingest from valid bundles</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
