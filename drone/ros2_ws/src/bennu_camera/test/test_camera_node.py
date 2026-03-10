@@ -1,8 +1,7 @@
 """Tests for CameraNode backend factory logic."""
 import pytest
 
-from bennu_camera.backends import PlaceholderBackend, LibcameraBackend
-
+from bennu_camera.backends import LibcameraBackend, PlaceholderBackend
 
 BACKENDS = {
     "libcamera": LibcameraBackend,

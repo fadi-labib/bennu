@@ -1,0 +1,37 @@
+{
+  "contract_version": "v1",
+  "mission_id": "2026-03-15-site-alpha-003",
+  "drone_id": "bennu-001",
+  "drone_hardware": {
+    "flight_controller": "Pixhawk6C",
+    "px4_version": "1.16.1",
+    "gps_model": "F9P",
+    "sensors": ["rgb:IMX477", "nir:IMX708_NoIR"]
+  },
+  "capture": {
+    "start_time": "2026-03-15T10:32:00Z",
+    "end_time": "2026-03-15T10:47:00Z",
+    "image_count": 120,
+    "sensor_config": "survey",
+    "trigger_mode": "distance",
+    "trigger_distance_m": 5.0
+  },
+  "survey": {
+    "site_id": "site-alpha",
+    "aoi_geojson": "{\"type\":\"Polygon\",\"coordinates\":[[[11.5550,48.1351],[11.5580,48.1351],[11.5580,48.1371],[11.5550,48.1371],[11.5550,48.1351]]]}",
+    "planned_altitude_m": 80,
+    "planned_overlap_front": 0.75,
+    "planned_overlap_side": 0.65,
+    "planned_gsd_cm": 2.1
+  },
+  "quality_summary": {
+    "images_total": 120,
+    "images_passed": 117,
+    "images_failed": 3,
+    "failure_reasons": {"blur": 2, "exposure": 1},
+    "rtk_fixed_pct": 0.95,
+    "coverage_pct": 0.98
+  },
+  "checksums_digest": "a3f2b8c1d4e5f67890abcdef1234567890abcdef1234567890abcdef12345678",
+  "signature": "TUVXYZ0123456789abcdef+ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=="
+}

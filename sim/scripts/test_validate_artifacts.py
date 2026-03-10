@@ -1,6 +1,7 @@
 """Tests for artifact validation script (not yet implemented — see Phase 2)."""
-import pytest
 from pathlib import Path
+
+import pytest
 
 validate_artifacts = pytest.importorskip(
     "validate_artifacts", reason="validate_artifacts not yet implemented"

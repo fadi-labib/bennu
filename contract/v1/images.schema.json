@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/fadi-labib/bennu/contract/v1/images.schema.json",
+  "title": "Bennu Mission Bundle — images.csv Column Definitions",
+  "description": "Defines the ordered columns for metadata/images.csv. Validators use this schema to check CSV headers and column types.",
+  "type": "object",
+  "required": ["columns"],
+  "additionalProperties": false,
+  "properties": {
+    "columns": {
+      "type": "array",
+      "description": "Ordered list of CSV column definitions. The CSV header row must match the column names in this exact order.",
+      "minItems": 18,
+      "maxItems": 18,
+      "items": {
+        "type": "object",
+        "required": ["name", "type", "nullable", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Column header name."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["integer", "string", "number"],
+            "description": "Data type: integer, number (float), or string."
+          },
+          "nullable": {
+            "type": "boolean",
+            "description": "Whether the column may contain empty/null values."
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable description of the column."
+          }
+        }
+      }
+    }
+  },
+  "default": {
+    "columns": [
+      {
+        "name": "sequence",
+        "type": "integer",
+        "nullable": false,
+        "description": "Capture sequence number."
+      },
+      {
+        "name": "filename",
+        "type": "string",
+        "nullable": false,
+        "description": "Image filename."
+      },
+      {
+        "name": "sensor",
+        "type": "string",
+        "nullable": false,
+        "description": "Sensor type: rgb, nir, thermal."
+      },
+      {
+        "name": "timestamp_utc",
+        "type": "string",
+        "nullable": false,
+        "description": "Capture time in ISO 8601 UTC."
+      },
+      {
+        "name": "lat",
+        "type": "number",
+        "nullable": false,
+        "description": "WGS84 latitude in decimal degrees."
+      },
+      {
+        "name": "lon",
+        "type": "number",
+        "nullable": false,
+        "description": "WGS84 longitude in decimal degrees."
+      },
+      {
+        "name": "alt_msl",
+        "type": "number",
+        "nullable": false,
+        "description": "Altitude above mean sea level in metres."
+      },
+      {
+        "name": "alt_agl",
+        "type": "number",
+        "nullable": false,
+        "description": "Altitude above ground level in metres (estimated)."
+      },
+      {
+        "name": "heading_deg",
+        "type": "number",
+        "nullable": false,
+        "description": "Camera heading in degrees (0-360)."
+      },
+      {
+        "name": "pitch_deg",
+        "type": "number",
+        "nullable": false,
+        "description": "Camera pitch in degrees."
+      },
+      {
+        "name": "roll_deg",
+        "type": "number",
+        "nullable": false,
+        "description": "Camera roll in degrees."
+      },
+      {
+        "name": "rtk_fix_type",
+        "type": "string",
+        "nullable": false,
+        "description": "RTK fix type: RTK_FIXED, RTK_FLOAT, DGPS, AUTONOMOUS."
+      },
+      {
+        "name": "position_accuracy_m",
+        "type": "number",
+        "nullable": false,
+        "description": "Estimated horizontal position accuracy in metres."
+      },
+      {
+        "name": "gsd_cm",
+        "type": "number",
+        "nullable": false,
+        "description": "Calculated ground sample distance in cm/pixel."
+      },
+      {
+        "name": "quality_score",
+        "type": "number",
+        "nullable": false,
+        "description": "Composite quality score (0.0-1.0)."
+      },
+      {
+        "name": "quality_flags",
+        "type": "string",
+        "nullable": false,
+        "description": "Comma-separated quality flags: ok, blur, overexposed, underexposed."
+      },
+      {
+        "name": "ambient_light_lux",
+        "type": "number",
+        "nullable": true,
+        "description": "BH1750 ambient light reading in lux (null if sensor not present)."
+      },
+      {
+        "name": "capture_offset_ms",
+        "type": "number",
+        "nullable": true,
+        "description": "Offset from trigger timestamp for multi-sensor sync in milliseconds (null for primary sensor)."
+      }
+    ]
+  }
+}
