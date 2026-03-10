@@ -20,6 +20,12 @@ services:
     command: >-
       bash -c "echo '=== Gazebo GUI: DISABLED (use make dev-debug for GUI) ===' &&
       make px4_sitl gz_x500"
+    healthcheck:
+      test: ["CMD-SHELL", "grep -q ':38DC ' /proc/net/udp"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+      start_period: 30s
 
   ros2-dev:
     build:
@@ -32,6 +38,7 @@ services:
       - ../tests:/ros2_ws/tests:rw
       - ../contract:/ros2_ws/contract:rw
     depends_on:
-      - px4-sitl
+      px4-sitl:
+        condition: service_healthy
     stdin_open: true
     tty: true
