@@ -18,6 +18,10 @@ class ManifestGenerator:
             hardware_manifest: Dict from DroneIdentity.hardware_manifest().
             mission_id: Unique mission identifier.
         """
+        if not drone_id:
+            raise ValueError("drone_id must not be empty")
+        if not mission_id:
+            raise ValueError("mission_id must not be empty")
         self._drone_id = drone_id
         self._hardware = hardware_manifest
         self._mission_id = mission_id
@@ -46,7 +50,16 @@ class ManifestGenerator:
 
         Returns:
             Dict matching contract/v1/manifest.schema.json.
+
+        Raises:
+            ValueError: If images list is empty.
         """
+        if not images:
+            raise ValueError(
+                "Cannot generate manifest for empty image list — "
+                "mission captured no images"
+            )
+
         quality_summary = self._compute_quality_summary(images)
 
         timestamps = [img.timestamp_utc for img in images]
@@ -57,8 +70,8 @@ class ManifestGenerator:
             "drone_id": self._drone_id,
             "drone_hardware": self._hardware,
             "capture": {
-                "start_time": min(timestamps) if timestamps else "",
-                "end_time": max(timestamps) if timestamps else "",
+                "start_time": min(timestamps),
+                "end_time": max(timestamps),
                 "image_count": len(images),
                 "sensor_config": sensor_config,
                 "trigger_mode": trigger_mode,
@@ -82,9 +95,15 @@ class ManifestGenerator:
 
         Returns:
             CSV string with header and one row per image.
+
+        Raises:
+            ValueError: If images list is empty.
         """
         if not images:
-            return ""
+            raise ValueError(
+                "Cannot generate images CSV for empty image list — "
+                "mission captured no images"
+            )
 
         output = io.StringIO()
         header = list(images[0].to_csv_dict().keys())
@@ -104,7 +123,10 @@ class ManifestGenerator:
         failure_reasons: Counter = Counter()
         for img in images:
             if img.quality_score < self.QUALITY_THRESHOLD:
-                for flag in img.quality_flags.split(","):
+                flags_str = img.quality_flags
+                if not isinstance(flags_str, str):
+                    flags_str = str(flags_str)
+                for flag in flags_str.split(","):
                     flag = flag.strip()
                     if flag and flag != "ok":
                         failure_reasons[flag] += 1

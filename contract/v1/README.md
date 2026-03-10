@@ -57,11 +57,15 @@ v1 can safely ignore unknown optional fields added in v1.x.
 
 ## Integrity Chain
 
-1. Compute SHA-256 of every file in the bundle and write `checksums.sha256`.
+1. Compute SHA-256 of every file in the bundle **except** `manifest.json` and
+   `checksums.sha256` itself, then write the result to `checksums.sha256`.
+   (`manifest.json` is excluded because it embeds `checksums_digest` — a hash of
+   `checksums.sha256` — creating a circular dependency if included.)
 2. Compute SHA-256 of `checksums.sha256` and set `checksums_digest` in the manifest.
 3. Serialize the manifest to canonical JSON (`json.dumps(m, sort_keys=True, separators=(',', ':'))`), excluding the `signature` field.
 4. Sign the canonical bytes with the drone's Ed25519 private key.
 5. Set `signature` in the manifest (base64-encoded).
 
-The platform verifies this chain on ingest: signature covers the manifest,
-manifest covers `checksums.sha256`, and `checksums.sha256` covers every file.
+The platform verifies this chain on ingest: the Ed25519 signature protects
+`manifest.json`, `checksums_digest` inside the manifest protects `checksums.sha256`,
+and `checksums.sha256` protects every other file in the bundle.

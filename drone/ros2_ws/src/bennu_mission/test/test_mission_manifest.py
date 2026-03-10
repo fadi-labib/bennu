@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 from bennu_mission.mission_manifest import ManifestGenerator
 
 
@@ -43,8 +45,10 @@ def _make_image(seq, score=0.9, flags="ok", rtk="RTK_FIXED", ts="2026-03-15T10:3
 
 def test_manifest_matches_schema():
     """Generated manifest validates against contract schema."""
-    repo_root = Path(__file__).resolve().parents[4]  # test/ -> bennu_mission/ -> src/ -> ros2_ws/ -> drone/ -> repo
+    # test/ -> bennu_mission/ -> src/ -> ros2_ws/ -> drone/ -> repo
+    repo_root = Path(__file__).resolve().parents[5]
     schema_path = repo_root / "contract" / "v1" / "manifest.schema.json"
+    assert schema_path.exists(), f"Schema not found at {schema_path}"
 
     gen = ManifestGenerator(
         drone_id="bennu-001",
@@ -65,18 +69,15 @@ def test_manifest_matches_schema():
         signature="base64sig",
     )
 
-    # If jsonschema and the schema file exist, validate
-    if schema_path.exists():
-        import jsonschema
-        schema = json.loads(schema_path.read_text())
-        jsonschema.validate(manifest, schema)
+    import jsonschema
+    schema = json.loads(schema_path.read_text())
+    jsonschema.validate(manifest, schema)
 
-    # Always check structure
     assert manifest["contract_version"] == "v1"
     assert manifest["mission_id"] == "2026-03-15-test-001"
     assert manifest["drone_id"] == "bennu-001"
     assert manifest["capture"]["image_count"] == 3
-    assert "survey" not in manifest  # Not provided
+    assert "survey" not in manifest
 
 
 def test_generate_images_csv():
@@ -96,7 +97,7 @@ def test_generate_images_csv():
 
 
 def test_quality_summary_counts():
-    """3 images (1 pass, 2 fail) → correct counts and failure reasons."""
+    """3 images (1 pass, 2 fail) -> correct counts and failure reasons."""
     gen = ManifestGenerator(
         drone_id="bennu-001",
         hardware_manifest={},
@@ -115,3 +116,35 @@ def test_quality_summary_counts():
     assert qs["images_failed"] == 2
     assert qs["failure_reasons"]["blur"] == 2
     assert qs["failure_reasons"]["underexposed"] == 1
+
+
+def test_empty_images_raises():
+    """generate_manifest rejects empty image list."""
+    gen = ManifestGenerator(
+        drone_id="bennu-001",
+        hardware_manifest={},
+        mission_id="test",
+    )
+    with pytest.raises(ValueError, match="empty image list"):
+        gen.generate_manifest(images=[], sensor_config="mapping")
+
+
+def test_empty_images_csv_raises():
+    """generate_images_csv rejects empty image list."""
+    gen = ManifestGenerator(
+        drone_id="bennu-001",
+        hardware_manifest={},
+        mission_id="test",
+    )
+    with pytest.raises(ValueError, match="empty image list"):
+        gen.generate_images_csv(images=[])
+
+
+def test_empty_drone_id_rejected():
+    with pytest.raises(ValueError, match="drone_id"):
+        ManifestGenerator(drone_id="", hardware_manifest={}, mission_id="test")
+
+
+def test_empty_mission_id_rejected():
+    with pytest.raises(ValueError, match="mission_id"):
+        ManifestGenerator(drone_id="bennu-001", hardware_manifest={}, mission_id="")
