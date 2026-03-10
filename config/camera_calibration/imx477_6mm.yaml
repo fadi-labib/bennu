@@ -1,0 +1,22 @@
+# IMX477 (Raspberry Pi HQ Camera) + 6mm CS-mount lens
+# Source: Sony IMX477 datasheet, lens spec sheet
+# Used by: grid planner GSD calculation, image quality scoring
+#
+# These are nominal values. For photogrammetry-grade accuracy,
+# run a calibration pattern (e.g. OpenCV checkerboard) and update
+# the intrinsics_matrix and distortion_coefficients sections.
+
+sensor:
+  name: "Sony IMX477"
+  width_px: 4056
+  height_px: 3040
+  pixel_size_um: 1.55       # micrometers per pixel
+  sensor_width_mm: 6.287    # 4056 * 1.55 / 1000
+  sensor_height_mm: 4.712   # 3040 * 1.55 / 1000
+  rolling_shutter_us: 6000  # top-to-bottom sweep ~6ms for full frame
+
+lens:
+  focal_length_mm: 6.0
+  aperture: "f/1.2"
+  mount: "CS"
+  hfov_deg: 63              # approximate at infinity focus
