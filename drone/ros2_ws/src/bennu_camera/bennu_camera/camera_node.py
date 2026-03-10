@@ -122,11 +122,11 @@ class CameraNode(Node):
 
         # Write GPS EXIF
         if self._lat != 0.0 or self._lon != 0.0:
-            success = write_gps_exif(filepath, self._lat, self._lon, self._alt)
-            if success:
+            result = write_gps_exif(filepath, self._lat, self._lon, self._alt)
+            if result is True:
                 self.get_logger().info(f"Saved: {filename} (geotagged)")
             else:
-                self.get_logger().warn(f"Saved: {filename} (geotag failed)")
+                self.get_logger().warn(f"Saved: {filename} (geotag failed: {result})")
         else:
             self.get_logger().warn(f"Saved: {filename} (no GPS fix)")
 

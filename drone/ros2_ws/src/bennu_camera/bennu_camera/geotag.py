@@ -1,6 +1,6 @@
 """GPS geotagging utilities for JPEG images."""
 import subprocess
-from typing import Tuple
+from typing import Tuple, Union
 
 
 def format_gps_coord(
@@ -23,8 +23,11 @@ def format_gps_coord(
 
 def write_gps_exif(
     image_path: str, lat: float, lon: float, alt: float
-) -> bool:
-    """Write GPS coordinates into JPEG EXIF data using exiftool."""
+) -> Union[bool, str]:
+    """Write GPS coordinates into JPEG EXIF data using exiftool.
+
+    Returns True on success, or an error description string on failure.
+    """
     try:
         subprocess.run(
             [
@@ -42,5 +45,8 @@ def write_gps_exif(
             capture_output=True,
         )
         return True
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return False
+    except FileNotFoundError:
+        return "exiftool not found — install with: sudo apt install libimage-exiftool-perl"
+    except subprocess.CalledProcessError as e:
+        stderr = e.stderr.decode(errors="replace") if e.stderr else "(no stderr)"
+        return f"exiftool failed (exit {e.returncode}): {stderr}"
