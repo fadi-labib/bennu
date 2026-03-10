@@ -1,6 +1,8 @@
 """GPS geotagging utilities for JPEG images."""
+import collections
 import subprocess
-from typing import Tuple, Union
+from dataclasses import dataclass
+from typing import Optional, Tuple, Union
 
 
 def format_gps_coord(
@@ -52,3 +54,64 @@ def write_gps_exif(
         return f"exiftool failed (exit {e.returncode}): {stderr}"
     except OSError as e:
         return f"exiftool could not be launched: {e}"
+
+
+@dataclass
+class ImageMetadata:
+    """Per-image metadata — all 18 columns of the images.csv contract."""
+    sequence: int
+    filename: str
+    sensor: str
+    timestamp_utc: str
+    lat: float
+    lon: float
+    alt_msl: float
+    alt_agl: float
+    heading_deg: float
+    pitch_deg: float
+    roll_deg: float
+    rtk_fix_type: str
+    position_accuracy_m: float
+    gsd_cm: float
+    quality_score: float
+    quality_flags: str
+    ambient_light_lux: Optional[float] = None
+    capture_offset_ms: Optional[float] = None
+
+    # Column order matching the contract schema
+    _COLUMNS = [
+        "sequence", "filename", "sensor", "timestamp_utc",
+        "lat", "lon", "alt_msl", "alt_agl",
+        "heading_deg", "pitch_deg", "roll_deg",
+        "rtk_fix_type", "position_accuracy_m", "gsd_cm",
+        "quality_score", "quality_flags",
+        "ambient_light_lux", "capture_offset_ms",
+    ]
+
+    def to_csv_dict(self) -> "collections.OrderedDict[str, object]":
+        """Return ordered dict with all 18 columns for CSV writing."""
+        return collections.OrderedDict(
+            (col, getattr(self, col)) for col in self._COLUMNS
+        )
+
+    @classmethod
+    def csv_header(cls) -> list:
+        """Return the CSV header row (18 column names)."""
+        return list(cls._COLUMNS)
+
+
+def compute_gsd(
+    altitude_m: float,
+    focal_length_mm: float,
+    sensor_height_mm: float,
+    image_height_px: int,
+) -> float:
+    """Calculate ground sample distance in cm.
+
+    GSD = (altitude * sensor_height) / (focal_length * image_height) * 100
+
+    Returns GSD in centimeters.
+    """
+    if focal_length_mm <= 0 or image_height_px <= 0:
+        raise ValueError("focal_length_mm and image_height_px must be positive")
+    return (altitude_m * sensor_height_mm) / (focal_length_mm * image_height_px) * 100

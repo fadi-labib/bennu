@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-dev.txt
+          # Install all bennu packages in editable mode
+          pip install -e drone/ros2_ws/src/bennu_camera
+          pip install -e drone/ros2_ws/src/bennu_core
+          pip install -e drone/ros2_ws/src/bennu_dataset
+          pip install -e drone/ros2_ws/src/bennu_mission
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Test
+        run: python -m pytest drone/ros2_ws/src/*/test/ tests/ -v --tb=short

@@ -1,0 +1,222 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/fadi-labib/bennu/contract/v1/manifest.schema.json",
+  "title": "Bennu Mission Bundle Manifest",
+  "description": "Schema for the mission bundle manifest.json — the ONLY coupling point between the Bennu drone and analysis platform.",
+  "type": "object",
+  "required": [
+    "contract_version",
+    "mission_id",
+    "drone_id",
+    "drone_hardware",
+    "capture",
+    "quality_summary",
+    "checksums_digest",
+    "signature"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "type": "string",
+      "const": "v1",
+      "description": "Schema version. Must be 'v1' for this schema."
+    },
+    "mission_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique mission identifier (e.g. '2026-03-15-site-alpha-003')."
+    },
+    "drone_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique drone identifier (e.g. 'bennu-001')."
+    },
+    "drone_hardware": {
+      "type": "object",
+      "description": "Hardware manifest of the drone that flew the mission.",
+      "required": [
+        "flight_controller",
+        "px4_version",
+        "gps_model",
+        "sensors"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "flight_controller": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Flight controller model (e.g. 'Pixhawk6C')."
+        },
+        "px4_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "PX4 firmware version (e.g. '1.16.1')."
+        },
+        "gps_model": {
+          "type": "string",
+          "minLength": 1,
+          "description": "GPS receiver model (e.g. 'F9P', 'M9N')."
+        },
+        "sensors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "description": "Sensor identifiers (e.g. ['rgb:IMX477', 'nir:IMX708_NoIR'])."
+        }
+      }
+    },
+    "capture": {
+      "type": "object",
+      "description": "Capture session parameters and timing.",
+      "required": [
+        "start_time",
+        "end_time",
+        "image_count",
+        "sensor_config",
+        "trigger_mode",
+        "trigger_distance_m"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "start_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Capture session start time (ISO 8601)."
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Capture session end time (ISO 8601)."
+        },
+        "image_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of images captured."
+        },
+        "sensor_config": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Sensor configuration used (e.g. 'survey', 'inspection', 'mapping')."
+        },
+        "trigger_mode": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Capture trigger mode (e.g. 'distance', 'time', 'manual')."
+        },
+        "trigger_distance_m": {
+          "type": "number",
+          "description": "Distance between triggers in metres."
+        }
+      }
+    },
+    "survey": {
+      "type": "object",
+      "description": "Survey planning parameters. Optional — omitted for manual/test flights.",
+      "required": [
+        "site_id",
+        "aoi_geojson",
+        "planned_altitude_m",
+        "planned_overlap_front",
+        "planned_overlap_side",
+        "planned_gsd_cm"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "site_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Site identifier (e.g. 'site-alpha')."
+        },
+        "aoi_geojson": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Area of interest as GeoJSON string."
+        },
+        "planned_altitude_m": {
+          "type": "number",
+          "description": "Planned flight altitude above ground in metres."
+        },
+        "planned_overlap_front": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Planned front overlap ratio (0.0-1.0)."
+        },
+        "planned_overlap_side": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Planned side overlap ratio (0.0-1.0)."
+        },
+        "planned_gsd_cm": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Planned ground sample distance in cm/pixel."
+        }
+      }
+    },
+    "quality_summary": {
+      "type": "object",
+      "description": "Aggregate quality metrics for the mission.",
+      "required": [
+        "images_total",
+        "images_passed",
+        "images_failed",
+        "failure_reasons",
+        "rtk_fixed_pct",
+        "coverage_pct"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "images_total": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total images in the bundle."
+        },
+        "images_passed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Images that passed quality checks."
+        },
+        "images_failed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Images that failed quality checks."
+        },
+        "failure_reasons": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "description": "Map of failure reason to count (e.g. {'blur': 2, 'exposure': 1})."
+        },
+        "rtk_fixed_pct": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Fraction of images with RTK_FIXED positioning (0.0-1.0)."
+        },
+        "coverage_pct": {
+          "type": ["number", "null"],
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Grid coverage fraction (0.0-1.0), or null when no survey grid was planned."
+        }
+      }
+    },
+    "checksums_digest": {
+      "type": "string",
+      "minLength": 1,
+      "description": "SHA-256 hex digest of the checksums.sha256 file. Links the manifest to the content integrity chain."
+    },
+    "signature": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Base64-encoded Ed25519 signature of the canonical manifest JSON (excluding this field)."
+    }
+  }
+}

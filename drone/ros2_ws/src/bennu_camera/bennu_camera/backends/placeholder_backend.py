@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+
 from bennu_camera.capture_backend import CaptureBackend
 
 logger = logging.getLogger(__name__)
