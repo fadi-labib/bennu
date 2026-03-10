@@ -26,6 +26,21 @@ def test_placeholder_name():
     assert backend.name == "placeholder"
 
 
+def test_placeholder_ignores_dimensions(tmp_path):
+    """PlaceholderBackend produces identical output regardless of requested dimensions.
+
+    This is by design — simulation doesn't need real-resolution images.
+    Changing this behavior would break sim performance assumptions.
+    """
+    backend = PlaceholderBackend()
+    small = tmp_path / "small.jpg"
+    large = tmp_path / "large.jpg"
+    backend.capture(small, 640, 480)
+    backend.capture(large, 4056, 3040)
+
+    assert small.read_bytes() == large.read_bytes()
+
+
 def test_libcamera_returns_false_when_not_found(tmp_path):
     """LibcameraBackend returns False when libcamera-still is not found."""
     backend = LibcameraBackend()

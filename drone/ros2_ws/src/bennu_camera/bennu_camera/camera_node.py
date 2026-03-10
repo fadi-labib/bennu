@@ -33,6 +33,7 @@ class CameraNode(Node):
         self.declare_parameter("image_width", 4056)
         self.declare_parameter("image_height", 3040)
         self.declare_parameter("camera_backend", "libcamera")
+        self.declare_parameter("timer_interval", 5.0)
 
         self.output_dir = self.get_parameter("output_dir").value
         self.width = self.get_parameter("image_width").value
@@ -40,7 +41,10 @@ class CameraNode(Node):
 
         backend_name = self.get_parameter("camera_backend").value
         if backend_name not in BACKENDS:
-            raise ValueError(f"Unknown camera backend: {backend_name}")
+            valid = ", ".join(sorted(BACKENDS.keys()))
+            raise ValueError(
+                f"Unknown camera backend: {backend_name} (valid: {valid})"
+            )
         self._backend = BACKENDS[backend_name]()
         self.get_logger().info(f"Camera backend: {self._backend.name}")
 
@@ -80,8 +84,13 @@ class CameraNode(Node):
             self.get_logger().warn(
                 "px4_msgs not found — running in standalone timer mode"
             )
-            # Fallback: capture on timer (for testing without PX4)
-            self.create_timer(5.0, self._on_timer_capture)
+            # Fallback: capture on timer — used in sim mode and when running without PX4
+            interval = self.get_parameter("timer_interval").value
+            if interval <= 0.0:
+                raise ValueError(
+                    f"timer_interval must be > 0, got {interval}"
+                )
+            self.create_timer(interval, self._on_timer_capture)
 
         self._capture_count = 0
         self.get_logger().info(
@@ -122,11 +131,11 @@ class CameraNode(Node):
 
         # Write GPS EXIF
         if self._lat != 0.0 or self._lon != 0.0:
-            success = write_gps_exif(filepath, self._lat, self._lon, self._alt)
-            if success:
+            result = write_gps_exif(filepath, self._lat, self._lon, self._alt)
+            if result is True:
                 self.get_logger().info(f"Saved: {filename} (geotagged)")
             else:
-                self.get_logger().warn(f"Saved: {filename} (geotag failed)")
+                self.get_logger().error(f"Saved: {filename} (UNGEOTAGGED — geotag failed: {result})")
         else:
             self.get_logger().warn(f"Saved: {filename} (no GPS fix)")
 
