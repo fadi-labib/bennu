@@ -6,12 +6,18 @@ import cv2
 import numpy as np
 
 
-@dataclass
+@dataclass(frozen=True)
 class QualityResult:
     """Result of image quality analysis."""
     score: float           # 0.0-1.0 composite quality score
-    flags: List[str]       # "ok", "blur", "overexposed", "underexposed"
+    flags: tuple           # "ok", "blur", "overexposed", "underexposed", "invalid"
     blur_variance: float   # Laplacian variance (higher = sharper)
+
+    def __post_init__(self):
+        if not (0.0 <= self.score <= 1.0):
+            raise ValueError(f"score must be in [0.0, 1.0], got {self.score}")
+        if not self.flags:
+            raise ValueError("flags must not be empty")
 
 
 class ImageQualityScorer:
@@ -28,9 +34,14 @@ class ImageQualityScorer:
 
         Returns:
             QualityResult with score, flags, and blur_variance.
+
+        Raises:
+            ValueError: If image is None or empty (capture failure).
         """
-        if image is None or image.size == 0:
-            return QualityResult(score=0.0, flags=["invalid"], blur_variance=0.0)
+        if image is None:
+            raise ValueError("Cannot score a None image — capture likely failed")
+        if image.size == 0:
+            raise ValueError("Cannot score an empty image array")
 
         # Convert to grayscale if needed
         if len(image.shape) == 3:
@@ -38,7 +49,7 @@ class ImageQualityScorer:
         else:
             gray = image
 
-        flags = []
+        flags: List[str] = []
         penalties = 0.0
 
         # Blur detection via Laplacian variance
@@ -67,4 +78,4 @@ class ImageQualityScorer:
             flags.append("ok")
 
         score = max(0.0, min(1.0, 1.0 - penalties))
-        return QualityResult(score=score, flags=flags, blur_variance=blur_var)
+        return QualityResult(score=score, flags=tuple(flags), blur_variance=blur_var)

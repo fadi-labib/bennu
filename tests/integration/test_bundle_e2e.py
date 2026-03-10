@@ -48,7 +48,7 @@ def test_full_bundle_pipeline(tmp_path):
         flight_controller="Pixhawk6C",
         px4_version="1.16.1",
         gps_model="F9P",
-        sensors=["rgb:IMX477"],
+        sensors=("rgb:IMX477",),
     )
 
     # 2. Generate fake images + score them
@@ -149,12 +149,12 @@ def test_full_bundle_pipeline(tmp_path):
     image_count = len(list((bundle / "images").glob("*.jpg")))
     assert image_count == 3
 
-    # 7c. Schema validation (if schema exists)
+    # 7c. Schema validation (mandatory)
     schema_path = REPO_ROOT / "contract" / "v1" / "manifest.schema.json"
-    if schema_path.exists():
-        import jsonschema
-        schema = json.loads(schema_path.read_text())
-        jsonschema.validate(manifest, schema)
+    assert schema_path.exists(), f"Schema not found at {schema_path}"
+    import jsonschema
+    schema = json.loads(schema_path.read_text())
+    jsonschema.validate(manifest, schema)
 
     # 7d. Signature verification
     manifest_for_verify = {k: v for k, v in manifest.items() if k != "signature"}

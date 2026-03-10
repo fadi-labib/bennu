@@ -87,7 +87,6 @@ class TestWriteGpsExif:
                 assert "37.77" in output
                 assert "122.41" in output
             except FileNotFoundError:
-                # exiftool not installed, skip verification
                 pass
         finally:
             os.unlink(temp_path)
@@ -153,6 +152,44 @@ def test_image_metadata_to_csv_row():
     assert row["capture_offset_ms"] is None
 
 
+def test_image_metadata_frozen():
+    """ImageMetadata is immutable."""
+    meta = ImageMetadata(
+        sequence=1, filename="0001_rgb.jpg", sensor="rgb",
+        timestamp_utc="2026-03-15T10:32:00Z",
+        lat=55.6761, lon=12.5683, alt_msl=80.0, alt_agl=75.0,
+        heading_deg=90.0, pitch_deg=-90.0, roll_deg=0.0,
+        rtk_fix_type="RTK_FIXED", position_accuracy_m=0.05,
+        gsd_cm=2.1, quality_score=0.95, quality_flags="ok",
+    )
+    with pytest.raises(AttributeError):
+        meta.lat = 0.0
+
+
+def test_image_metadata_rejects_invalid_lat():
+    with pytest.raises(ValueError, match="lat"):
+        ImageMetadata(
+            sequence=1, filename="test.jpg", sensor="rgb",
+            timestamp_utc="2026-03-15T10:32:00Z",
+            lat=91.0, lon=12.0, alt_msl=80.0, alt_agl=75.0,
+            heading_deg=90.0, pitch_deg=-90.0, roll_deg=0.0,
+            rtk_fix_type="RTK_FIXED", position_accuracy_m=0.05,
+            gsd_cm=2.1, quality_score=0.95, quality_flags="ok",
+        )
+
+
+def test_image_metadata_rejects_invalid_rtk():
+    with pytest.raises(ValueError, match="rtk_fix_type"):
+        ImageMetadata(
+            sequence=1, filename="test.jpg", sensor="rgb",
+            timestamp_utc="2026-03-15T10:32:00Z",
+            lat=55.0, lon=12.0, alt_msl=80.0, alt_agl=75.0,
+            heading_deg=90.0, pitch_deg=-90.0, roll_deg=0.0,
+            rtk_fix_type="INVALID",  position_accuracy_m=0.05,
+            gsd_cm=2.1, quality_score=0.95, quality_flags="ok",
+        )
+
+
 def test_gsd_scales_with_altitude():
     """Double altitude -> double GSD (linear relationship)."""
     gsd_80 = compute_gsd(80.0, 6.0, 4.712, 3040)
@@ -162,6 +199,30 @@ def test_gsd_scales_with_altitude():
 
 def test_gsd_known_value():
     """80m altitude, 6mm lens, IMX477 sensor -> ~2.1cm GSD."""
-    # IMX477: sensor_height = 4.712mm, image_height = 3040px
     gsd = compute_gsd(80.0, 6.0, 4.712, 3040)
     assert 2.0 < gsd < 2.2  # ~2.07cm
+
+
+def test_gsd_rejects_negative_altitude():
+    with pytest.raises(ValueError):
+        compute_gsd(-1.0, 6.0, 4.712, 3040)
+
+
+def test_gsd_rejects_zero_focal_length():
+    with pytest.raises(ValueError):
+        compute_gsd(80.0, 0.0, 4.712, 3040)
+
+
+def test_gsd_rejects_zero_sensor_height():
+    with pytest.raises(ValueError):
+        compute_gsd(80.0, 6.0, 0.0, 3040)
+
+
+def test_gsd_rejects_zero_image_height():
+    with pytest.raises(ValueError):
+        compute_gsd(80.0, 6.0, 4.712, 0)
+
+
+def test_gsd_zero_altitude_returns_zero():
+    """GSD at ground level is 0."""
+    assert compute_gsd(0.0, 6.0, 4.712, 3040) == 0.0
