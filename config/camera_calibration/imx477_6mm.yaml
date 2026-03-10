@@ -19,4 +19,5 @@ lens:
   focal_length_mm: 6.0
   aperture: "f/1.2"
   mount: "CS"
-  hfov_deg: 63              # approximate at infinity focus
+  hfov_deg: 55.3            # 2*atan(sensor_width_mm / (2*focal_length_mm))
+  vfov_deg: 42.9            # 2*atan(sensor_height_mm / (2*focal_length_mm))
