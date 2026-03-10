@@ -3,8 +3,9 @@
 # Used by: grid planner GSD calculation, image quality scoring
 #
 # These are nominal values. For photogrammetry-grade accuracy,
-# run a calibration pattern (e.g. OpenCV checkerboard) and update
-# the intrinsics_matrix and distortion_coefficients sections.
+# run a calibration pattern (e.g. OpenCV checkerboard) and add
+# intrinsics_matrix and distortion_coefficients sections using
+# the OpenCV calibrateCamera output format.
 
 sensor:
   name: "Sony IMX477"

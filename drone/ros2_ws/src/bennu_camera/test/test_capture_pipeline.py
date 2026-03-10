@@ -42,7 +42,7 @@ def test_placeholder_capture_then_geotag(tmp_path):
 
 
 def test_geotag_preserves_file_on_failure(tmp_path):
-    """If geotag fails, original file content is unchanged."""
+    """write_gps_exif returns error string on CalledProcessError without touching file."""
     not_jpeg = tmp_path / "not_a_jpeg.jpg"
     original_content = b"this is not a jpeg"
     not_jpeg.write_bytes(original_content)

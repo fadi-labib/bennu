@@ -50,3 +50,5 @@ def write_gps_exif(
     except subprocess.CalledProcessError as e:
         stderr = e.stderr.decode(errors="replace") if e.stderr else "(no stderr)"
         return f"exiftool failed (exit {e.returncode}): {stderr}"
+    except OSError as e:
+        return f"exiftool could not be launched: {e}"
