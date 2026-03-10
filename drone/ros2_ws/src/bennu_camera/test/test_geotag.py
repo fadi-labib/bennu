@@ -117,3 +117,17 @@ class TestWriteGpsExifErrors:
             result = write_gps_exif(str(jpeg), 37.0, -122.0, 50.0)
         assert result is not True
         assert isinstance(result, str)
+        assert "bad image" in result
+
+    def test_returns_no_stderr_fallback_on_process_failure(self, tmp_path):
+        """write_gps_exif handles CalledProcessError with stderr=None."""
+        import subprocess as sp
+        jpeg = tmp_path / "test.jpg"
+        jpeg.write_bytes(b'\xff\xd8\xff\xd9')
+        with patch(
+            "bennu_camera.geotag.subprocess.run",
+            side_effect=sp.CalledProcessError(1, "exiftool", stderr=None),
+        ):
+            result = write_gps_exif(str(jpeg), 37.0, -122.0, 50.0)
+        assert result is not True
+        assert "(no stderr)" in result
