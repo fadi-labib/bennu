@@ -1,10 +1,9 @@
 """Tests for camera capture backends."""
 import subprocess
-from pathlib import Path
 from unittest.mock import patch
 
-from bennu_camera.backends.placeholder_backend import PlaceholderBackend
 from bennu_camera.backends.libcamera_backend import LibcameraBackend
+from bennu_camera.backends.placeholder_backend import PlaceholderBackend
 
 
 def test_placeholder_creates_valid_jpeg(tmp_path):

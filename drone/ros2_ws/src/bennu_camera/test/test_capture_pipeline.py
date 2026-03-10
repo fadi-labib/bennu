@@ -9,9 +9,9 @@ This runs without rclpy — it tests the data pipeline, not the ROS2 wiring.
 """
 import shutil
 import subprocess
+from unittest.mock import patch
 
 import pytest
-from unittest.mock import patch
 
 from bennu_camera.backends.placeholder_backend import PlaceholderBackend
 from bennu_camera.geotag import write_gps_exif

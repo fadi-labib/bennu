@@ -82,6 +82,7 @@ nav:
       - PX4 Parameters: reference/px4-parameters.md
       - ROS2 Interfaces: reference/ros2-interfaces.md
       - ROS2 Ecosystem: reference/ros2-ecosystem.md
+      - Compatibility Matrix: reference/compatibility-matrix.md
       - Power Architecture: reference/power-architecture.md
       - Vibration Damping: reference/vibration-damping.md
   - Decisions:

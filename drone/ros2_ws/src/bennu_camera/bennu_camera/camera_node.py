@@ -10,11 +10,10 @@ from pathlib import Path
 
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
+from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
 
-from bennu_camera.geotag import write_gps_exif
 from bennu_camera.backends import LibcameraBackend, PlaceholderBackend
-
+from bennu_camera.geotag import write_gps_exif
 
 BACKENDS = {
     "libcamera": LibcameraBackend,
@@ -64,7 +63,7 @@ class CameraNode(Node):
 
         # Subscribe to PX4 vehicle GPS position
         try:
-            from px4_msgs.msg import VehicleGlobalPosition, CameraTrigger
+            from px4_msgs.msg import CameraTrigger, VehicleGlobalPosition
 
             self.create_subscription(
                 VehicleGlobalPosition,

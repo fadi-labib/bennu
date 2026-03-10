@@ -2,10 +2,11 @@
 import os
 import shutil
 import tempfile
-import pytest
 from unittest.mock import patch
 
-from bennu_camera.geotag import write_gps_exif, format_gps_coord
+import pytest
+
+from bennu_camera.geotag import ImageMetadata, compute_gsd, format_gps_coord, write_gps_exif
 
 HAS_EXIFTOOL = shutil.which("exiftool") is not None
 
@@ -86,7 +87,6 @@ class TestWriteGpsExif:
                 assert "37.77" in output
                 assert "122.41" in output
             except FileNotFoundError:
-                # exiftool not installed, skip verification
                 pass
         finally:
             os.unlink(temp_path)
@@ -131,3 +131,98 @@ class TestWriteGpsExifErrors:
             result = write_gps_exif(str(jpeg), 37.0, -122.0, 50.0)
         assert result is not True
         assert "(no stderr)" in result
+
+
+def test_image_metadata_to_csv_row():
+    """All 18 fields present in correct order."""
+    meta = ImageMetadata(
+        sequence=1, filename="0001_rgb.jpg", sensor="rgb",
+        timestamp_utc="2026-03-15T10:32:00Z",
+        lat=55.6761, lon=12.5683, alt_msl=80.0, alt_agl=75.0,
+        heading_deg=90.0, pitch_deg=-90.0, roll_deg=0.0,
+        rtk_fix_type="RTK_FIXED", position_accuracy_m=0.05,
+        gsd_cm=2.1, quality_score=0.95, quality_flags="ok",
+        ambient_light_lux=45000.0, capture_offset_ms=None,
+    )
+    row = meta.to_csv_dict()
+    assert list(row.keys()) == ImageMetadata.csv_header()
+    assert len(row) == 18
+    assert row["sequence"] == 1
+    assert row["ambient_light_lux"] == 45000.0
+    assert row["capture_offset_ms"] is None
+
+
+def test_image_metadata_frozen():
+    """ImageMetadata is immutable."""
+    meta = ImageMetadata(
+        sequence=1, filename="0001_rgb.jpg", sensor="rgb",
+        timestamp_utc="2026-03-15T10:32:00Z",
+        lat=55.6761, lon=12.5683, alt_msl=80.0, alt_agl=75.0,
+        heading_deg=90.0, pitch_deg=-90.0, roll_deg=0.0,
+        rtk_fix_type="RTK_FIXED", position_accuracy_m=0.05,
+        gsd_cm=2.1, quality_score=0.95, quality_flags="ok",
+    )
+    with pytest.raises(AttributeError):
+        meta.lat = 0.0
+
+
+def test_image_metadata_rejects_invalid_lat():
+    with pytest.raises(ValueError, match="lat"):
+        ImageMetadata(
+            sequence=1, filename="test.jpg", sensor="rgb",
+            timestamp_utc="2026-03-15T10:32:00Z",
+            lat=91.0, lon=12.0, alt_msl=80.0, alt_agl=75.0,
+            heading_deg=90.0, pitch_deg=-90.0, roll_deg=0.0,
+            rtk_fix_type="RTK_FIXED", position_accuracy_m=0.05,
+            gsd_cm=2.1, quality_score=0.95, quality_flags="ok",
+        )
+
+
+def test_image_metadata_rejects_invalid_rtk():
+    with pytest.raises(ValueError, match="rtk_fix_type"):
+        ImageMetadata(
+            sequence=1, filename="test.jpg", sensor="rgb",
+            timestamp_utc="2026-03-15T10:32:00Z",
+            lat=55.0, lon=12.0, alt_msl=80.0, alt_agl=75.0,
+            heading_deg=90.0, pitch_deg=-90.0, roll_deg=0.0,
+            rtk_fix_type="INVALID",  position_accuracy_m=0.05,
+            gsd_cm=2.1, quality_score=0.95, quality_flags="ok",
+        )
+
+
+def test_gsd_scales_with_altitude():
+    """Double altitude -> double GSD (linear relationship)."""
+    gsd_80 = compute_gsd(80.0, 6.0, 4.712, 3040)
+    gsd_160 = compute_gsd(160.0, 6.0, 4.712, 3040)
+    assert abs(gsd_160 / gsd_80 - 2.0) < 0.01
+
+
+def test_gsd_known_value():
+    """80m altitude, 6mm lens, IMX477 sensor -> ~2.1cm GSD."""
+    gsd = compute_gsd(80.0, 6.0, 4.712, 3040)
+    assert 2.0 < gsd < 2.2  # ~2.07cm
+
+
+def test_gsd_rejects_negative_altitude():
+    with pytest.raises(ValueError):
+        compute_gsd(-1.0, 6.0, 4.712, 3040)
+
+
+def test_gsd_rejects_zero_focal_length():
+    with pytest.raises(ValueError):
+        compute_gsd(80.0, 0.0, 4.712, 3040)
+
+
+def test_gsd_rejects_zero_sensor_height():
+    with pytest.raises(ValueError):
+        compute_gsd(80.0, 6.0, 0.0, 3040)
+
+
+def test_gsd_rejects_zero_image_height():
+    with pytest.raises(ValueError):
+        compute_gsd(80.0, 6.0, 4.712, 0)
+
+
+def test_gsd_zero_altitude_returns_zero():
+    """GSD at ground level is 0."""
+    assert compute_gsd(0.0, 6.0, 4.712, 3040) == 0.0
