@@ -1,0 +1,38 @@
+name: SIL Smoke Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  sil-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pull prebuilt images
+        run: |
+          docker pull ghcr.io/fadi-labib/bennu/px4-sitl:v1.16.1 || true
+          docker pull ghcr.io/fadi-labib/bennu/ros2-dev:jazzy || true
+
+      - name: Run SIL smoke test
+        working-directory: sim
+        run: |
+          docker compose -f docker-compose.sil.yml up \
+            --abort-on-container-exit \
+            --exit-code-from test-runner
+
+      - name: Upload artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sil-artifacts
+          path: sim/artifacts/
+
+      - name: Cleanup
+        if: always()
+        working-directory: sim
+        run: docker compose -f docker-compose.sil.yml down -v

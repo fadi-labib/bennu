@@ -8,6 +8,3 @@ ignore = ["E501"]  # Line length handled by formatter
 
 [tool.ruff.lint.isort]
 known-first-party = ["bennu_camera", "bennu_core", "bennu_dataset", "bennu_mission", "bennu_bringup"]
-
-[tool.pytest.ini_options]
-addopts = "--import-mode=importlib"
