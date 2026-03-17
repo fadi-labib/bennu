@@ -1,0 +1,9 @@
+# Mapping configuration: RGB only
+# Used for standard photogrammetry / 3D reconstruction.
+sensors:
+  - rgb
+
+ambient_light: false
+
+capture_order:
+  - rgb

@@ -1,0 +1,11 @@
+# Inspection configuration: RGB + thermal
+# Used for infrastructure inspection (solar panels, roofs, power lines).
+sensors:
+  - rgb
+  - thermal
+
+ambient_light: false
+
+capture_order:
+  - rgb
+  - thermal

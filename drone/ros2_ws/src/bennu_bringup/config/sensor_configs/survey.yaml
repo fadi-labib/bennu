@@ -1,0 +1,11 @@
+# Survey configuration: RGB + NIR + ambient light sensor (BH1750)
+# Used for agricultural/environmental surveys requiring radiometric normalization.
+sensors:
+  - rgb
+  - nir
+
+ambient_light: true
+
+capture_order:
+  - rgb
+  - nir
