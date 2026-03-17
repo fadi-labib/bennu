@@ -1,12 +1,7 @@
-"""Tests for artifact validation script (not yet implemented — see Phase 2)."""
+"""Tests for artifact validation script."""
 from pathlib import Path
 
-import pytest
-
-validate_artifacts = pytest.importorskip(
-    "validate_artifacts", reason="validate_artifacts not yet implemented"
-)
-validate = validate_artifacts.validate
+from validate_artifacts import validate
 
 
 def _write_scenario(tmp_path: Path, min_triggers: int) -> Path:
@@ -20,7 +15,7 @@ def _write_scenario(tmp_path: Path, min_triggers: int) -> Path:
 
 def _write_jpeg(path: Path):
     """Write a minimal valid JPEG file."""
-    path.write_bytes(b'\xff\xd8\xff\xe0' + b'\x00' * 20 + b'\xff\xd9')
+    path.write_bytes(b"\xff\xd8\xff\xe0" + b"\x00" * 20 + b"\xff\xd9")
 
 
 def test_passes_with_enough_images(tmp_path):
@@ -50,6 +45,6 @@ def test_validates_jpeg_magic_bytes(tmp_path):
     scenario = _write_scenario(tmp_path, min_triggers=1)
     output = tmp_path / "output"
     output.mkdir()
-    (output / "bad.jpg").write_bytes(b'not a jpeg')
+    (output / "bad.jpg").write_bytes(b"not a jpeg")
 
     assert validate(str(scenario), str(output)) is False
