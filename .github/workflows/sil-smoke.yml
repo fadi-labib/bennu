@@ -24,10 +24,10 @@ jobs:
       - name: Run SIL smoke test
         working-directory: sim
         run: |
-          docker compose -f docker-compose.sil.yml up --build \
+          docker compose -f docker-compose.sil.yml up \
             --abort-on-container-exit \
             --exit-code-from test-runner
-        timeout-minutes: 20
+        timeout-minutes: 15
 
       - name: Upload artifacts on failure
         if: failure()
