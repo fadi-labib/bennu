@@ -1,5 +1,5 @@
 name: nominal_survey
-description: Baseline happy path — flat world, small grid, complete bundle
+description: Baseline happy path — flat world, small grid
 world: default
 vehicle: x500
 mission:
@@ -13,4 +13,4 @@ assertions:
   min_triggers: 4
   expected_end_state: landed
   max_duration_s: 180
-  require_bundle: false   # Bundle validation added in Phase 3
+  require_bundle: false   # Set to true when bundle validation is available

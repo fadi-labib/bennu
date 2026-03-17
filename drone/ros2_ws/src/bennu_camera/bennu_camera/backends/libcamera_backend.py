@@ -1,4 +1,5 @@
 import logging
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -50,3 +51,7 @@ class LibcameraBackend(CaptureBackend):
     @property
     def name(self) -> str:
         return "libcamera"
+
+    def is_available(self) -> bool:
+        """Check if libcamera-still is installed."""
+        return shutil.which("libcamera-still") is not None

@@ -12,13 +12,8 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
 
-from bennu_camera.backends import LibcameraBackend, PlaceholderBackend
+from bennu_camera.backends import create_backend
 from bennu_camera.geotag import write_gps_exif
-
-BACKENDS = {
-    "libcamera": LibcameraBackend,
-    "placeholder": PlaceholderBackend,
-}
 
 
 class CameraNode(Node):
@@ -39,13 +34,12 @@ class CameraNode(Node):
         self.height = self.get_parameter("image_height").value
 
         backend_name = self.get_parameter("camera_backend").value
-        if backend_name not in BACKENDS:
-            valid = ", ".join(sorted(BACKENDS.keys()))
-            raise ValueError(
-                f"Unknown camera backend: {backend_name} (valid: {valid})"
-            )
-        self._backend = BACKENDS[backend_name]()
+        self._backend = create_backend(backend_name)
         self.get_logger().info(f"Camera backend: {self._backend.name}")
+        if not self._backend.is_available():
+            self.get_logger().warning(
+                f"Backend '{self._backend.name}' is not available in this environment"
+            )
 
         os.makedirs(self.output_dir, exist_ok=True)
 

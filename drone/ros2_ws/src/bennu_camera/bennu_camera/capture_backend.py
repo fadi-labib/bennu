@@ -15,3 +15,7 @@ class CaptureBackend(ABC):
     def name(self) -> str:
         """Backend identifier string."""
         ...
+
+    def is_available(self) -> bool:
+        """Check if this backend can function in the current environment."""
+        return True

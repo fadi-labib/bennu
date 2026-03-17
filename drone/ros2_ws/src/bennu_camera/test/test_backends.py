@@ -2,6 +2,7 @@
 import subprocess
 from unittest.mock import patch
 
+from bennu_camera.backends import create_backend
 from bennu_camera.backends.libcamera_backend import LibcameraBackend
 from bennu_camera.backends.placeholder_backend import PlaceholderBackend
 
@@ -71,3 +72,40 @@ def test_libcamera_returns_false_on_timeout(tmp_path):
     ):
         result = backend.capture(tmp_path / "test.jpg", 4056, 3040)
     assert result is False
+
+
+def test_placeholder_creates_nested_directories(tmp_path):
+    """PlaceholderBackend creates intermediate directories when they don't exist."""
+    backend = PlaceholderBackend()
+    filepath = tmp_path / "a" / "b" / "c" / "test.jpg"
+    result = backend.capture(filepath, 4056, 3040)
+    assert result is True
+    assert filepath.exists()
+
+
+def test_libcamera_is_available_checks_binary():
+    """LibcameraBackend.is_available() checks for libcamera-still on PATH."""
+    backend = LibcameraBackend()
+    with patch(
+        "bennu_camera.backends.libcamera_backend.shutil.which",
+        return_value=None,
+    ):
+        assert backend.is_available() is False
+
+    with patch(
+        "bennu_camera.backends.libcamera_backend.shutil.which",
+        return_value="/usr/bin/libcamera-still",
+    ):
+        assert backend.is_available() is True
+
+
+def test_placeholder_is_always_available():
+    """PlaceholderBackend is always available (no external deps)."""
+    backend = PlaceholderBackend()
+    assert backend.is_available() is True
+
+
+def test_create_backend_factory():
+    """create_backend() returns correct backend instances."""
+    assert isinstance(create_backend("placeholder"), PlaceholderBackend)
+    assert isinstance(create_backend("libcamera"), LibcameraBackend)
