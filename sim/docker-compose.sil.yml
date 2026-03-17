@@ -3,6 +3,12 @@
 #
 # px4-sitl uses prebuilt GHCR image with local build fallback.
 # test-runner always builds locally. No GPU required.
+#
+# Known CI issue (2026-03-17): run_mission.py fails in GitHub Actions
+# because MAVSDK cannot connect to PX4 in time or PX4 doesn't achieve
+# GPS lock fast enough on the CI runner. The infrastructure is correct
+# (PX4 boots, Gazebo starts, healthcheck passes) but the mission runner
+# needs CI-specific timeout tuning. Works locally with `make test-sitl`.
 
 name: bennu-sil
 
