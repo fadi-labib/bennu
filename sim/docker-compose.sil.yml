@@ -22,8 +22,8 @@ services:
       bash -c "echo '=== SIL: Headless PX4 SITL ===' &&
       make px4_sitl gz_x500"
     healthcheck:
-      # 0x38DC = port 14556 (PX4 MAVLink onboard link) — bound when PX4 is ready
-      test: ["CMD-SHELL", "grep -q ':38DC ' /proc/net/udp"]
+      # 0x488A = port 18570 (PX4 MAVLink GCS link) — bound when PX4 is ready
+      test: ["CMD-SHELL", "grep -q ':488A ' /proc/net/udp"]
       interval: 5s
       timeout: 3s
       retries: 24
