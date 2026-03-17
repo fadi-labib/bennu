@@ -1,10 +1,11 @@
 name: SIL Smoke Test
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1-5'  # Weekdays 6am UTC
 
 jobs:
   sil-smoke:
@@ -15,8 +16,10 @@ jobs:
 
       - name: Pull prebuilt images
         run: |
-          docker pull ghcr.io/fadi-labib/bennu/px4-sitl:latest || true
-          docker pull ghcr.io/fadi-labib/bennu/ros2-dev:latest || true
+          docker pull ghcr.io/fadi-labib/bennu/px4-sitl:latest &
+          docker pull ghcr.io/fadi-labib/bennu/ros2-dev:latest &
+          wait
+        timeout-minutes: 10
 
       - name: Prepare artifact directory
         run: mkdir -p sim/artifacts
