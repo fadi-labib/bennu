@@ -18,8 +18,6 @@ services:
       - PX4_SYS_AUTOSTART=4001
       - PX4_GZ_MODEL=x500
       - HEADLESS=1
-      # Run Gazebo as a separate process (prevents GUI spawn in CI)
-      - PX4_GZ_STANDALONE=1
     command: >-
       bash -c "echo '=== SIL: Headless PX4 SITL ===' &&
       make px4_sitl gz_x500"
