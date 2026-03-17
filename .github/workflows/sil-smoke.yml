@@ -18,6 +18,9 @@ jobs:
           docker pull ghcr.io/fadi-labib/bennu/px4-sitl:v1.16.1 || true
           docker pull ghcr.io/fadi-labib/bennu/ros2-dev:jazzy || true
 
+      - name: Prepare artifact directory
+        run: mkdir -p sim/artifacts
+
       - name: Run SIL smoke test
         working-directory: sim
         run: |

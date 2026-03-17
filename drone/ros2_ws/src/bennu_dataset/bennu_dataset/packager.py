@@ -118,10 +118,12 @@ class BundlePackager:
         (contains checksums_digest, creating a circular dependency).
         manifest.json is instead protected by the Ed25519 signature.
         """
+        excluded = {Path("checksums.sha256"), Path("manifest.json")}
         lines = []
         for path in sorted(bundle_dir.rglob("*")):
-            if path.is_file() and path.name != "checksums.sha256" and path.name != "manifest.json":
+            if path.is_file():
                 rel = path.relative_to(bundle_dir)
-                sha = hashlib.sha256(path.read_bytes()).hexdigest()
-                lines.append(f"{sha}  {rel}")
+                if rel not in excluded:
+                    sha = hashlib.sha256(path.read_bytes()).hexdigest()
+                    lines.append(f"{sha}  {rel}")
         return "\n".join(lines) + "\n"

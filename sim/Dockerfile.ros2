@@ -31,6 +31,7 @@ RUN pip3 install --break-system-packages \
     "pytest-watch>=4,<5" \
     "jsonschema>=4,<5" \
     "pynacl>=1.5,<2" \
+    "pyyaml>=6,<7" \
     "mavsdk>=2,<3" \
     "ruff>=0.4,<1"
 

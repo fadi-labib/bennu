@@ -58,11 +58,11 @@ class SensorConfig:
             )
 
         capture_order = data["capture_order"]
-        unknown_order = set(capture_order) - KNOWN_SENSORS
-        if unknown_order:
+        invalid_order = set(capture_order) - set(sensors)
+        if invalid_order:
             raise ValueError(
-                f"Unknown sensor(s) in capture_order: {sorted(unknown_order)}. "
-                f"Valid sensors: {sorted(KNOWN_SENSORS)}"
+                f"capture_order contains sensors not in sensors list: {sorted(invalid_order)}. "
+                f"Active sensors: {sorted(sensors)}"
             )
 
         return cls(

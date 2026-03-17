@@ -1,7 +1,6 @@
 """Tests for ambient-light calibration capture."""
 
 import csv
-import io
 import os
 import tempfile
 
@@ -9,7 +8,6 @@ import pytest
 
 from bennu_camera.calibration import CalibrationCapture
 from bennu_camera.sensor_config import SensorConfig
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -81,3 +79,21 @@ def test_calibration_csv_not_generated_without_ambient_light():
 
     # to_csv should return empty string
     assert cal.to_csv() == ""
+
+
+def test_calibration_csv_with_zero_readings():
+    """Enabled calibration with no readings writes header-only CSV."""
+    cfg = SensorConfig.from_yaml(_config_path("survey.yaml"))
+    cal = CalibrationCapture(cfg)
+
+    csv_output = cal.to_csv()
+    lines = csv_output.strip().split("\n")
+    assert len(lines) == 1  # header only
+    assert "timestamp_utc" in lines[0]
+    assert "lux" in lines[0]
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        csv_path = os.path.join(tmpdir, "calibration.csv")
+        written = cal.write_csv(csv_path)
+        assert written is True
+        assert os.path.exists(csv_path)

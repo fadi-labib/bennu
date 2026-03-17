@@ -85,3 +85,26 @@ def test_quality_result_frozen():
     result = QualityResult(score=0.8, flags=("ok",), blur_variance=150.0)
     with pytest.raises(AttributeError):
         result.score = 0.5
+
+
+def test_combined_blur_and_overexposed():
+    """A blurry, overexposed image gets both flags; penalty = 0.5 + 0.4 = 0.9."""
+    scorer = ImageQualityScorer(blur_threshold=100.0)
+    # Uniform bright image: blurry (no edges) + overexposed (bright pixels)
+    image = np.full((480, 640, 3), 250, dtype=np.uint8)
+    result = scorer.score(image)
+    assert "blur" in result.flags
+    assert "overexposed" in result.flags
+    assert "ok" not in result.flags
+    assert result.score == pytest.approx(0.1, abs=0.01)
+
+
+def test_combined_blur_and_underexposed():
+    """A blurry, underexposed image gets both flags; penalty = 0.5 + 0.4 = 0.9."""
+    scorer = ImageQualityScorer(blur_threshold=100.0)
+    image = np.full((480, 640, 3), 5, dtype=np.uint8)
+    result = scorer.score(image)
+    assert "blur" in result.flags
+    assert "underexposed" in result.flags
+    assert "ok" not in result.flags
+    assert result.score == pytest.approx(0.1, abs=0.01)

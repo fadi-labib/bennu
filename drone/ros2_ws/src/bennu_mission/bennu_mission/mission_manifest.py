@@ -4,6 +4,8 @@ import io
 from collections import Counter
 from typing import Optional
 
+from bennu_camera.geotag import IMAGE_METADATA_COLUMNS
+
 
 class ManifestGenerator:
     """Generates contract v1 compliant manifest.json and images.csv."""
@@ -49,7 +51,9 @@ class ManifestGenerator:
             signature: Base64 Ed25519 signature.
 
         Returns:
-            Dict matching contract/v1/manifest.schema.json.
+            Dict matching contract/v1/manifest.schema.json structure.
+            Note: checksums_digest and signature must be populated by the
+            caller before the manifest is schema-valid or written to disk.
 
         Raises:
             ValueError: If images list is empty.
@@ -106,8 +110,7 @@ class ManifestGenerator:
             )
 
         output = io.StringIO()
-        header = list(images[0].to_csv_dict().keys())
-        writer = csv.DictWriter(output, fieldnames=header)
+        writer = csv.DictWriter(output, fieldnames=list(IMAGE_METADATA_COLUMNS))
         writer.writeheader()
         for img in images:
             writer.writerow(img.to_csv_dict())

@@ -95,6 +95,9 @@ def test_generate_images_csv():
     assert len(rows) == 2
     assert len(reader.fieldnames) == 18
 
+    from bennu_camera.geotag import IMAGE_METADATA_COLUMNS
+    assert tuple(reader.fieldnames) == IMAGE_METADATA_COLUMNS
+
 
 def test_quality_summary_counts():
     """3 images (1 pass, 2 fail) -> correct counts and failure reasons."""

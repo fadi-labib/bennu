@@ -7,15 +7,16 @@ import sys
 from mavsdk import System
 
 
-async def wait_for_px4(address: str = "udp://:14540", timeout: int = 120) -> bool:
+async def wait_for_px4(address: str = "udp://:14540") -> bool:
     """Poll PX4 via MAVSDK until GPS fix and home position are set.
 
-    Returns True when PX4 is ready, False on timeout.
+    Returns True when PX4 is ready. This coroutine runs indefinitely
+    until PX4 reports ready — use asyncio.wait_for() to enforce a timeout.
     """
     drone = System()
     await drone.connect(system_address=address)
 
-    print(f"Waiting for PX4 at {address} (timeout {timeout}s)...")
+    print(f"Waiting for PX4 at {address}...")
 
     # Wait for connection
     async for state in drone.core.connection_state():
@@ -36,7 +37,7 @@ async def wait_for_px4(address: str = "udp://:14540", timeout: int = 120) -> boo
 async def _main(address: str, timeout: int) -> bool:
     """Run wait_for_px4 with a timeout wrapper."""
     return await asyncio.wait_for(
-        wait_for_px4(address=address, timeout=timeout),
+        wait_for_px4(address=address),
         timeout=timeout,
     )
 

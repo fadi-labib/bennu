@@ -29,11 +29,13 @@ def _create_test_image(path: Path, sharp: bool = True) -> np.ndarray:
     """Create a test image and save it as JPEG-like bytes.
 
     Returns the image array for quality scoring.
+    A non-sharp image is dark+uniform: triggers both blur and underexposed
+    flags, giving a score well below the 0.5 quality threshold.
     """
     if sharp:
         img = np.random.randint(50, 200, (480, 640, 3), dtype=np.uint8)
     else:
-        img = np.full((480, 640, 3), 128, dtype=np.uint8)
+        img = np.full((480, 640, 3), 5, dtype=np.uint8)
     # Write raw bytes as a fake image file
     path.write_bytes(b"\xff\xd8\xff\xe0" + img.tobytes()[:1000])
     return img
@@ -186,3 +188,10 @@ def test_full_bundle_pipeline(tmp_path):
     assert manifest["drone_id"] == "bennu-001"
     assert manifest["capture"]["image_count"] == 3
     assert manifest["quality_summary"]["images_total"] == 3
+    assert manifest["quality_summary"]["images_passed"] == 2
+    assert manifest["quality_summary"]["images_failed"] == 1
+    assert "blur" in manifest["quality_summary"]["failure_reasons"]
+
+    # 7h. CSV column order matches contract schema
+    from bennu_camera.geotag import IMAGE_METADATA_COLUMNS
+    assert tuple(reader.fieldnames) == IMAGE_METADATA_COLUMNS

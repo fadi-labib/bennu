@@ -11,7 +11,6 @@ from pathlib import Path
 
 import yaml
 
-
 JPEG_MAGIC = b"\xff\xd8"
 
 

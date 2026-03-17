@@ -59,10 +59,21 @@ def write_gps_exif(
 
 _VALID_RTK_FIX_TYPES = {"RTK_FIXED", "RTK_FLOAT", "DGPS", "AUTONOMOUS"}
 
+# Column order matching the contract schema (18 columns)
+IMAGE_METADATA_COLUMNS = (
+    "sequence", "filename", "sensor", "timestamp_utc",
+    "lat", "lon", "alt_msl", "alt_agl",
+    "heading_deg", "pitch_deg", "roll_deg",
+    "rtk_fix_type", "position_accuracy_m", "gsd_cm",
+    "quality_score", "quality_flags",
+    "ambient_light_lux", "capture_offset_ms",
+)
+
 
 @dataclass(frozen=True)
 class ImageMetadata:
     """Per-image metadata — all 18 columns of the images.csv contract."""
+
     sequence: int
     filename: str
     sensor: str
@@ -82,28 +93,11 @@ class ImageMetadata:
     ambient_light_lux: Optional[float] = None
     capture_offset_ms: Optional[float] = None
 
-    # Column order matching the contract schema (immutable tuple)
-    _COLUMNS: tuple = dataclasses.field(
-        default=(
-            "sequence", "filename", "sensor", "timestamp_utc",
-            "lat", "lon", "alt_msl", "alt_agl",
-            "heading_deg", "pitch_deg", "roll_deg",
-            "rtk_fix_type", "position_accuracy_m", "gsd_cm",
-            "quality_score", "quality_flags",
-            "ambient_light_lux", "capture_offset_ms",
-        ),
-        init=False,
-        repr=False,
-        compare=False,
-    )
-
     def __post_init__(self):
-        # Validate _COLUMNS stays in sync with dataclass fields
-        field_names = [
-            f.name for f in dataclasses.fields(self) if not f.name.startswith("_")
-        ]
-        if list(self._COLUMNS) != field_names:
-            raise RuntimeError("_COLUMNS out of sync with dataclass fields")
+        # Validate IMAGE_METADATA_COLUMNS stays in sync with dataclass fields
+        field_names = [f.name for f in dataclasses.fields(self)]
+        if list(IMAGE_METADATA_COLUMNS) != field_names:
+            raise RuntimeError("IMAGE_METADATA_COLUMNS out of sync with dataclass fields")
 
         if self.sequence < 0:
             raise ValueError(f"sequence must be non-negative, got {self.sequence}")
@@ -124,13 +118,13 @@ class ImageMetadata:
     def to_csv_dict(self) -> "collections.OrderedDict[str, object]":
         """Return ordered dict with all 18 columns for CSV writing."""
         return collections.OrderedDict(
-            (col, getattr(self, col)) for col in self._COLUMNS
+            (col, getattr(self, col)) for col in IMAGE_METADATA_COLUMNS
         )
 
     @classmethod
     def csv_header(cls) -> list:
         """Return the CSV header row (18 column names)."""
-        return list(cls.__dataclass_fields__["_COLUMNS"].default)
+        return list(IMAGE_METADATA_COLUMNS)
 
 
 def compute_gsd(

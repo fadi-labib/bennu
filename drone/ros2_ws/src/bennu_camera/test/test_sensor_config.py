@@ -8,7 +8,6 @@ import yaml
 
 from bennu_camera.sensor_config import SensorConfig
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -70,3 +69,70 @@ def test_unknown_sensor_raises():
             SensorConfig.from_yaml(tmp_path)
     finally:
         os.unlink(tmp_path)
+
+
+def test_capture_order_sensor_not_in_active_sensors():
+    """capture_order with a sensor not in the active sensors list must raise."""
+    bad_config = {
+        "sensors": ["rgb"],
+        "ambient_light": False,
+        "capture_order": ["rgb", "thermal"],
+    }
+
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".yaml", delete=False
+    ) as tmp:
+        yaml.dump(bad_config, tmp)
+        tmp_path = tmp.name
+
+    try:
+        with pytest.raises(ValueError, match="not in sensors list"):
+            SensorConfig.from_yaml(tmp_path)
+    finally:
+        os.unlink(tmp_path)
+
+
+def test_empty_sensors_raises():
+    """An empty sensors list must raise ValueError."""
+    bad_config = {
+        "sensors": [],
+        "ambient_light": False,
+        "capture_order": [],
+    }
+
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".yaml", delete=False
+    ) as tmp:
+        yaml.dump(bad_config, tmp)
+        tmp_path = tmp.name
+
+    try:
+        with pytest.raises(ValueError, match="must not be empty"):
+            SensorConfig.from_yaml(tmp_path)
+    finally:
+        os.unlink(tmp_path)
+
+
+def test_missing_required_key_raises():
+    """A YAML missing a required key must raise ValueError."""
+    bad_config = {"sensors": ["rgb"]}
+
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".yaml", delete=False
+    ) as tmp:
+        yaml.dump(bad_config, tmp)
+        tmp_path = tmp.name
+
+    try:
+        with pytest.raises(ValueError, match="Missing required key"):
+            SensorConfig.from_yaml(tmp_path)
+    finally:
+        os.unlink(tmp_path)
+
+
+def test_load_inspection_config():
+    """inspection.yaml must contain rgb + thermal sensors."""
+    cfg = SensorConfig.from_yaml(_config_path("inspection.yaml"))
+
+    assert "rgb" in cfg.sensors
+    assert "thermal" in cfg.sensors
