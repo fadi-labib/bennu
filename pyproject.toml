@@ -3,8 +3,11 @@ target-version = "py312"
 line-length = 99
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I"]
+select = ["E", "F", "W", "I", "UP", "PERF", "C90"]
 ignore = ["E501"]  # Line length handled by formatter
 
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
 [tool.ruff.lint.isort]
-known-first-party = ["bennu_camera", "bennu_core", "bennu_dataset", "bennu_mission", "bennu_bringup"]
+known-first-party = ["bennu_camera", "bennu_core", "bennu_dataset", "bennu_mission", "bennu_bringup", "bennu_survey"]
