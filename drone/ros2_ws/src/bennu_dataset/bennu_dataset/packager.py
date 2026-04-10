@@ -4,7 +4,6 @@ import json
 import re
 import shutil
 from pathlib import Path
-from typing import List, Optional
 
 
 class BundlePackager:
@@ -21,9 +20,9 @@ class BundlePackager:
         mission_id: str,
         manifest: dict,
         images_csv: str,
-        image_files: List[Path],
-        flight_log: Optional[Path] = None,
-        quality_report: Optional[dict] = None,
+        image_files: list[Path],
+        flight_log: Path | None = None,
+        quality_report: dict | None = None,
     ) -> Path:
         """Assemble the complete bundle directory.
 

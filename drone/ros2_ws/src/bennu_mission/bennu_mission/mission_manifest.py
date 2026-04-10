@@ -2,7 +2,6 @@
 import csv
 import io
 from collections import Counter
-from typing import Optional
 
 from bennu_camera.geotag import IMAGE_METADATA_COLUMNS
 
@@ -34,7 +33,7 @@ class ManifestGenerator:
         sensor_config: str,
         trigger_mode: str = "distance",
         trigger_distance_m: float = 5.0,
-        survey: Optional[dict] = None,
+        survey: dict | None = None,
         checksums_digest: str = "",
         signature: str = "",
     ) -> dict:

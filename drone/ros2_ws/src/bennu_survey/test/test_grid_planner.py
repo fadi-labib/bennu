@@ -3,6 +3,7 @@
 import math
 
 import pytest
+
 from bennu_survey.grid_planner import GridPlanner, SensorParams
 
 IMX477 = SensorParams(

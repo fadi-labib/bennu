@@ -1,6 +1,5 @@
 """Image quality scoring — blur detection and exposure analysis."""
 from dataclasses import dataclass
-from typing import List
 
 import cv2
 import numpy as np
@@ -49,7 +48,7 @@ class ImageQualityScorer:
         else:
             gray = image
 
-        flags: List[str] = []
+        flags: list[str] = []
         penalties = 0.0
 
         # Blur detection via Laplacian variance

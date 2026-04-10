@@ -5,9 +5,8 @@ from __future__ import annotations
 import csv
 import io
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import List
 
 from bennu_camera.sensor_config import SensorConfig
 
@@ -32,7 +31,7 @@ class CalibrationCapture:
 
     def __init__(self, config: SensorConfig) -> None:
         self._config = config
-        self._readings: List[LuxReading] = []
+        self._readings: list[LuxReading] = []
 
     @property
     def enabled(self) -> bool:
@@ -55,7 +54,7 @@ class CalibrationCapture:
                 "Calibration capture is disabled — sensor config has no ambient light"
             )
         if timestamp_utc is None:
-            timestamp_utc = datetime.now(timezone.utc).isoformat()
+            timestamp_utc = datetime.now(UTC).isoformat()
         self._readings.append(LuxReading(timestamp_utc=timestamp_utc, lux=lux))
 
     def to_csv(self) -> str:

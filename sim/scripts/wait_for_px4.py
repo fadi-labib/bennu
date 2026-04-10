@@ -63,7 +63,7 @@ if __name__ == "__main__":
     try:
         result = asyncio.run(_main(address=args.address, timeout=args.timeout))
         sys.exit(0 if result else 1)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         print(f"Timeout: PX4 not ready after {args.timeout}s", file=sys.stderr)
         sys.exit(1)
     except Exception as e:

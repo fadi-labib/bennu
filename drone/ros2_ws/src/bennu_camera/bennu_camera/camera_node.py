@@ -5,7 +5,7 @@ Subscribes to PX4 camera trigger events via uXRCE-DDS,
 captures images using configurable backends, and writes GPS EXIF data.
 """
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import rclpy
@@ -110,7 +110,7 @@ class CameraNode(Node):
     def _capture_image(self):
         """Capture image using the configured backend."""
         self._capture_count += 1
-        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
         filename = f"bennu_{timestamp}_{self._capture_count:04d}.jpg"
         filepath = os.path.join(self.output_dir, filename)
 
