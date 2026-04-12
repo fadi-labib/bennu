@@ -92,6 +92,8 @@ nav:
       - ADR-003 Rolling Shutter Camera: decisions/003-rolling-shutter-camera.md
       - ADR-004 uXRCE-DDS over MAVROS: decisions/004-uxrce-dds-over-mavros.md
       - ADR-005 ROS2 OSS Package Adoption: decisions/005-ros2-oss-package-adoption.md
+      - ADR-006 Simulation-First SIL: decisions/006-simulation-first-sil.md
+      - ADR-007 Platform Readiness Phases 0–2: decisions/007-platform-readiness-phases-0-2.md
   - Plans:
       - plans/index.md
       - Platform Readiness Design: plans/2026-03-08-drone-platform-readiness-design.md
