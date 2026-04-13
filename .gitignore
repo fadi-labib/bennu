@@ -13,6 +13,9 @@ __pycache__/
 *.pyo
 *.egg-info/
 .venv/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
 
 # Images captured during flights (too large for git)
 ground/odm/datasets/
