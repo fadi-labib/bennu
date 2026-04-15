@@ -6,28 +6,25 @@ Power distribution for the Bennu drone — from battery to all subsystems.
 
 ```mermaid
 graph TD
-    BATT[6S LiPo 1300mAh] --> PDB[Power Distribution Board]
-    PDB --> ESC1[ESC 1]
-    PDB --> ESC2[ESC 2]
-    PDB --> ESC3[ESC 3]
-    PDB --> ESC4[ESC 4]
-    ESC1 --> M1[Motor 1]
-    ESC2 --> M2[Motor 2]
-    ESC3 --> M3[Motor 3]
-    ESC4 --> M4[Motor 4]
-    PDB --> BEC5V[BEC 5V 3A]
-    PDB --> FC[Pixhawk 6C Power Module]
-    BEC5V --> PI[Raspberry Pi 5]
-    PI --> CAM[HQ Camera IMX477]
-    FC --> GPS[GPS M10S]
-    FC --> RC[RC Receiver]
+    BATT["4S LiPo<br/>2200–3000mAh"] --> PM["PM02<br/>Power Module"]
+    PM -->|Power| PIX["Pixhawk 6C"]
+    PM -->|XT60| ESC["Tekko32<br/>4-in-1 ESC"]
+    ESC --> M1["Motor 1"]
+    ESC --> M2["Motor 2"]
+    ESC --> M3["Motor 3"]
+    ESC --> M4["Motor 4"]
+    PM --> BEC5V["BEC 5V 3A"]
+    BEC5V --> PI["Raspberry Pi 5"]
+    PI --> CAM["HQ Camera IMX477"]
+    PIX --> GPS["Holybro M9N GPS"]
+    PIX --> RC["RC Receiver"]
 ```
 
 ## Voltage Rails
 
 | Rail | Voltage | Source | Consumers |
 |------|---------|--------|-----------|
-| Battery | 22.2V nominal (6S) | LiPo | ESCs, PDB |
+| Battery | 14.8V nominal (4S) | LiPo | PM02, ESC |
 | Servo/FC | 5.3V | Pixhawk power module | Pixhawk 6C, GPS, RC receiver |
 | Pi 5 | 5V | Dedicated BEC (min 3A) | Raspberry Pi 5, HQ Camera |
 
@@ -39,7 +36,7 @@ graph TD
 
 !!! warning "BEC Selection"
     - Minimum 5V 3A continuous output
-    - Must handle 6S input voltage (up to 25.2V fully charged)
+    - Must handle 4S input voltage (up to 16.8V fully charged)
     - Recommended: Matek UBEC 5V 3A or Pololu 5V 3.2A step-down
 
 ## Pi 5 Power Notes

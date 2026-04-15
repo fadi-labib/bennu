@@ -9,7 +9,8 @@ graph TD
     BAT["4S LiPo<br/>Battery"] --> PM["PM02<br/>Power Module"]
     PM -->|Power| PIX["Pixhawk 6C"]
     PM -->|XT60| ESC["Tekko32<br/>4-in-1 ESC"]
-    PM -->|"BEC 5V"| PI["Raspberry Pi 5"]
+    BAT -->|"BEC input<br/>(battery voltage)"| BEC["BEC 5V 3A"]
+    BEC --> PI["Raspberry Pi 5"]
     ESC --> M1["Motor 1<br/>Front Right CCW"]
     ESC --> M2["Motor 2<br/>Rear Left CCW"]
     ESC --> M3["Motor 3<br/>Front Left CW"]
@@ -21,7 +22,7 @@ graph TD
 | From | To | Connection | Notes |
 |---|---|---|---|
 | Pixhawk MAIN OUT 1-4 | ESC signal | DShot600 | Motor control |
-| Pixhawk GPS1 | M9N GPS | UART/I2C | Position + compass |
+| Pixhawk GPS1 | Holybro M9N GPS | UART/I2C | Position + compass |
 | Pixhawk TELEM1 | SiK Radio | UART | Telemetry to QGC |
 | Pixhawk TELEM2 TX | Pi 5 GPIO 15 (RX) | UART cross-wired | uXRCE-DDS |
 | Pixhawk TELEM2 RX | Pi 5 GPIO 14 (TX) | UART cross-wired | uXRCE-DDS |
