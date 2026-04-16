@@ -1,30 +1,33 @@
 # Frame Specifications
 
-Dimensions, print settings, and hardware for the Bennu 7" quadcopter frame.
+The Bennu frame uses a TBS Source One V5 7" Deadcat as the base, with custom 3D-printed adapter parts for the companion computer, camera, and GPS mast.
 
-## Specifications
+## Base Frame: TBS Source One V5 7" DC
 
 | Spec | Value |
 |---|---|
-| Type | 7" Quadcopter X |
-| Diagonal (M2M) | 300mm |
-| Material | CF-PETG (carbon fiber reinforced PETG) |
-| Arms | Carbon fiber tubes, 10mm OD |
-| Max print bed | 235x235mm (AnkerMake M5C) |
-| Target AUW | <900g |
+| Type | 7" Deadcat (props out of camera view) |
+| Diagonal (M2M) | ~320mm |
+| Weight | ~144g |
+| Arm thickness | 6mm |
+| Top plate | 2mm carbon fiber |
+| Bottom plate | 2.5mm carbon fiber |
+| FC/ESC stack mount | 30.5x30.5mm and 20x20mm |
+| Open-source files | [GitHub](https://github.com/tbs-trappy/source_one) (DXF, STL) |
 
-## Printed Parts
+!!! tip "Why Deadcat?"
+    The deadcat layout angles the front arms backward so propellers do not appear in downward-facing camera images. This is essential for photogrammetry — props in frame create artifacts in orthomosaics.
 
-| Part | Qty | Est. Print Time | Notes |
-|---|---|---|---|
-| Bottom plate | 1 | ~3h | Battery mount, ESC mount |
-| Top plate | 1 | ~2h | Pi 5 mount (M2.5 holes), FC mount |
-| Arm clamp | 4 | ~20min each | Secures CF tubes to body |
-| Camera mount | 1 | ~1h | Bottom-mount, 15° forward tilt |
-| GPS mast base | 1 | ~30min | Holds 12mm CF tube vertical |
-| Canopy | 1 | ~2h | Protects FC + Pi + wiring |
-| Landing legs | 4 | ~20min each | Simple clip-on legs |
-| Motor mount | 4 | ~30min each | Press-fit onto CF tubes |
+## Custom 3D-Printed Adapters
+
+These parts are printed in CF-PETG and mount onto the Source One V5 frame.
+
+| Part | Est. Print Time | Notes |
+|---|---|---|
+| Pi 4 top plate adapter | ~1.5h | Mounts Pi 4 (85x56mm) above the FC stack on M2.5 standoffs |
+| Camera mount | ~1h | Bottom-mount for IMX477, 15° forward tilt |
+| GPS mast base | ~30min | Clips onto rear standoffs, holds 12mm CF tube vertical |
+| Canopy | ~2h | Protects Pi 4 + wiring from wind/debris |
 
 ## Print Settings
 
@@ -44,10 +47,19 @@ Dimensions, print settings, and hardware for the Bennu 7" quadcopter frame.
 
 | Part | Qty | Notes |
 |---|---|---|
-| CF tube 10mm OD x 200mm | 4 | Drone arms |
 | CF tube 12mm OD x 150mm | 1 | GPS mast |
-| M3x8 button head screws | 20 | Frame assembly |
-| M3 heat-set inserts | 20 | Press into printed parts |
-| M2.5x6 screws | 4 | Pi 5 mounting |
-| M2.5 standoffs 10mm | 4 | FC vibration mount |
+| M3x8 button head screws | 8 | Adapter mounting |
+| M3 heat-set inserts | 8 | Press into printed adapters |
+| M2.5x6 screws | 4 | Pi 4 mounting |
+| M2.5 standoffs 10mm | 4 | FC vibration mount (included with Pixhawk 6C) |
 | Vibration dampening balls | 4 | FC soft mount |
+
+## Target Weight
+
+| | Weight |
+|---|---|
+| Source One V5 7" DC frame | ~144g |
+| 3D-printed adapters (all) | ~30g |
+| **Total frame weight** | **~174g** |
+| Target AUW (with 2200mAh) | <750g |
+| Target AUW (with 3000mAh) | <830g |

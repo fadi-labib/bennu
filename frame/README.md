@@ -1,43 +1,27 @@
 # Bennu Drone Frame — 7" Quadcopter
 
-## Specifications
+## Base Frame
 
+**TBS Source One V5 7" Deadcat** — open-source carbon fiber frame.
+
+- **Source files:** https://github.com/tbs-trappy/source_one (DXF, STL)
+- **Buy pre-cut:** available from GetFPV, Pyrodrone, TBS store (~$35-45)
 - **Prop size:** 7 inch (HQProp 7x3.5x3)
-- **Motor-to-motor diagonal:** ~300mm
-- **Material:** CF-PETG (carbon fiber reinforced PETG)
-- **Arms:** 10mm OD carbon fiber tubes (NOT 3D printed)
-- **Fits print bed:** 235×235mm (AnkerMake M5C)
+- **Motor-to-motor diagonal:** ~320mm
+- **Frame weight:** ~144g
+- **Stack mount:** 30.5x30.5mm (fits Pixhawk 6C and Tekko32 ESC)
+- **Layout:** Deadcat (props out of camera view)
 
-## Design Approach
+## Custom Adapter Parts (3D-printed)
 
-The frame is a hybrid design:
-- **3D-printed body** (center plates, motor mounts, canopy, camera mount, GPS mast base)
-- **Carbon fiber tube arms** (10mm OD, ~5mm wall) for strength and vibration damping
+The Source One V5 provides the structural frame. These custom parts adapt it for the Bennu photogrammetry payload:
 
-## Parts List (printed)
-
-| Part | Qty | Est. Print Time | Notes |
-|------|-----|----------------|-------|
-| Bottom plate | 1 | ~3h | Battery mount, ESC mount |
-| Top plate | 1 | ~2h | Pi 5 mount (M2.5 holes), FC mount |
-| Motor mount | 4 | ~30min each | Press-fit onto CF tubes |
-| Arm clamp | 4 | ~20min each | Secures CF tubes to body |
-| GPS mast base | 1 | ~30min | Holds 12mm CF tube vertical |
-| Camera mount | 1 | ~1h | Bottom-mount, 15° forward tilt |
-| Canopy | 1 | ~2h | Protects FC + Pi + wiring |
-| Landing legs | 4 | ~20min each | Simple clip-on legs |
-
-## Non-printed Parts
-
-| Part | Qty | Notes |
-|------|-----|-------|
-| CF tube 10mm OD × 200mm | 4 | Drone arms |
-| CF tube 12mm OD × 150mm | 1 | GPS mast |
-| M3×8 button head screws | 20 | Frame assembly |
-| M3 press-fit inserts | 20 | Heat-set into prints |
-| M2.5×6 screws | 4 | Pi 5 mounting |
-| M2.5 standoffs 10mm | 4 | FC vibration mount |
-| Vibration dampening balls | 4 | FC soft mount |
+| Part | Est. Print Time | Notes |
+|------|----------------|-------|
+| Pi 4 top plate adapter | ~1.5h | Mounts Pi 4 (85x56mm) above FC stack |
+| Camera mount | ~1h | Bottom-mount, 15° forward tilt for IMX477 |
+| GPS mast base | ~30min | Clips onto rear standoffs, holds 12mm CF tube |
+| Canopy | ~2h | Protects Pi 4 + wiring from wind/debris |
 
 ## Print Settings
 
@@ -51,5 +35,5 @@ The frame is a hybrid design:
 
 ## CAD Files
 
-- `step/` — Editable STEP files (open in FreeCAD or Fusion 360)
-- `stl/` — Print-ready STL files
+- `step/` — Editable STEP files for custom adapters (FreeCAD or Fusion 360)
+- `stl/` — Print-ready STL files for custom adapters

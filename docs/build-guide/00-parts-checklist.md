@@ -4,6 +4,16 @@ Track your build progress step by step. Check off items as you complete them.
 
 ## Phase A: Parts Procurement
 
+### Frame
+
+- [ ] TBS Source One V5 7" Deadcat frame kit (or CNC-cut from open-source DXF files)
+- [ ] CF-PETG filament 500g (for custom adapter parts)
+- [ ] Hardened steel 0.4mm nozzle (CF wears brass)
+- [ ] Carbon fiber tube 12mm OD x 150mm x1 (GPS mast)
+- [ ] M3x8 button head screws x8 (adapter mounting)
+- [ ] M3 heat-set inserts x8
+- [ ] M2.5x6 screws x4 (Pi 4 mount)
+
 ### Core Electronics
 
 - [ ] Holybro Pixhawk 6C (with PM02 power module)
@@ -13,32 +23,20 @@ Track your build progress step by step. Check off items as you complete them.
 - [ ] Holybro M9N GPS (u-blox M9N, built-in compass)
 - [ ] RC Receiver (TBS Crossfire Nano or ELRS 900MHz)
 - [ ] RC Transmitter (if not owned)
-- [ ] 4S 2200–3000mAh LiPo x2
+- [ ] 4S 2200--3000mAh LiPo x2
 - [ ] LiPo charger (if not owned)
 - [ ] Holybro SiK Radio V3 (433 or 915MHz, pair)
 
 ### Companion Computer
 
-- [ ] Raspberry Pi 5 (8GB)
-- [ ] 64GB+ microSD card (or NVMe HAT + SSD)
+- [ ] Raspberry Pi 4 (4GB)
+- [ ] 64GB+ microSD card
 - [ ] BEC 5V 3A (Matek UBEC or Pololu 5V step-down)
 
 ### Camera
 
 - [ ] Raspberry Pi HQ Camera (IMX477)
 - [ ] 6mm CS-mount lens
-
-### Frame Materials
-
-- [ ] CF-PETG filament 1kg (e.g., Polymaker PolyLite CF-PETG)
-- [ ] Hardened steel 0.4mm nozzle (CF wears brass)
-- [ ] Carbon fiber tube 10mm OD x 200mm x4 (arms)
-- [ ] Carbon fiber tube 12mm OD x 150mm x1 (GPS mast)
-- [ ] M3x8 button head screws x20
-- [ ] M3 heat-set inserts x20
-- [ ] M2.5x6 screws x4 (Pi 5 mount)
-- [ ] M2.5 standoffs 10mm x4 (FC mount)
-- [ ] Vibration dampening balls x4 (FC soft mount)
 
 ### Wiring & Connectors
 
@@ -50,28 +48,24 @@ Track your build progress step by step. Check off items as you complete them.
 
 ---
 
-## Phase B: 3D Printing (~12h total)
+## Phase B: 3D Print Custom Adapters (~5h total)
 
-- [ ] Bottom plate (~3h)
-- [ ] Top plate (~2h)
-- [ ] Motor mounts x4 (~30min each, ~2h total)
-- [ ] Arm clamps x4 (~20min each, ~1.5h total)
-- [ ] GPS mast base (~30min)
+- [ ] Pi 4 top plate adapter (~1.5h)
 - [ ] Camera mount (~1h)
+- [ ] GPS mast base (~30min)
 - [ ] Canopy (~2h)
-- [ ] Landing legs x4 (~20min each, ~1.5h total)
-- [ ] Test-fit all parts before assembly
+- [ ] Test-fit all adapters on the Source One V5 frame
 
 ---
 
 ## Phase C: Frame Assembly
 
-- [ ] Install M3 heat-set inserts in all printed parts (soldering iron at 220°C)
-- [ ] Slide CF tube arms through bottom plate channels
-- [ ] Attach arm clamps on both sides, tighten M3 screws (snug, not overtight)
-- [ ] Press-fit motor mounts onto arm ends
-- [ ] Mount motors to motor mounts (M3 screws, mind rotation direction)
-- [ ] Attach landing legs
+- [ ] Assemble Source One V5 frame per TBS instructions
+- [ ] Install M3 heat-set inserts in custom printed adapters (soldering iron at 220°C)
+- [ ] Attach Pi 4 adapter plate to top standoffs
+- [ ] Attach camera mount to bottom plate
+- [ ] Attach GPS mast base to rear standoffs
+- [ ] Mount motors (mind rotation direction: M1 FR-CCW, M2 RL-CCW, M3 FL-CW, M4 RR-CW)
 
 ---
 
@@ -79,16 +73,14 @@ Track your build progress step by step. Check off items as you complete them.
 
 ### ESC & Motors
 
-- [ ] Mount Tekko32 4-in-1 ESC on bottom plate
-- [ ] Solder motor wires to ESC (correct rotation: M1 FR-CCW, M2 RL-CCW, M3 FL-CW, M4 RR-CW)
+- [ ] Mount Tekko32 4-in-1 ESC in the 30.5mm stack
+- [ ] Solder motor wires to ESC pads
 - [ ] Route motor wires cleanly along arms
 - [ ] Connect ESC signal cable to Pixhawk MAIN OUT 1-4
 
 ### Flight Controller
 
-- [ ] Attach vibration dampening balls to M2.5 standoffs
-- [ ] Mount standoffs to top plate
-- [ ] Place Pixhawk 6C on standoffs (arrow pointing forward)
+- [ ] Mount Pixhawk 6C on vibration dampening standoffs (arrow pointing forward)
 - [ ] Connect PM02 power cable to Pixhawk POWER1
 - [ ] Connect PM02 XT60 to ESC power input
 
@@ -108,11 +100,12 @@ Track your build progress step by step. Check off items as you complete them.
 
 ### Companion Computer
 
-- [ ] Mount Pi 5 to top plate with M2.5 screws
-- [ ] Connect BEC 5V output to Pi 5 (via GPIO 5V/GND or USB-C)
+- [ ] Mount Pi 4 to adapter plate with M2.5 screws
+- [ ] Connect BEC 5V output to Pi 4 (via GPIO 5V/GND or USB-C)
 - [ ] Connect BEC input to battery voltage (tap from PM02 or ESC pad)
 - [ ] Wire TELEM2 TX → Pi GPIO 15 (RX), TELEM2 RX → Pi GPIO 14 (TX)
 - [ ] Connect Pi HQ Camera via CSI ribbon cable
+- [ ] Attach canopy over Pi 4 + wiring
 
 ### Power
 
@@ -125,9 +118,9 @@ Track your build progress step by step. Check off items as you complete them.
 
 ## Phase E: Software Setup
 
-### Pi 5
+### Pi 4
 
-- [ ] Flash Ubuntu 24.04 Server to microSD/NVMe
+- [ ] Flash Ubuntu 24.04 Server to microSD
 - [ ] Boot and configure WiFi + SSH
 - [ ] Install ROS2 Jazzy (`sudo apt install ros-jazzy-ros-base`)
 - [ ] Enable UART for uXRCE-DDS (`/boot/firmware/config.txt`)
@@ -167,12 +160,13 @@ Track your build progress step by step. Check off items as you complete them.
 - [ ] Battery fully charged
 - [ ] GPS 3D fix acquired
 - [ ] Failsafes configured (RTL on RC loss, RTL on data link loss)
+- [ ] Geofence configured (max 200m radius, max 120m altitude)
 - [ ] QGroundControl connected via telemetry
 
 ### First Hover
 
 - [ ] Arm in Stabilized mode
-- [ ] Gentle throttle up — hover at 1–2m
+- [ ] Gentle throttle up — hover at 1--2m
 - [ ] Check stability (no oscillations, no toilet-bowling)
 - [ ] If unstable: land immediately, check prop direction and motor order
 - [ ] Land, disarm
