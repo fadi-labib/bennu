@@ -25,6 +25,9 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
     steps:
       - uses: actions/checkout@v4
 
@@ -61,4 +64,13 @@ jobs:
             -v --tb=short \
             --cov=drone/ros2_ws/src \
             --cov-report=term-missing \
-            --cov-fail-under=70
+            --cov-fail-under=70 \
+            --junitxml=test-results.xml
+
+      - name: Test report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Test Results
+          path: test-results.xml
+          reporter: java-junit
