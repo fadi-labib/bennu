@@ -17,6 +17,7 @@ __pycache__/
 .mypy_cache/
 .pytest_cache/
 coverage.xml
+.coverage
 
 # Images captured during flights (too large for git)
 ground/odm/datasets/
