@@ -1,11 +1,13 @@
 # Bennu
 
 [![CI](https://github.com/fadi-labib/bennu/actions/workflows/ci.yml/badge.svg)](https://github.com/fadi-labib/bennu/actions/workflows/ci.yml)
-[![SIL](https://github.com/fadi-labib/bennu/actions/workflows/sil-smoke.yml/badge.svg)](https://github.com/fadi-labib/bennu/actions/workflows/sil-smoke.yml)
 [![Docker](https://github.com/fadi-labib/bennu/actions/workflows/docker-images.yml/badge.svg)](https://github.com/fadi-labib/bennu/actions/workflows/docker-images.yml)
 [![codecov](https://codecov.io/gh/fadi-labib/bennu/graph/badge.svg)](https://codecov.io/gh/fadi-labib/bennu)
 [![Docs](https://img.shields.io/badge/docs-live-brightgreen)](https://fadi-labib.github.io/bennu/)
 [![License](https://img.shields.io/github/license/fadi-labib/bennu)](LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/fadi-labib/bennu)](https://github.com/fadi-labib/bennu/commits/main)
+[![Repo Size](https://img.shields.io/github/repo-size/fadi-labib/bennu)](https://github.com/fadi-labib/bennu)
+[![Lines of Code](https://tokei.rs/b1/github/fadi-labib/bennu?category=code)](https://github.com/fadi-labib/bennu)
 [![Python](https://img.shields.io/badge/python-3.12-blue)](https://www.python.org/)
 [![ROS2](https://img.shields.io/badge/ROS2-Jazzy-blue)](https://docs.ros.org/en/jazzy/)
 [![PX4](https://img.shields.io/badge/PX4-v1.16-blue)](https://docs.px4.io/)
