@@ -39,7 +39,7 @@ markdown_extensions:
       custom_fences:
         - name: mermaid
           class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
+          format: !!python/name:pymdownx.superfences.fence_mermaid_format
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.highlight:
@@ -103,5 +103,4 @@ nav:
       - Platform Readiness Design: plans/2026-03-08-drone-platform-readiness-design.md
       - Platform Readiness Plan: plans/2026-03-08-drone-platform-readiness-plan.md
       - Simulation-First SIL Design: plans/2026-03-08-simulation-first-sil-design.md
-      - Simulation-First SIL Plan: plans/2026-03-08-simulation-first-sil-plan.md
   - Build Log: blog/index.md
