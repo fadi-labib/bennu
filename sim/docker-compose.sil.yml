@@ -4,11 +4,8 @@
 # px4-sitl uses prebuilt GHCR image with local build fallback.
 # test-runner always builds locally. No GPU required.
 #
-# Known CI issue (2026-03-17): run_mission.py fails in GitHub Actions
-# because MAVSDK cannot connect to PX4 in time or PX4 doesn't achieve
-# GPS lock fast enough on the CI runner. The infrastructure is correct
-# (PX4 boots, Gazebo starts, healthcheck passes) but the mission runner
-# needs CI-specific timeout tuning. Works locally with `make test-sitl`.
+# CI note: PX4 SITL GPS lock can take 60-120s on shared CI runners.
+# Healthcheck and run_mission.py timeouts are tuned for slow environments.
 
 name: bennu-sil
 
@@ -30,10 +27,10 @@ services:
     healthcheck:
       # 0x488A = port 18570 (PX4 MAVLink GCS link) — bound when PX4 is ready
       test: ["CMD-SHELL", "grep -q ':488A ' /proc/net/udp"]
-      interval: 5s
-      timeout: 3s
-      retries: 24
-      start_period: 30s
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 45s
 
   test-runner:
     image: ghcr.io/fadi-labib/bennu/ros2-dev:latest
@@ -52,4 +49,4 @@ services:
     depends_on:
       px4-sitl:
         condition: service_healthy
-    command: ["python3", "/ros2_ws/scripts/run_mission.py", "--scenario", "/ros2_ws/scenarios/nominal_survey.yaml"]
+    command: ["python3", "/ros2_ws/scripts/run_mission.py", "--scenario", "/ros2_ws/scenarios/nominal_survey.yaml", "--timeout", "180"]

@@ -85,6 +85,25 @@ def generate_grid_waypoints(
     return items
 
 
+async def _connect_with_backoff(address: str, max_retries: int = 5) -> System:
+    """Connect to PX4 with exponential backoff. Returns connected System."""
+    drone = System()
+    for attempt in range(max_retries):
+        delay = min(2 ** attempt, 30)
+        try:
+            await drone.connect(system_address=address)
+            async for state in drone.core.connection_state():
+                if state.is_connected:
+                    print(f"[run_mission] Connected on attempt {attempt + 1}")
+                    return drone
+        except Exception as e:
+            print(f"[run_mission] Connection attempt {attempt + 1} failed: {e}")
+        if attempt < max_retries - 1:
+            print(f"[run_mission] Retrying in {delay}s...")
+            await asyncio.sleep(delay)
+    raise ConnectionError(f"Failed to connect after {max_retries} attempts")
+
+
 async def run_mission(scenario_path: str, address: str, timeout: int) -> bool:
     """Execute a full mission from scenario YAML. Returns True on success."""
     scenario = load_scenario(scenario_path)
@@ -95,11 +114,10 @@ async def run_mission(scenario_path: str, address: str, timeout: int) -> bool:
     print(f"[run_mission] Scenario: {scenario['name']}")
     print(f"[run_mission] Mission: {mission_cfg}")
 
-    # 1. Connect and wait for PX4 readiness
-    drone = System()
-    await drone.connect(system_address=address)
+    # 1. Connect with backoff and wait for PX4 readiness
+    drone = await _connect_with_backoff(address)
 
-    print("[run_mission] Waiting for PX4 readiness...")
+    print("[run_mission] Waiting for PX4 readiness (GPS fix + home position)...")
     await asyncio.wait_for(wait_for_px4(address=address), timeout=timeout)
 
     # 2. Get home position for waypoint generation
@@ -188,8 +206,8 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--timeout",
         type=int,
-        default=120,
-        help="PX4 readiness timeout in seconds (default: 120)",
+        default=180,
+        help="PX4 readiness timeout in seconds (default: 180)",
     )
     return parser.parse_args(argv)
 
