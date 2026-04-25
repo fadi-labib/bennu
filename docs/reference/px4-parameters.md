@@ -68,7 +68,7 @@ Bennu's PX4 parameters are organized into 6 YAML files, applied in order via `up
 
 === "Companion"
 
-    Companion computer (Pi 5) connection via TELEM2.
+    Companion computer (Pi 4) connection via TELEM2.
 
     | Parameter | Value | Description |
     |---|---|---|

@@ -18,7 +18,7 @@ The project combines a 3D-printed frame with production-grade flight software, g
 | Component | Choice |
 |---|---|
 | **Flight Controller** | PX4 v1.16+ on Holybro Pixhawk 6C |
-| **Companion Computer** | Raspberry Pi 5 (8GB), Ubuntu 24.04, ROS2 Jazzy |
+| **Companion Computer** | Raspberry Pi 4 (4GB), Ubuntu 24.04, ROS2 Jazzy |
 | **PX4-ROS2 Bridge** | uXRCE-DDS |
 | **Camera** | Raspberry Pi HQ Camera (IMX477, 12.3MP) + 6mm CS-mount lens |
 | **Processing** | WebODM / OpenDroneMap |

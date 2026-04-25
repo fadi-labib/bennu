@@ -51,7 +51,7 @@ and arm clamps. Use a soldering iron at 220°C, press straight in.
 
 1. Place top plate over standoffs
 2. Secure with M3 screws
-3. Pi 5 mounts on top plate with M2.5 standoffs
+3. Pi 4 mounts on top plate with M2.5 standoffs
 
 ### 8. Landing Gear
 
@@ -67,7 +67,7 @@ and arm clamps. Use a soldering iron at 220°C, press straight in.
 | ESC 4-in-1 | ~30g |
 | Pixhawk 6C | ~40g |
 | GPS M9N | ~25g |
-| Pi 5 + camera | ~100g |
+| Pi 4 + camera | ~100g |
 | Battery 4S 2200mAh | ~220g |
 | Wiring, props, misc | ~80g |
 | **Total AUW** | **~795g** |

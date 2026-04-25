@@ -9,7 +9,7 @@ This means you can:
 - Iterate on ROS2 node logic without flying
 - Test mission plans and camera trigger behavior
 - Validate uXRCE-DDS message flows end-to-end
-- Develop on any machine with Docker --- no Pi 5, no Pixhawk, no drone
+- Develop on any machine with Docker --- no Pi 4, no Pixhawk, no drone
 
 ## Architecture
 
@@ -25,7 +25,7 @@ This container runs two tightly coupled processes:
 
 ### ros2-dev Container
 
-This container mirrors what runs on the Pi 5:
+This container mirrors what runs on the Pi 4:
 
 - **uXRCE-DDS Agent** --- Bridges PX4 topics into ROS2, exactly as it does on hardware. The only difference is the transport: UDP instead of UART serial.
 
@@ -96,6 +96,6 @@ In both modes, the camera node subscribes to `VehicleGlobalPosition` and writes 
 | Physics | Real world | Gazebo Harmonic |
 | Launch argument | `use_sim:=false` | `use_sim:=true` |
 | QGC connection | Telemetry radio (MAVLink) | UDP 14550 (localhost, host networking) |
-| Start command | Manual launch on Pi 5 | `cd sim && make dev` |
+| Start command | Manual launch on Pi 4 | `cd sim && make dev` |
 
 The goal is to minimize the difference between simulation and hardware. The same ROS2 nodes, the same launch files, and the same uXRCE-DDS protocol are used in both environments. Only the transport layer and camera backend change.
