@@ -10,7 +10,7 @@ setup(
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
         ("share/" + package_name, ["package.xml"]),
     ],
-    install_requires=["setuptools", "bennu_camera"],
+    install_requires=["setuptools", "bennu_core", "bennu_camera"],
     zip_safe=True,
     maintainer="Fadi Labib",
     maintainer_email="github@fadilabib.com",
