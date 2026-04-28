@@ -1,4 +1,5 @@
 """Image quality scoring — blur detection and exposure analysis."""
+
 from dataclasses import dataclass
 
 import cv2
@@ -8,9 +9,10 @@ import numpy as np
 @dataclass(frozen=True)
 class QualityResult:
     """Result of image quality analysis."""
-    score: float           # 0.0-1.0 composite quality score
-    flags: tuple           # "ok", "blur", "overexposed", "underexposed", "invalid"
-    blur_variance: float   # Laplacian variance (higher = sharper)
+
+    score: float  # 0.0-1.0 composite quality score
+    flags: tuple  # "ok", "blur", "overexposed", "underexposed", "invalid"
+    blur_variance: float  # Laplacian variance (higher = sharper)
 
     def __post_init__(self):
         if not (0.0 <= self.score <= 1.0):

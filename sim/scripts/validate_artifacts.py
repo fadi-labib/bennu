@@ -5,6 +5,7 @@ Loads a scenario YAML, counts images in the output directory,
 verifies the count meets min_triggers, and checks that every
 image is a valid JPEG (starts with FF D8 magic bytes).
 """
+
 import argparse
 import sys
 from pathlib import Path

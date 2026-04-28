@@ -6,6 +6,7 @@ Starts:
 
 Supports both real hardware (serial) and simulation (UDP).
 """
+
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess
 from launch.conditions import IfCondition, UnlessCondition
@@ -46,11 +47,13 @@ def generate_launch_description():
 
     camera_backend_arg = DeclareLaunchArgument(
         "camera_backend",
-        default_value=PythonExpression([
-            "'placeholder' if '",
-            LaunchConfiguration("use_sim"),
-            "' == 'true' else 'libcamera'",
-        ]),
+        default_value=PythonExpression(
+            [
+                "'placeholder' if '",
+                LaunchConfiguration("use_sim"),
+                "' == 'true' else 'libcamera'",
+            ]
+        ),
         description="Camera capture backend (libcamera, placeholder). "
         "Defaults to placeholder when use_sim:=true",
     )
@@ -60,8 +63,10 @@ def generate_launch_description():
         cmd=[
             LaunchConfiguration("dds_agent_binary"),
             "serial",
-            "--dev", LaunchConfiguration("serial_port"),
-            "-b", LaunchConfiguration("baud_rate"),
+            "--dev",
+            LaunchConfiguration("serial_port"),
+            "-b",
+            LaunchConfiguration("baud_rate"),
         ],
         name="uxrce_dds_agent",
         output="screen",
@@ -73,7 +78,8 @@ def generate_launch_description():
         cmd=[
             LaunchConfiguration("dds_agent_binary"),
             "udp4",
-            "-p", "8888",
+            "-p",
+            "8888",
         ],
         name="uxrce_dds_agent",
         output="screen",
@@ -94,14 +100,16 @@ def generate_launch_description():
         output="screen",
     )
 
-    return LaunchDescription([
-        use_sim_arg,
-        output_dir_arg,
-        serial_port_arg,
-        baud_rate_arg,
-        dds_agent_binary_arg,
-        camera_backend_arg,
-        dds_agent_serial,
-        dds_agent_udp,
-        camera_node,
-    ])
+    return LaunchDescription(
+        [
+            use_sim_arg,
+            output_dir_arg,
+            serial_port_arg,
+            baud_rate_arg,
+            dds_agent_binary_arg,
+            camera_backend_arg,
+            dds_agent_serial,
+            dds_agent_udp,
+            camera_node,
+        ]
+    )

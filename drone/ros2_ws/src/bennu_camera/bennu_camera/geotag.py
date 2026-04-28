@@ -1,13 +1,12 @@
 """GPS geotagging utilities for JPEG images."""
+
 import collections
 import dataclasses
 import subprocess
 from dataclasses import dataclass
 
 
-def format_gps_coord(
-    decimal_degrees: float, is_lat: bool
-) -> tuple[int, int, float, str]:
+def format_gps_coord(decimal_degrees: float, is_lat: bool) -> tuple[int, int, float, str]:
     """Convert decimal degrees to (degrees, minutes, seconds, ref)."""
     if is_lat:
         ref = "N" if decimal_degrees >= 0 else "S"
@@ -23,9 +22,7 @@ def format_gps_coord(
     return degrees, minutes, seconds, ref
 
 
-def write_gps_exif(
-    image_path: str, lat: float, lon: float, alt: float
-) -> bool | str:
+def write_gps_exif(image_path: str, lat: float, lon: float, alt: float) -> bool | str:
     """Write GPS coordinates into JPEG EXIF data using exiftool.
 
     Returns True on success, or an error description string on failure.
@@ -60,12 +57,24 @@ _VALID_RTK_FIX_TYPES = {"RTK_FIXED", "RTK_FLOAT", "DGPS", "AUTONOMOUS"}
 
 # Column order matching the contract schema (18 columns)
 IMAGE_METADATA_COLUMNS = (
-    "sequence", "filename", "sensor", "timestamp_utc",
-    "lat", "lon", "alt_msl", "alt_agl",
-    "heading_deg", "pitch_deg", "roll_deg",
-    "rtk_fix_type", "position_accuracy_m", "gsd_cm",
-    "quality_score", "quality_flags",
-    "ambient_light_lux", "capture_offset_ms",
+    "sequence",
+    "filename",
+    "sensor",
+    "timestamp_utc",
+    "lat",
+    "lon",
+    "alt_msl",
+    "alt_agl",
+    "heading_deg",
+    "pitch_deg",
+    "roll_deg",
+    "rtk_fix_type",
+    "position_accuracy_m",
+    "gsd_cm",
+    "quality_score",
+    "quality_flags",
+    "ambient_light_lux",
+    "capture_offset_ms",
 )
 
 
@@ -105,20 +114,15 @@ class ImageMetadata:
         if not (-180.0 <= self.lon <= 180.0):
             raise ValueError(f"lon must be in [-180, 180], got {self.lon}")
         if not (0.0 <= self.quality_score <= 1.0):
-            raise ValueError(
-                f"quality_score must be in [0.0, 1.0], got {self.quality_score}"
-            )
+            raise ValueError(f"quality_score must be in [0.0, 1.0], got {self.quality_score}")
         if self.rtk_fix_type not in _VALID_RTK_FIX_TYPES:
             raise ValueError(
-                f"rtk_fix_type must be one of {_VALID_RTK_FIX_TYPES}, "
-                f"got {self.rtk_fix_type!r}"
+                f"rtk_fix_type must be one of {_VALID_RTK_FIX_TYPES}, got {self.rtk_fix_type!r}"
             )
 
     def to_csv_dict(self) -> "collections.OrderedDict[str, object]":
         """Return ordered dict with all 18 columns for CSV writing."""
-        return collections.OrderedDict(
-            (col, getattr(self, col)) for col in IMAGE_METADATA_COLUMNS
-        )
+        return collections.OrderedDict((col, getattr(self, col)) for col in IMAGE_METADATA_COLUMNS)
 
     @classmethod
     def csv_header(cls) -> list:

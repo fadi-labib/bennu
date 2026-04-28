@@ -4,6 +4,7 @@ Bennu Camera Node — captures geotagged images triggered by PX4.
 Subscribes to PX4 camera trigger events via uXRCE-DDS,
 captures images using configurable backends, and writes GPS EXIF data.
 """
+
 import os
 from datetime import UTC, datetime
 from pathlib import Path
@@ -74,21 +75,15 @@ class CameraNode(Node):
             )
             self.get_logger().info("Subscribed to PX4 topics via uXRCE-DDS")
         except ImportError:
-            self.get_logger().warn(
-                "px4_msgs not found — running in standalone timer mode"
-            )
+            self.get_logger().warn("px4_msgs not found — running in standalone timer mode")
             # Fallback: capture on timer — used in sim mode and when running without PX4
             interval = self.get_parameter("timer_interval").value
             if interval <= 0.0:
-                raise ValueError(
-                    f"timer_interval must be > 0, got {interval}"
-                )
+                raise ValueError(f"timer_interval must be > 0, got {interval}")
             self.create_timer(interval, self._on_timer_capture)
 
         self._capture_count = 0
-        self.get_logger().info(
-            f"Camera node started. Output: {self.output_dir}"
-        )
+        self.get_logger().info(f"Camera node started. Output: {self.output_dir}")
 
     def _on_gps(self, msg):
         """Update latest GPS position from PX4."""
@@ -128,7 +123,9 @@ class CameraNode(Node):
             if result is True:
                 self.get_logger().info(f"Saved: {filename} (geotagged)")
             else:
-                self.get_logger().error(f"Saved: {filename} (UNGEOTAGGED — geotag failed: {result})")
+                self.get_logger().error(
+                    f"Saved: {filename} (UNGEOTAGGED — geotag failed: {result})"
+                )
         else:
             self.get_logger().warn(f"Saved: {filename} (no GPS fix)")
 

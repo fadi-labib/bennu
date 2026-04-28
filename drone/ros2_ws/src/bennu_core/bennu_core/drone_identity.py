@@ -1,4 +1,5 @@
 """Drone identity and hardware manifest for mission bundles."""
+
 from dataclasses import dataclass, field
 
 
@@ -8,6 +9,7 @@ class DroneIdentity:
 
     Used to populate the `drone_hardware` section of manifest.json.
     """
+
     drone_id: str
     flight_controller: str
     px4_version: str

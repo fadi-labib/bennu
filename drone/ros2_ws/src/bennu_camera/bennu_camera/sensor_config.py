@@ -52,8 +52,7 @@ class SensorConfig:
         unknown = set(sensors) - KNOWN_SENSORS
         if unknown:
             raise ValueError(
-                f"Unknown sensor(s): {sorted(unknown)}. "
-                f"Valid sensors: {sorted(KNOWN_SENSORS)}"
+                f"Unknown sensor(s): {sorted(unknown)}. Valid sensors: {sorted(KNOWN_SENSORS)}"
             )
 
         capture_order = data["capture_order"]

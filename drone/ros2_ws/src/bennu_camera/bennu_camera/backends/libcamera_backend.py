@@ -20,11 +20,15 @@ class LibcameraBackend(CaptureBackend):
             subprocess.run(
                 [
                     "libcamera-still",
-                    "-o", str(filepath),
-                    "--width", str(width),
-                    "--height", str(height),
+                    "-o",
+                    str(filepath),
+                    "--width",
+                    str(width),
+                    "--height",
+                    str(height),
                     "--nopreview",
-                    "-t", "1",
+                    "-t",
+                    "1",
                 ],
                 check=True,
                 capture_output=True,
@@ -35,9 +39,7 @@ class LibcameraBackend(CaptureBackend):
             logger.error("libcamera-still not found — is libcamera installed?")
             return False
         except subprocess.TimeoutExpired:
-            logger.error(
-                "libcamera-still timed out after 10s capturing %s", filepath
-            )
+            logger.error("libcamera-still timed out after 10s capturing %s", filepath)
             return False
         except subprocess.CalledProcessError as e:
             logger.error(

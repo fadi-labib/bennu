@@ -1,4 +1,5 @@
 """Tests for geotagging utility functions."""
+
 import os
 import shutil
 import tempfile
@@ -50,27 +51,162 @@ class TestWriteGpsExif:
         """Create a minimal JPEG, write GPS EXIF, verify it was written."""
         with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as f:
             # Minimal JPEG file (1x1 white pixel)
-            f.write(bytes([
-                0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46,
-                0x49, 0x46, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01,
-                0x00, 0x01, 0x00, 0x00, 0xFF, 0xDB, 0x00, 0x43,
-                0x00, 0x08, 0x06, 0x06, 0x07, 0x06, 0x05, 0x08,
-                0x07, 0x07, 0x07, 0x09, 0x09, 0x08, 0x0A, 0x0C,
-                0x14, 0x0D, 0x0C, 0x0B, 0x0B, 0x0C, 0x19, 0x12,
-                0x13, 0x0F, 0x14, 0x1D, 0x1A, 0x1F, 0x1E, 0x1D,
-                0x1A, 0x1C, 0x1C, 0x20, 0x24, 0x2E, 0x27, 0x20,
-                0x22, 0x2C, 0x23, 0x1C, 0x1C, 0x28, 0x37, 0x29,
-                0x2C, 0x30, 0x31, 0x34, 0x34, 0x34, 0x1F, 0x27,
-                0x39, 0x3D, 0x38, 0x32, 0x3C, 0x2E, 0x33, 0x34,
-                0x32, 0xFF, 0xC0, 0x00, 0x0B, 0x08, 0x00, 0x01,
-                0x00, 0x01, 0x01, 0x01, 0x11, 0x00, 0xFF, 0xC4,
-                0x00, 0x1F, 0x00, 0x00, 0x01, 0x05, 0x01, 0x01,
-                0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04,
-                0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0xFF,
-                0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x3F,
-                0x00, 0x7B, 0x40, 0x1B, 0xFF, 0xD9
-            ]))
+            f.write(
+                bytes(
+                    [
+                        0xFF,
+                        0xD8,
+                        0xFF,
+                        0xE0,
+                        0x00,
+                        0x10,
+                        0x4A,
+                        0x46,
+                        0x49,
+                        0x46,
+                        0x00,
+                        0x01,
+                        0x01,
+                        0x00,
+                        0x00,
+                        0x01,
+                        0x00,
+                        0x01,
+                        0x00,
+                        0x00,
+                        0xFF,
+                        0xDB,
+                        0x00,
+                        0x43,
+                        0x00,
+                        0x08,
+                        0x06,
+                        0x06,
+                        0x07,
+                        0x06,
+                        0x05,
+                        0x08,
+                        0x07,
+                        0x07,
+                        0x07,
+                        0x09,
+                        0x09,
+                        0x08,
+                        0x0A,
+                        0x0C,
+                        0x14,
+                        0x0D,
+                        0x0C,
+                        0x0B,
+                        0x0B,
+                        0x0C,
+                        0x19,
+                        0x12,
+                        0x13,
+                        0x0F,
+                        0x14,
+                        0x1D,
+                        0x1A,
+                        0x1F,
+                        0x1E,
+                        0x1D,
+                        0x1A,
+                        0x1C,
+                        0x1C,
+                        0x20,
+                        0x24,
+                        0x2E,
+                        0x27,
+                        0x20,
+                        0x22,
+                        0x2C,
+                        0x23,
+                        0x1C,
+                        0x1C,
+                        0x28,
+                        0x37,
+                        0x29,
+                        0x2C,
+                        0x30,
+                        0x31,
+                        0x34,
+                        0x34,
+                        0x34,
+                        0x1F,
+                        0x27,
+                        0x39,
+                        0x3D,
+                        0x38,
+                        0x32,
+                        0x3C,
+                        0x2E,
+                        0x33,
+                        0x34,
+                        0x32,
+                        0xFF,
+                        0xC0,
+                        0x00,
+                        0x0B,
+                        0x08,
+                        0x00,
+                        0x01,
+                        0x00,
+                        0x01,
+                        0x01,
+                        0x01,
+                        0x11,
+                        0x00,
+                        0xFF,
+                        0xC4,
+                        0x00,
+                        0x1F,
+                        0x00,
+                        0x00,
+                        0x01,
+                        0x05,
+                        0x01,
+                        0x01,
+                        0x01,
+                        0x01,
+                        0x01,
+                        0x01,
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x01,
+                        0x02,
+                        0x03,
+                        0x04,
+                        0x05,
+                        0x06,
+                        0x07,
+                        0x08,
+                        0x09,
+                        0x0A,
+                        0x0B,
+                        0xFF,
+                        0xDA,
+                        0x00,
+                        0x08,
+                        0x01,
+                        0x01,
+                        0x00,
+                        0x00,
+                        0x3F,
+                        0x00,
+                        0x7B,
+                        0x40,
+                        0x1B,
+                        0xFF,
+                        0xD9,
+                    ]
+                )
+            )
             temp_path = f.name
 
         try:
@@ -79,10 +215,10 @@ class TestWriteGpsExif:
 
             # Verify with exiftool if available
             import subprocess
+
             try:
                 output = subprocess.check_output(
-                    ["exiftool", "-GPSLatitude", "-GPSLongitude", "-n", temp_path],
-                    text=True
+                    ["exiftool", "-GPSLatitude", "-GPSLongitude", "-n", temp_path], text=True
                 )
                 assert "37.77" in output
                 assert "122.41" in output
@@ -96,7 +232,7 @@ class TestWriteGpsExifErrors:
     def test_returns_error_message_when_exiftool_missing(self, tmp_path):
         """write_gps_exif returns error string when exiftool is not installed."""
         jpeg = tmp_path / "test.jpg"
-        jpeg.write_bytes(b'\xff\xd8\xff\xd9')  # minimal JPEG
+        jpeg.write_bytes(b"\xff\xd8\xff\xd9")  # minimal JPEG
         with patch(
             "bennu_camera.geotag.subprocess.run",
             side_effect=FileNotFoundError("exiftool"),
@@ -108,8 +244,9 @@ class TestWriteGpsExifErrors:
     def test_returns_error_message_on_process_failure(self, tmp_path):
         """write_gps_exif returns error string on subprocess failure."""
         import subprocess as sp
+
         jpeg = tmp_path / "test.jpg"
-        jpeg.write_bytes(b'\xff\xd8\xff\xd9')
+        jpeg.write_bytes(b"\xff\xd8\xff\xd9")
         with patch(
             "bennu_camera.geotag.subprocess.run",
             side_effect=sp.CalledProcessError(1, "exiftool", stderr=b"bad image"),
@@ -122,8 +259,9 @@ class TestWriteGpsExifErrors:
     def test_returns_no_stderr_fallback_on_process_failure(self, tmp_path):
         """write_gps_exif handles CalledProcessError with stderr=None."""
         import subprocess as sp
+
         jpeg = tmp_path / "test.jpg"
-        jpeg.write_bytes(b'\xff\xd8\xff\xd9')
+        jpeg.write_bytes(b"\xff\xd8\xff\xd9")
         with patch(
             "bennu_camera.geotag.subprocess.run",
             side_effect=sp.CalledProcessError(1, "exiftool", stderr=None),
@@ -136,13 +274,24 @@ class TestWriteGpsExifErrors:
 def test_image_metadata_to_csv_row():
     """All 18 fields present in correct order."""
     meta = ImageMetadata(
-        sequence=1, filename="0001_rgb.jpg", sensor="rgb",
+        sequence=1,
+        filename="0001_rgb.jpg",
+        sensor="rgb",
         timestamp_utc="2026-03-15T10:32:00Z",
-        lat=55.6761, lon=12.5683, alt_msl=80.0, alt_agl=75.0,
-        heading_deg=90.0, pitch_deg=-90.0, roll_deg=0.0,
-        rtk_fix_type="RTK_FIXED", position_accuracy_m=0.05,
-        gsd_cm=2.1, quality_score=0.95, quality_flags="ok",
-        ambient_light_lux=45000.0, capture_offset_ms=None,
+        lat=55.6761,
+        lon=12.5683,
+        alt_msl=80.0,
+        alt_agl=75.0,
+        heading_deg=90.0,
+        pitch_deg=-90.0,
+        roll_deg=0.0,
+        rtk_fix_type="RTK_FIXED",
+        position_accuracy_m=0.05,
+        gsd_cm=2.1,
+        quality_score=0.95,
+        quality_flags="ok",
+        ambient_light_lux=45000.0,
+        capture_offset_ms=None,
     )
     row = meta.to_csv_dict()
     assert list(row.keys()) == ImageMetadata.csv_header()
@@ -155,12 +304,22 @@ def test_image_metadata_to_csv_row():
 def test_image_metadata_frozen():
     """ImageMetadata is immutable."""
     meta = ImageMetadata(
-        sequence=1, filename="0001_rgb.jpg", sensor="rgb",
+        sequence=1,
+        filename="0001_rgb.jpg",
+        sensor="rgb",
         timestamp_utc="2026-03-15T10:32:00Z",
-        lat=55.6761, lon=12.5683, alt_msl=80.0, alt_agl=75.0,
-        heading_deg=90.0, pitch_deg=-90.0, roll_deg=0.0,
-        rtk_fix_type="RTK_FIXED", position_accuracy_m=0.05,
-        gsd_cm=2.1, quality_score=0.95, quality_flags="ok",
+        lat=55.6761,
+        lon=12.5683,
+        alt_msl=80.0,
+        alt_agl=75.0,
+        heading_deg=90.0,
+        pitch_deg=-90.0,
+        roll_deg=0.0,
+        rtk_fix_type="RTK_FIXED",
+        position_accuracy_m=0.05,
+        gsd_cm=2.1,
+        quality_score=0.95,
+        quality_flags="ok",
     )
     with pytest.raises(AttributeError):
         meta.lat = 0.0
@@ -169,24 +328,44 @@ def test_image_metadata_frozen():
 def test_image_metadata_rejects_invalid_lat():
     with pytest.raises(ValueError, match="lat"):
         ImageMetadata(
-            sequence=1, filename="test.jpg", sensor="rgb",
+            sequence=1,
+            filename="test.jpg",
+            sensor="rgb",
             timestamp_utc="2026-03-15T10:32:00Z",
-            lat=91.0, lon=12.0, alt_msl=80.0, alt_agl=75.0,
-            heading_deg=90.0, pitch_deg=-90.0, roll_deg=0.0,
-            rtk_fix_type="RTK_FIXED", position_accuracy_m=0.05,
-            gsd_cm=2.1, quality_score=0.95, quality_flags="ok",
+            lat=91.0,
+            lon=12.0,
+            alt_msl=80.0,
+            alt_agl=75.0,
+            heading_deg=90.0,
+            pitch_deg=-90.0,
+            roll_deg=0.0,
+            rtk_fix_type="RTK_FIXED",
+            position_accuracy_m=0.05,
+            gsd_cm=2.1,
+            quality_score=0.95,
+            quality_flags="ok",
         )
 
 
 def test_image_metadata_rejects_invalid_rtk():
     with pytest.raises(ValueError, match="rtk_fix_type"):
         ImageMetadata(
-            sequence=1, filename="test.jpg", sensor="rgb",
+            sequence=1,
+            filename="test.jpg",
+            sensor="rgb",
             timestamp_utc="2026-03-15T10:32:00Z",
-            lat=55.0, lon=12.0, alt_msl=80.0, alt_agl=75.0,
-            heading_deg=90.0, pitch_deg=-90.0, roll_deg=0.0,
-            rtk_fix_type="INVALID",  position_accuracy_m=0.05,
-            gsd_cm=2.1, quality_score=0.95, quality_flags="ok",
+            lat=55.0,
+            lon=12.0,
+            alt_msl=80.0,
+            alt_agl=75.0,
+            heading_deg=90.0,
+            pitch_deg=-90.0,
+            roll_deg=0.0,
+            rtk_fix_type="INVALID",
+            position_accuracy_m=0.05,
+            gsd_cm=2.1,
+            quality_score=0.95,
+            quality_flags="ok",
         )
 
 

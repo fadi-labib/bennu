@@ -1,4 +1,5 @@
 """Tests for CameraNode backend factory logic."""
+
 import pytest
 
 from bennu_camera.backends import create_backend

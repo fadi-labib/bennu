@@ -1,4 +1,5 @@
 """Tests for bundle packager."""
+
 import hashlib
 import json
 from pathlib import Path

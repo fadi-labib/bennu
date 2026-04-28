@@ -1,4 +1,5 @@
 """Tests for Ed25519 manifest signer."""
+
 import os
 import stat
 

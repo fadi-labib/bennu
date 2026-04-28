@@ -69,9 +69,7 @@ class CalibrationCapture:
         writer = csv.DictWriter(buf, fieldnames=self.CSV_HEADER)
         writer.writeheader()
         for reading in self._readings:
-            writer.writerow(
-                {"timestamp_utc": reading.timestamp_utc, "lux": reading.lux}
-            )
+            writer.writerow({"timestamp_utc": reading.timestamp_utc, "lux": reading.lux})
         return buf.getvalue()
 
     def write_csv(self, path: str | Path) -> bool:

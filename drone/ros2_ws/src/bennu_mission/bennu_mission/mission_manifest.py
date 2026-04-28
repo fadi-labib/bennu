@@ -1,4 +1,5 @@
 """Mission manifest generator — produces contract v1 manifest.json and images.csv."""
+
 import csv
 import io
 from collections import Counter
@@ -59,8 +60,7 @@ class ManifestGenerator:
         """
         if not images:
             raise ValueError(
-                "Cannot generate manifest for empty image list — "
-                "mission captured no images"
+                "Cannot generate manifest for empty image list — mission captured no images"
             )
 
         quality_summary = self._compute_quality_summary(images)
@@ -104,8 +104,7 @@ class ManifestGenerator:
         """
         if not images:
             raise ValueError(
-                "Cannot generate images CSV for empty image list — "
-                "mission captured no images"
+                "Cannot generate images CSV for empty image list — mission captured no images"
             )
 
         output = io.StringIO()

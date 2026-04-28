@@ -6,6 +6,7 @@ Usage:
     python3 ground/analysis/inspect_model.py <odm_output_dir>
     python3 ground/analysis/inspect_model.py <odm_output_dir> --visualize
 """
+
 import argparse
 import os
 import sys
@@ -20,9 +21,7 @@ def find_output_files(odm_dir: str) -> dict:
         for root, _, filenames in os.walk(odm_dir):
             for f in filenames:
                 if f.endswith(ext):
-                    files.setdefault("pointcloud", []).append(
-                        os.path.join(root, f)
-                    )
+                    files.setdefault("pointcloud", []).append(os.path.join(root, f))
 
     # Mesh
     for root, _, filenames in os.walk(odm_dir):
@@ -34,9 +33,7 @@ def find_output_files(odm_dir: str) -> dict:
     for root, _, filenames in os.walk(odm_dir):
         for f in filenames:
             if f.endswith(".tif") and "orthophoto" in root:
-                files.setdefault("orthophoto", []).append(
-                    os.path.join(root, f)
-                )
+                files.setdefault("orthophoto", []).append(os.path.join(root, f))
 
     # DSM/DTM
     for root, _, filenames in os.walk(odm_dir):
@@ -75,9 +72,7 @@ def inspect_pointcloud(filepath: str, visualize: bool = False):
 def main():
     parser = argparse.ArgumentParser(description="Inspect ODM output")
     parser.add_argument("odm_dir", help="Path to ODM output directory")
-    parser.add_argument(
-        "--visualize", action="store_true", help="Open 3D viewer"
-    )
+    parser.add_argument("--visualize", action="store_true", help="Open 3D viewer")
     args = parser.parse_args()
 
     if not os.path.isdir(args.odm_dir):

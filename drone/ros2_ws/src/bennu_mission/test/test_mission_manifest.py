@@ -1,4 +1,5 @@
 """Tests for mission manifest generator."""
+
 import csv
 import io
 import json
@@ -32,13 +33,24 @@ def _make_image(seq, score=0.9, flags="ok", rtk="RTK_FIXED", ts="2026-03-15T10:3
         ambient_light_lux=None,
         capture_offset_ms=None,
         to_csv_dict=lambda s=seq, sc=score, f=flags, r=rtk, t=ts: {
-            "sequence": s, "filename": f"{s:04d}_rgb.jpg", "sensor": "rgb",
-            "timestamp_utc": t, "lat": 55.6761, "lon": 12.5683,
-            "alt_msl": 80.0, "alt_agl": 75.0, "heading_deg": 90.0,
-            "pitch_deg": -90.0, "roll_deg": 0.0, "rtk_fix_type": r,
-            "position_accuracy_m": 0.05, "gsd_cm": 2.1,
-            "quality_score": sc, "quality_flags": f,
-            "ambient_light_lux": None, "capture_offset_ms": None,
+            "sequence": s,
+            "filename": f"{s:04d}_rgb.jpg",
+            "sensor": "rgb",
+            "timestamp_utc": t,
+            "lat": 55.6761,
+            "lon": 12.5683,
+            "alt_msl": 80.0,
+            "alt_agl": 75.0,
+            "heading_deg": 90.0,
+            "pitch_deg": -90.0,
+            "roll_deg": 0.0,
+            "rtk_fix_type": r,
+            "position_accuracy_m": 0.05,
+            "gsd_cm": 2.1,
+            "quality_score": sc,
+            "quality_flags": f,
+            "ambient_light_lux": None,
+            "capture_offset_ms": None,
         },
     )
 
@@ -70,6 +82,7 @@ def test_manifest_matches_schema():
     )
 
     import jsonschema
+
     schema = json.loads(schema_path.read_text())
     jsonschema.validate(manifest, schema)
 
@@ -96,6 +109,7 @@ def test_generate_images_csv():
     assert len(reader.fieldnames) == 18
 
     from bennu_camera.geotag import IMAGE_METADATA_COLUMNS
+
     assert tuple(reader.fieldnames) == IMAGE_METADATA_COLUMNS
 
 
@@ -111,8 +125,9 @@ def test_quality_summary_counts():
         _make_image(2, score=0.3, flags="blur"),
         _make_image(3, score=0.2, flags="blur,underexposed"),
     ]
-    manifest = gen.generate_manifest(images=images, sensor_config="mapping",
-                                      checksums_digest="x", signature="y")
+    manifest = gen.generate_manifest(
+        images=images, sensor_config="mapping", checksums_digest="x", signature="y"
+    )
     qs = manifest["quality_summary"]
     assert qs["images_total"] == 3
     assert qs["images_passed"] == 1

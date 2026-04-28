@@ -1,4 +1,5 @@
 """Tests for camera capture backends."""
+
 import subprocess
 from unittest.mock import patch
 
@@ -16,8 +17,8 @@ def test_placeholder_creates_valid_jpeg(tmp_path):
     assert result is True
     assert filepath.exists()
     data = filepath.read_bytes()
-    assert data[:2] == b'\xff\xd8'  # JPEG SOI marker
-    assert data[-2:] == b'\xff\xd9'  # JPEG EOI marker
+    assert data[:2] == b"\xff\xd8"  # JPEG SOI marker
+    assert data[-2:] == b"\xff\xd9"  # JPEG EOI marker
 
 
 def test_placeholder_name():
