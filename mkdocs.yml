@@ -39,7 +39,7 @@ markdown_extensions:
       custom_fences:
         - name: mermaid
           class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_mermaid_format
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.highlight:
@@ -65,7 +65,6 @@ nav:
       - Frame Assembly: build-guide/01-frame-assembly.md
   - Tutorials:
       - tutorials/index.md
-      - Frame Assembly: tutorials/frame-assembly.md
   - How-to Guides:
       - how-to/index.md
       - Flash PX4 Parameters: how-to/flash-px4-params.md
