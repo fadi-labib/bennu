@@ -1,5 +1,5 @@
 # Development and testing dependencies
-pytest>=7,<9
+pytest>=9.0.3,<10
 pytest-cov>=4,<6
 jsonschema>=4.26.0,<5
 pynacl>=1.5,<2
