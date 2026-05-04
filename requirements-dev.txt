@@ -1,8 +1,8 @@
 # Development and testing dependencies
 pytest>=9.0.3,<10
-pytest-cov>=4,<6
+pytest-cov>=7.1.0,<8
 jsonschema>=4.26.0,<5
-pynacl>=1.5,<2
+pynacl>=1.6.2,<2
 pyyaml>=6,<7
 mavsdk>=2,<3
 ruff>=0.15.12,<1
