@@ -1,0 +1,49 @@
+name: Bug Report
+description: Report a software or firmware bug
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened? What did you expect?
+    validations:
+      required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - bennu_camera
+        - bennu_core
+        - bennu_dataset
+        - bennu_mission
+        - bennu_survey
+        - bennu_bringup
+        - PX4 / firmware
+        - Simulation (SITL)
+        - CI / GitHub Actions
+        - Documentation
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: How can we reproduce this?
+      placeholder: |
+        1. Run `...`
+        2. See error `...`
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python version, hardware (if applicable)
+      placeholder: |
+        - OS: Ubuntu 24.04
+        - Python: 3.12
+        - Hardware: Pi 4 / Pixhawk 6C
+    validations:
+      required: false
