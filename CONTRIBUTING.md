@@ -14,10 +14,19 @@ Open a [GitHub issue](https://github.com/fadi-labib/bennu/issues) with:
 
 ## Submitting Changes
 
-1. **Fork** the repository and create a feature branch from `main`:
+1. **Fork** the repository and create a branch from `main` using a conventional prefix:
    ```bash
    git checkout -b feat/your-feature main
    ```
+   | Prefix | Use for |
+   |--------|---------|
+   | `feat/` | New features |
+   | `fix/` | Bug fixes |
+   | `docs/` | Documentation only |
+   | `chore/` | Maintenance, deps, CI |
+   | `refactor/` | Code restructuring |
+   | `test/` | Test additions or fixes |
+
 2. **Make your changes.** Follow the code style and conventions below.
 3. **Test locally:**
    ```bash
