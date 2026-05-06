@@ -60,6 +60,9 @@ plugins:
 
 nav:
   - Home: index.md
+  - Build Guide:
+      - Parts Checklist: build-guide/00-parts-checklist.md
+      - Frame Assembly: build-guide/01-frame-assembly.md
   - Tutorials:
       - tutorials/index.md
       - Frame Assembly: tutorials/frame-assembly.md
