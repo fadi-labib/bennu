@@ -1,5 +1,5 @@
 # ROS2 Jazzy + Micro XRCE-DDS Agent + bennu workspace
-FROM ros:jazzy
+FROM ros:jazzy-ros-base
 
 ENV DEBIAN_FRONTEND=noninteractive
 
