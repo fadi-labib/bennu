@@ -17,7 +17,4 @@ setup(
     description="Survey planning and grid generation for Bennu drone",
     license="Apache-2.0",
     tests_require=["pytest"],
-    entry_points={
-        "console_scripts": [],
-    },
 )
