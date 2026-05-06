@@ -1,6 +1,5 @@
 """Drone identity and hardware manifest for mission bundles."""
 from dataclasses import dataclass, field
-from typing import Tuple
 
 
 @dataclass(frozen=True)
@@ -13,7 +12,7 @@ class DroneIdentity:
     flight_controller: str
     px4_version: str
     gps_model: str
-    sensors: Tuple[str, ...] = field(default_factory=tuple)
+    sensors: tuple[str, ...] = field(default_factory=tuple)
 
     def __post_init__(self):
         if not self.drone_id:

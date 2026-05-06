@@ -11,7 +11,6 @@ import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional
 
 import yaml
 
@@ -24,10 +23,10 @@ class ScenarioResult:
     path: str
     passed: bool
     duration_s: float
-    error: Optional[str] = None
+    error: str | None = None
 
 
-def discover_scenarios(directory: str) -> List[str]:
+def discover_scenarios(directory: str) -> list[str]:
     """Find all .yaml scenario files in a directory, sorted by name.
 
     Returns list of file paths. Raises FileNotFoundError if directory
@@ -82,7 +81,7 @@ async def run_single_scenario(
         )
 
 
-def print_summary(results: List[ScenarioResult]) -> None:
+def print_summary(results: list[ScenarioResult]) -> None:
     """Print a summary table of scenario results."""
     print("\n" + "=" * 60)
     print("SCENARIO RESULTS")
@@ -104,7 +103,7 @@ def print_summary(results: List[ScenarioResult]) -> None:
 
 async def run_all_scenarios(
     directory: str, address: str, timeout: int, runner=None
-) -> List[ScenarioResult]:
+) -> list[ScenarioResult]:
     """Discover and run all scenarios sequentially. Returns list of results."""
     scenarios = discover_scenarios(directory)
     if not scenarios:

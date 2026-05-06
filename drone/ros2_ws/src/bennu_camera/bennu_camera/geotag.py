@@ -3,12 +3,11 @@ import collections
 import dataclasses
 import subprocess
 from dataclasses import dataclass
-from typing import Optional, Tuple, Union
 
 
 def format_gps_coord(
     decimal_degrees: float, is_lat: bool
-) -> Tuple[int, int, float, str]:
+) -> tuple[int, int, float, str]:
     """Convert decimal degrees to (degrees, minutes, seconds, ref)."""
     if is_lat:
         ref = "N" if decimal_degrees >= 0 else "S"
@@ -26,7 +25,7 @@ def format_gps_coord(
 
 def write_gps_exif(
     image_path: str, lat: float, lon: float, alt: float
-) -> Union[bool, str]:
+) -> bool | str:
     """Write GPS coordinates into JPEG EXIF data using exiftool.
 
     Returns True on success, or an error description string on failure.
@@ -90,8 +89,8 @@ class ImageMetadata:
     gsd_cm: float
     quality_score: float
     quality_flags: str
-    ambient_light_lux: Optional[float] = None
-    capture_offset_ms: Optional[float] = None
+    ambient_light_lux: float | None = None
+    capture_offset_ms: float | None = None
 
     def __post_init__(self):
         # Validate IMAGE_METADATA_COLUMNS stays in sync with dataclass fields

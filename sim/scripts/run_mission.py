@@ -152,7 +152,7 @@ async def run_mission(scenario_path: str, address: str, timeout: int) -> bool:
 
     try:
         await asyncio.wait_for(monitor_progress(), timeout=max_duration)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         print(f"[run_mission] TIMEOUT: mission did not complete in {max_duration}s",
               file=sys.stderr)
         return False
@@ -168,7 +168,7 @@ async def run_mission(scenario_path: str, address: str, timeout: int) -> bool:
 
             await asyncio.wait_for(wait_for_landed(), timeout=60)
             print("[run_mission] Landed successfully")
-        except asyncio.TimeoutError:
+        except TimeoutError:
             print("[run_mission] WARNING: landing timeout, but mission items completed")
 
     print("[run_mission] Mission finished successfully")
@@ -203,7 +203,7 @@ if __name__ == "__main__":
             timeout=args.timeout,
         ))
         sys.exit(0 if ok else 1)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         print("[run_mission] TIMEOUT: PX4 not ready", file=sys.stderr)
         sys.exit(1)
     except Exception as e:

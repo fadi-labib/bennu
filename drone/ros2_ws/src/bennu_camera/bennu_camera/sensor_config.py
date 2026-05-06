@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
 
 import yaml
 
@@ -22,12 +21,12 @@ class SensorConfig:
         capture_order: Ordered list of sensors for synchronised capture timing.
     """
 
-    sensors: List[str]
+    sensors: list[str]
     has_ambient_light: bool
-    capture_order: List[str]
+    capture_order: list[str]
 
     @classmethod
-    def from_yaml(cls, path: str | Path) -> "SensorConfig":
+    def from_yaml(cls, path: str | Path) -> SensorConfig:
         """Load a sensor configuration from a YAML file.
 
         Raises:

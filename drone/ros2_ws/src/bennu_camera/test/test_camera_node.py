@@ -47,7 +47,7 @@ def test_timer_interval_is_declared_parameter():
             and len(node.args) >= 1
             and isinstance(node.args[0], ast.Constant)
         ):
-            param_names.append(node.args[0].value)
+            param_names.append(node.args[0].value)  # noqa: PERF401
 
     assert "timer_interval" in param_names, (
         f"Expected 'timer_interval' in declared parameters, found: {param_names}"

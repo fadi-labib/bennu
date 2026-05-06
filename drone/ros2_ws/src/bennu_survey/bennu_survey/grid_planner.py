@@ -2,9 +2,8 @@
 
 import math
 from dataclasses import dataclass
-from typing import List, Tuple
 
-Coordinate = Tuple[float, float]  # (lat, lon) in decimal degrees
+Coordinate = tuple[float, float]  # (lat, lon) in decimal degrees
 Waypoint = dict  # {"lat": float, "lon": float, "alt": float}
 
 
@@ -32,7 +31,7 @@ def _rad2deg(r: float) -> float:
     return r * 180.0 / math.pi
 
 
-def _latlon_to_utm(lat: float, lon: float) -> Tuple[float, float, int, str]:
+def _latlon_to_utm(lat: float, lon: float) -> tuple[float, float, int, str]:
     """Convert WGS84 lat/lon to UTM easting/northing.
 
     Returns (easting, northing, zone_number, zone_letter).
@@ -87,7 +86,7 @@ def _latlon_to_utm(lat: float, lon: float) -> Tuple[float, float, int, str]:
 
 def _utm_to_latlon(
     easting: float, northing: float, zone_number: int, zone_letter: str
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """Convert UTM easting/northing back to WGS84 lat/lon."""
     k0 = 0.9996
     e_prime_sq = _WGS84_E2 / (1 - _WGS84_E2)
@@ -171,7 +170,7 @@ class GridPlanner:
         self._line_spacing_m = self._footprint_x_m * (1.0 - overlap_side)
         self._shot_spacing_m = self._footprint_y_m * (1.0 - overlap_front)
 
-    def plan(self, aoi_polygon: List[Coordinate]) -> List[Waypoint]:
+    def plan(self, aoi_polygon: list[Coordinate]) -> list[Waypoint]:
         """Generate survey waypoints covering the AOI polygon.
 
         Args:
@@ -203,7 +202,7 @@ class GridPlanner:
         if (max_e - min_e) < 1e-6 or (max_n - min_n) < 1e-6:
             raise ValueError("AOI polygon is degenerate (zero area)")
 
-        waypoints: List[Waypoint] = []
+        waypoints: list[Waypoint] = []
         line_x = min_e + self._line_spacing_m / 2.0
         line_idx = 0
 
@@ -230,7 +229,7 @@ class GridPlanner:
 
     @staticmethod
     def _point_in_polygon_utm(
-        x: float, y: float, polygon: List[Tuple[float, float]]
+        x: float, y: float, polygon: list[tuple[float, float]]
     ) -> bool:
         """Ray-casting point-in-polygon test in UTM coordinates."""
         n = len(polygon)
