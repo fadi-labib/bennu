@@ -1,6 +1,6 @@
 # ROS2 Ecosystem
 
-Evaluated open-source ROS2 packages for Bennu's photogrammetry drone stack (PX4 v1.16+, ROS2 Jazzy, Raspberry Pi 5, uXRCE-DDS). Packages are assessed for Jazzy compatibility, fit with Bennu's architecture, and maintenance status.
+Evaluated open-source ROS2 packages for Bennu's photogrammetry drone stack (PX4 v1.16+, ROS2 Jazzy, Raspberry Pi 4, uXRCE-DDS). Packages are assessed for Jazzy compatibility, fit with Bennu's architecture, and maintenance status.
 
 See [ADR-005](../decisions/005-ros2-oss-package-adoption.md) for the adoption decision and phased rollout.
 

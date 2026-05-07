@@ -25,7 +25,7 @@ PX4 executes the waypoint mission autonomously. The drone follows the grid patte
 
 ### 3. Capture
 
-On each trigger event, PX4 publishes a `CameraTrigger` message over uXRCE-DDS. The `bennu_camera` ROS2 node on the Pi 5:
+On each trigger event, PX4 publishes a `CameraTrigger` message over uXRCE-DDS. The `bennu_camera` ROS2 node on the Pi 4:
 
 1. Captures a full-resolution image via `libcamera-still`
 2. Reads the drone's current position from PX4 (`VehicleGlobalPosition`)
@@ -34,7 +34,7 @@ On each trigger event, PX4 publishes a `CameraTrigger` message over uXRCE-DDS. T
 
 ### 4. Transfer
 
-After the drone lands, images are transferred from the Pi 5 to the ground station PC. The `sync_images.sh` script uses `rsync` over the Pi's WiFi connection (~30 m range). For larger datasets, the Pi's microSD card can be physically swapped.
+After the drone lands, images are transferred from the Pi 4 to the ground station PC. The `sync_images.sh` script uses `rsync` over the Pi's WiFi connection (~30 m range). For larger datasets, the Pi's microSD card can be physically swapped.
 
 ### 5. Process
 
@@ -64,7 +64,7 @@ The pipeline produces several output formats:
 ```mermaid
 graph LR
     PLAN[Plan Survey Grid<br/>QGroundControl] --> FLY[Fly Mission<br/>PX4 Waypoints]
-    FLY --> CAPTURE[Capture Images<br/>Pi 5 + libcamera]
+    FLY --> CAPTURE[Capture Images<br/>Pi 4 + libcamera]
     CAPTURE --> TRANSFER[Transfer<br/>WiFi / rsync]
     TRANSFER --> PROCESS[Process<br/>OpenDroneMap]
     PROCESS --> OUTPUT[Output<br/>3D Model + Orthophoto]

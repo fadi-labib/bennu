@@ -12,13 +12,13 @@ The Holybro Pixhawk 6C runs PX4 Autopilot on an STM32H743 processor. It handles 
 
 The flight controller is intentionally kept simple. It does not run ROS2 nodes, process images, or make high-level decisions. Its only job is to keep the drone in the air and follow waypoints.
 
-### Companion Computer --- Raspberry Pi 5
+### Companion Computer --- Raspberry Pi 4
 
-The Pi 5 (8 GB) is the intelligence layer. It runs Ubuntu 24.04 with ROS2 Jazzy and hosts the uXRCE-DDS agent that bridges PX4 topics into the ROS2 ecosystem. It drives the camera over CSI, handles geotagging by subscribing to PX4 position data, and assembles signed mission bundles for export.
+The Pi 4 (4 GB) is the intelligence layer. It runs Ubuntu 24.04 with ROS2 Jazzy and hosts the uXRCE-DDS agent that bridges PX4 topics into the ROS2 ecosystem. It drives the camera over CSI, handles geotagging by subscribing to PX4 position data, and assembles signed mission bundles for export.
 
 ### Camera --- Pi HQ Camera (IMX477)
 
-The Raspberry Pi HQ Camera provides 12.3 MP resolution through a 6 mm CS-mount lens. It connects to the Pi 5 via the CSI ribbon cable and is driven by `libcamera`. At a survey altitude of 50--80 m, the 6 mm lens delivers roughly 2 cm/pixel ground sample distance (GSD), which is sufficient for site survey and photogrammetry.
+The Raspberry Pi HQ Camera provides 12.3 MP resolution through a 6 mm CS-mount lens. It connects to the Pi 4 via the CSI ribbon cable and is driven by `libcamera`. At a survey altitude of 50--80 m, the 6 mm lens delivers roughly 2 cm/pixel ground sample distance (GSD), which is sufficient for site survey and photogrammetry.
 
 ### GPS --- M9N
 
@@ -33,7 +33,7 @@ A Holybro Tekko32 F4 4-in-1 50A ESC drives four T-Motor Velox V2207.5 1950KV mot
 The split between flight controller and companion computer is deliberate:
 
 - **FC (Pixhawk 6C):** Real-time, safety-critical. Runs a deterministic RTOS. If the Pi crashes, the FC can still fly, hold position, or return to launch.
-- **Companion (Pi 5):** Non-critical intelligence. Runs Linux. Can be rebooted or updated without affecting flight safety.
+- **Companion (Pi 4):** Non-critical intelligence. Runs Linux. Can be rebooted or updated without affecting flight safety.
 
 This architecture means a software bug in a ROS2 node cannot cause a crash. The worst case is a failed image capture, not a failed flight.
 
@@ -42,29 +42,29 @@ This architecture means a software bug in a ROS2 node cannot cause a crash. The 
 | Layer | Platform | Software | Role |
 |---|---|---|---|
 | Flight Controller | Pixhawk 6C | PX4 Autopilot v1.16+ | Stabilization, navigation, failsafes, camera trigger |
-| Companion Computer | Raspberry Pi 5 | ROS2 Jazzy, uXRCE-DDS Agent | Camera capture, geotagging, future autonomy |
+| Companion Computer | Raspberry Pi 4 | ROS2 Jazzy, uXRCE-DDS Agent | Camera capture, geotagging, future autonomy |
 | Ground Station | PC | QGroundControl | Mission planning, telemetry, parameter tuning |
 | Processing | PC (Docker) | WebODM / OpenDroneMap | 3D reconstruction from geotagged images |
-| Data Export | Pi 5 → Ground Station | Mission bundle (v1 contract) | Signed dataset package for platform ingestion |
+| Data Export | Pi 4 → Ground Station | Mission bundle (v1 contract) | Signed dataset package for platform ingestion |
 
-PX4 includes a built-in uXRCE-DDS client. On the Pi 5, the Micro-XRCE-DDS Agent translates PX4's internal topics (vehicle position, camera trigger events, battery status) into standard ROS2 topics. This is a first-class integration --- no MAVLink parsing, no MAVROS, no message translation layers.
+PX4 includes a built-in uXRCE-DDS client. On the Pi 4, the Micro-XRCE-DDS Agent translates PX4's internal topics (vehicle position, camera trigger events, battery status) into standard ROS2 topics. This is a first-class integration --- no MAVLink parsing, no MAVROS, no message translation layers.
 
 ## Communication Flow
 
 ```
 QGroundControl ←── MAVLink (telemetry radio, 433/915 MHz) ──→ PX4
-PX4            ←── uXRCE-DDS (UART 921600 baud, TELEM2) ──→ Pi 5
-Pi 5           ←── CSI ribbon cable ──────────────────────→ Pi HQ Camera
-Pi 5           ──── WiFi / rsync (post-flight) ──────────→ Ground Station PC
+PX4            ←── uXRCE-DDS (UART 921600 baud, TELEM2) ──→ Pi 4
+Pi 4           ←── CSI ribbon cable ──────────────────────→ Pi HQ Camera
+Pi 4           ──── WiFi / rsync (post-flight) ──────────→ Ground Station PC
 ```
 
 Three distinct communication channels serve different purposes:
 
 1. **MAVLink over telemetry radio** --- Real-time telemetry between the drone and QGroundControl. Used for mission upload, live monitoring, and parameter tuning. Range depends on radio (SiK radios: ~1 km, Crossfire: 10+ km).
 
-2. **uXRCE-DDS over UART** --- High-bandwidth link between PX4 and ROS2 on the Pi 5. Carries position data, sensor readings, and camera trigger events at 921600 baud. This is an onboard link (30 cm wire), so bandwidth and latency are not concerns.
+2. **uXRCE-DDS over UART** --- High-bandwidth link between PX4 and ROS2 on the Pi 4. Carries position data, sensor readings, and camera trigger events at 921600 baud. This is an onboard link (30 cm wire), so bandwidth and latency are not concerns.
 
-3. **WiFi / rsync** --- Bulk image transfer after the drone lands. The Pi 5's built-in WiFi (~30 m range) is not used in flight. Images are synced to the ground station for processing.
+3. **WiFi / rsync** --- Bulk image transfer after the drone lands. The Pi 4's built-in WiFi (~30 m range) is not used in flight. Images are synced to the ground station for processing.
 
 ## System Diagram
 
@@ -76,7 +76,7 @@ graph TB
     end
 
     subgraph Drone
-        subgraph Pi5["Companion Computer — Raspberry Pi 5"]
+        subgraph Pi4["Companion Computer — Raspberry Pi 4"]
             XRCE[uXRCE-DDS Agent]
             CAM_NODE[bennu_camera Node]
             ROS2[ROS2 Jazzy]
@@ -113,7 +113,7 @@ graph TB
         direction TB
         R_QGC[QGroundControl]
         R_PX4[PX4 on Pixhawk 6C]
-        R_PI[Raspberry Pi 5]
+        R_PI[Raspberry Pi 4]
         R_CAM[Pi HQ Camera]
         R_ODM[WebODM]
 
@@ -160,7 +160,7 @@ Build the frame, wire the flight controller and propulsion system, flash PX4, an
 
 ### Phase 2: Survey + Camera
 
-Add the Pi 5 and Pi HQ Camera. Establish the uXRCE-DDS serial link between the Pi and Pixhawk. Plan waypoint survey missions in QGroundControl with distance-based camera triggering. The Pi captures geotagged images during flight. Post-flight, images are either processed locally with WebODM or packaged as a signed mission bundle for platform ingestion.
+Add the Pi 4 and Pi HQ Camera. Establish the uXRCE-DDS serial link between the Pi and Pixhawk. Plan waypoint survey missions in QGroundControl with distance-based camera triggering. The Pi captures geotagged images during flight. Post-flight, images are either processed locally with WebODM or packaged as a signed mission bundle for platform ingestion.
 
 ### Phase 3: Autonomy (Future)
 

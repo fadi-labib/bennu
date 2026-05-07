@@ -12,7 +12,7 @@ Pinned versions of all major components in the Bennu stack. These versions are t
 | Micro-XRCE-DDS Agent | latest (from source) | `sim/Dockerfile.ros2` | Built from eProsima repo |
 | Gazebo | Harmonic | `sim/Dockerfile.px4` | SITL only |
 | Python | 3.12 | Ubuntu 24.04 default | System Python |
-| Ubuntu | 24.04 LTS | Both Dockerfiles | Pi 5 and Docker base |
+| Ubuntu | 24.04 LTS | Both Dockerfiles | Pi 4 and Docker base |
 | PyNaCl | >=1.5,<2 | `sim/Dockerfile.ros2` | Ed25519 signing |
 | jsonschema | >=4,<5 | `sim/Dockerfile.ros2` | Contract validation |
 | MAVSDK | >=2,<3 | `sim/Dockerfile.ros2` | Mission execution |

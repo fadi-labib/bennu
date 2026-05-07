@@ -1,12 +1,12 @@
 # Transfer Images from Drone
 
-Sync captured images from the Raspberry Pi 5 on the drone to your ground
+Sync captured images from the Raspberry Pi 4 on the drone to your ground
 station workstation. The transfer uses `rsync` so it is resume-capable -- if the
 connection drops, re-run the command to pick up where it left off.
 
 !!! abstract "Prerequisites"
 
-    - Raspberry Pi 5 powered on and connected to the same WiFi network as your workstation
+    - Raspberry Pi 4 powered on and connected to the same WiFi network as your workstation
     - SSH key configured for passwordless access to the Pi (`ssh-copy-id pi@bennu.local`)
 
 ## Usage
