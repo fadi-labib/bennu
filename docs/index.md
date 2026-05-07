@@ -25,34 +25,13 @@ The project combines a 3D-printed frame with production-grade flight software, g
 
 ## Getting Started
 
-New to Bennu? Head to the [Tutorials](tutorials/index.md) section for step-by-step build guides that walk you through the entire process from first print to first flight.
+New to Bennu? Start with the [Build Guide](build-guide/index.md) for step-by-step instructions from parts ordering to first flight.
 
 ## Explore the Docs
 
-<div class="grid cards" markdown>
-
-- :material-school: **[Tutorials](tutorials/index.md)**
-
-    Step-by-step build guides
-
-- :material-wrench: **[How-to Guides](how-to/index.md)**
-
-    Task-oriented recipes
-
-- :material-lightbulb: **[Concepts](concepts/index.md)**
-
-    Architecture and design explanations
-
-- :material-book-open-variant: **[Reference](reference/index.md)**
-
-    Technical specifications and data
-
-- :material-scale-balance: **[Decisions](decisions/index.md)**
-
-    Architecture Decision Records
-
-- :material-post: **[Build Log](blog/index.md)**
-
-    Project journal
-
-</div>
+- :material-hammer-wrench: **[Build Guide](build-guide/index.md)** — Parts checklist, frame assembly, first flight
+- :material-wrench: **[How-to Guides](how-to/index.md)** — Task-oriented recipes
+- :material-lightbulb: **[Concepts](concepts/index.md)** — Architecture and design explanations
+- :material-book-open-variant: **[Reference](reference/index.md)** — Technical specifications and data
+- :material-scale-balance: **[Decisions](decisions/index.md)** — Architecture Decision Records
+- :material-post: **[Build Log](blog/index.md)** — Project journal
