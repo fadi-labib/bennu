@@ -45,6 +45,16 @@ jobs:
           pip install -e drone/ros2_ws/src/bennu_mission
           pip install -e drone/ros2_ws/src/bennu_survey
 
+      - name: Validate contract schema
+        run: |
+          python -c "
+          import json, jsonschema
+          schema = json.load(open('contract/v1/manifest.schema.json'))
+          example = json.load(open('contract/v1/example/manifest.json'))
+          jsonschema.validate(example, schema)
+          print('Contract schema validation passed')
+          "
+
       - name: Test with coverage
         run: |
           python -m pytest drone/ros2_ws/src/*/test/ tests/ sim/scripts/ \
