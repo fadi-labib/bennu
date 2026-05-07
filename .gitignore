@@ -16,6 +16,7 @@ __pycache__/
 .ruff_cache/
 .mypy_cache/
 .pytest_cache/
+coverage.xml
 
 # Images captured during flights (too large for git)
 ground/odm/datasets/
