@@ -1,6 +1,6 @@
 # PX4 SITL + Gazebo Harmonic
 # Builds PX4-Autopilot for SITL and runs with Gazebo simulation
-FROM ubuntu:noble-20250404
+FROM ubuntu:noble-20260410
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
