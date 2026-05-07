@@ -1,4 +1,5 @@
 """Tests for scenario matrix runner."""
+
 import asyncio
 from pathlib import Path
 
@@ -156,9 +157,7 @@ def test_run_single_scenario_exception(tmp_path):
 
 def test_run_all_scenarios_empty(tmp_path):
     """Empty directory produces empty results."""
-    results = asyncio.run(
-        run_all_scenarios(str(tmp_path), address="udp://:14540", timeout=10)
-    )
+    results = asyncio.run(run_all_scenarios(str(tmp_path), address="udp://:14540", timeout=10))
     assert results == []
 
 

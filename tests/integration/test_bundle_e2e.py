@@ -9,6 +9,7 @@ Exercises the full pipeline:
 6. Package everything with BundlePackager
 7. Validate: schema, signature, checksums, file counts
 """
+
 import hashlib
 import json
 from pathlib import Path
@@ -64,7 +65,7 @@ def test_full_bundle_pipeline(tmp_path):
     for i in range(1, 4):
         filename = f"{i:04d}_rgb.jpg"
         img_path = img_dir / filename
-        sharp = (i != 2)  # Image 2 is blurry
+        sharp = i != 2  # Image 2 is blurry
         img_array = _create_test_image(img_path, sharp=sharp)
         image_files.append(img_path)
 
@@ -155,6 +156,7 @@ def test_full_bundle_pipeline(tmp_path):
     schema_path = REPO_ROOT / "contract" / "v1" / "manifest.schema.json"
     assert schema_path.exists(), f"Schema not found at {schema_path}"
     import jsonschema
+
     schema = json.loads(schema_path.read_text())
     jsonschema.validate(manifest, schema)
 
@@ -176,6 +178,7 @@ def test_full_bundle_pipeline(tmp_path):
     # 7f. CSV has 18 columns
     import csv
     import io
+
     csv_content = (bundle / "metadata" / "images.csv").read_text()
     reader = csv.DictReader(io.StringIO(csv_content))
     rows = list(reader)
@@ -194,4 +197,5 @@ def test_full_bundle_pipeline(tmp_path):
 
     # 7h. CSV column order matches contract schema
     from bennu_camera.geotag import IMAGE_METADATA_COLUMNS
+
     assert tuple(reader.fieldnames) == IMAGE_METADATA_COLUMNS

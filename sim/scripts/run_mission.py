@@ -5,6 +5,7 @@ Loads a scenario YAML, waits for PX4 readiness, generates a small grid
 of waypoints around the home position, uploads the mission via MAVSDK,
 arms, flies, and monitors until landing. Exits 0 on success, 1 on failure.
 """
+
 import argparse
 import asyncio
 import math
@@ -48,8 +49,8 @@ def generate_grid_waypoints(
     leg_spacing_m = 30.0
 
     for i in range(num_waypoints):
-        leg = i // 2          # which east-west column
-        direction = i % 2     # 0 = north, 1 = south
+        leg = i // 2  # which east-west column
+        direction = i % 2  # 0 = north, 1 = south
 
         east_offset_m = leg * leg_spacing_m
         north_offset_m = leg_length_m if direction == 0 else 0.0
@@ -65,22 +66,24 @@ def generate_grid_waypoints(
             camera_action = MissionItem.CameraAction.NONE
             photo_distance = NAN
 
-        items.append(MissionItem(
-            lat,
-            lon,
-            altitude_m,
-            speed_mps,
-            True,           # is_fly_through
-            NAN,            # gimbal_pitch_deg
-            NAN,            # gimbal_yaw_deg
-            camera_action,
-            NAN,            # loiter_time_s
-            NAN,            # camera_photo_interval_s
-            NAN,            # acceptance_radius_m
-            NAN,            # yaw_deg
-            photo_distance, # camera_photo_distance_m
-            MissionItem.VehicleAction.NONE,
-        ))
+        items.append(
+            MissionItem(
+                lat,
+                lon,
+                altitude_m,
+                speed_mps,
+                True,  # is_fly_through
+                NAN,  # gimbal_pitch_deg
+                NAN,  # gimbal_yaw_deg
+                camera_action,
+                NAN,  # loiter_time_s
+                NAN,  # camera_photo_interval_s
+                NAN,  # acceptance_radius_m
+                NAN,  # yaw_deg
+                photo_distance,  # camera_photo_distance_m
+                MissionItem.VehicleAction.NONE,
+            )
+        )
 
     return items
 
@@ -89,7 +92,7 @@ async def _connect_with_backoff(address: str, max_retries: int = 5) -> System:
     """Connect to PX4 with exponential backoff. Returns connected System."""
     drone = System()
     for attempt in range(max_retries):
-        delay = min(2 ** attempt, 30)
+        delay = min(2**attempt, 30)
         try:
             await drone.connect(system_address=address)
             async for state in drone.core.connection_state():
@@ -171,14 +174,16 @@ async def run_mission(scenario_path: str, address: str, timeout: int) -> bool:
     try:
         await asyncio.wait_for(monitor_progress(), timeout=max_duration)
     except TimeoutError:
-        print(f"[run_mission] TIMEOUT: mission did not complete in {max_duration}s",
-              file=sys.stderr)
+        print(
+            f"[run_mission] TIMEOUT: mission did not complete in {max_duration}s", file=sys.stderr
+        )
         return False
 
     # 7. Wait for landing
     if mission_complete:
         print("[run_mission] Mission items complete, waiting for landing...")
         try:
+
             async def wait_for_landed():
                 async for in_air in drone.telemetry.in_air():
                     if not in_air:
@@ -195,9 +200,7 @@ async def run_mission(scenario_path: str, address: str, timeout: int) -> bool:
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run a MAVSDK mission scenario")
-    parser.add_argument(
-        "--scenario", required=True, help="Path to scenario YAML"
-    )
+    parser.add_argument("--scenario", required=True, help="Path to scenario YAML")
     parser.add_argument(
         "--address",
         default="udp://:14540",
@@ -215,11 +218,13 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 if __name__ == "__main__":
     args = _parse_args()
     try:
-        ok = asyncio.run(run_mission(
-            scenario_path=args.scenario,
-            address=args.address,
-            timeout=args.timeout,
-        ))
+        ok = asyncio.run(
+            run_mission(
+                scenario_path=args.scenario,
+                address=args.address,
+                timeout=args.timeout,
+            )
+        )
         sys.exit(0 if ok else 1)
     except TimeoutError:
         print("[run_mission] TIMEOUT: PX4 not ready", file=sys.stderr)

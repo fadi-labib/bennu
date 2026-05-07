@@ -1,4 +1,5 @@
 """Tests for artifact validation script."""
+
 from pathlib import Path
 
 from validate_artifacts import validate
@@ -7,9 +8,7 @@ from validate_artifacts import validate
 def _write_scenario(tmp_path: Path, min_triggers: int) -> Path:
     """Write a minimal scenario YAML for testing."""
     scenario = tmp_path / "scenario.yaml"
-    scenario.write_text(
-        f"name: test\nassertions:\n  min_triggers: {min_triggers}\n"
-    )
+    scenario.write_text(f"name: test\nassertions:\n  min_triggers: {min_triggers}\n")
     return scenario
 
 

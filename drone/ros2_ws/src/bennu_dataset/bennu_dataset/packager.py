@@ -1,4 +1,5 @@
 """Mission bundle packager — assembles the complete bundle directory."""
+
 import hashlib
 import json
 import re
@@ -58,9 +59,7 @@ class BundlePackager:
             seen_names: set = set()
             for img in image_files:
                 if img.name in seen_names:
-                    raise ValueError(
-                        f"Duplicate image filename: {img.name}"
-                    )
+                    raise ValueError(f"Duplicate image filename: {img.name}")
                 seen_names.add(img.name)
                 shutil.copy2(img, images_dir / img.name)
 
@@ -82,9 +81,7 @@ class BundlePackager:
                 report = {"status": "not_available"}
             else:
                 report = quality_report
-            (quality_dir / "report.json").write_text(
-                json.dumps(report, indent=2) + "\n"
-            )
+            (quality_dir / "report.json").write_text(json.dumps(report, indent=2) + "\n")
 
             # checksums.sha256 — hash every file in the bundle
             checksums = self._compute_checksums(bundle_dir)
@@ -92,9 +89,7 @@ class BundlePackager:
             checksums_path.write_text(checksums)
 
             # Write manifest.json (caller should set checksums_digest before signing)
-            (bundle_dir / "manifest.json").write_text(
-                json.dumps(manifest, indent=2) + "\n"
-            )
+            (bundle_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
 
             return bundle_dir
         except Exception:

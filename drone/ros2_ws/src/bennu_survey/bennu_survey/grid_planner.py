@@ -61,11 +61,16 @@ def _latlon_to_utm(lat: float, lon: float) -> tuple[float, float, int, str]:
 
     k0 = 0.9996
 
-    easting = k0 * N * (
-        A
-        + (1 - T + C) * A**3 / 6
-        + (5 - 18 * T + T**2 + 72 * C - 58 * e_prime_sq) * A**5 / 120
-    ) + 500000.0
+    easting = (
+        k0
+        * N
+        * (
+            A
+            + (1 - T + C) * A**3 / 6
+            + (5 - 18 * T + T**2 + 72 * C - 58 * e_prime_sq) * A**5 / 120
+        )
+        + 500000.0
+    )
 
     northing = k0 * (
         M
@@ -97,9 +102,7 @@ def _utm_to_latlon(
         y -= 10000000.0
 
     M = y / k0
-    mu = M / (
-        _WGS84_A * (1 - _WGS84_E2 / 4 - 3 * _WGS84_E2**2 / 64 - 5 * _WGS84_E2**3 / 256)
-    )
+    mu = M / (_WGS84_A * (1 - _WGS84_E2 / 4 - 3 * _WGS84_E2**2 / 64 - 5 * _WGS84_E2**3 / 256))
 
     e1 = (1 - math.sqrt(1 - _WGS84_E2)) / (1 + math.sqrt(1 - _WGS84_E2))
 
@@ -120,9 +123,7 @@ def _utm_to_latlon(
     lat = phi1 - (N1 * math.tan(phi1) / R1) * (
         D**2 / 2
         - (5 + 3 * T1 + 10 * C1 - 4 * C1**2 - 9 * e_prime_sq) * D**4 / 24
-        + (61 + 90 * T1 + 298 * C1 + 45 * T1**2 - 252 * e_prime_sq - 3 * C1**2)
-        * D**6
-        / 720
+        + (61 + 90 * T1 + 298 * C1 + 45 * T1**2 - 252 * e_prime_sq - 3 * C1**2) * D**6 / 720
     )
 
     lon_origin = _deg2rad((zone_number - 1) * 6 - 180 + 3)
@@ -181,9 +182,7 @@ class GridPlanner:
             List of waypoint dicts with keys: lat, lon, alt.
         """
         if len(aoi_polygon) < 3:
-            raise ValueError(
-                f"AOI polygon must have at least 3 vertices, got {len(aoi_polygon)}"
-            )
+            raise ValueError(f"AOI polygon must have at least 3 vertices, got {len(aoi_polygon)}")
 
         ref_lat = aoi_polygon[0][0]
         ref_lon = aoi_polygon[0][1]
@@ -228,9 +227,7 @@ class GridPlanner:
         return waypoints
 
     @staticmethod
-    def _point_in_polygon_utm(
-        x: float, y: float, polygon: list[tuple[float, float]]
-    ) -> bool:
+    def _point_in_polygon_utm(x: float, y: float, polygon: list[tuple[float, float]]) -> bool:
         """Ray-casting point-in-polygon test in UTM coordinates."""
         n = len(polygon)
         inside = False

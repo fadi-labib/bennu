@@ -7,6 +7,7 @@ Tests the full sequence that camera_node._capture_image() performs:
 
 This runs without rclpy — it tests the data pipeline, not the ROS2 wiring.
 """
+
 import shutil
 import subprocess
 from unittest.mock import patch
@@ -37,8 +38,8 @@ def test_placeholder_capture_then_geotag(tmp_path):
 
     # Step 3: Verify JPEG still valid after EXIF modification
     data = filepath.read_bytes()
-    assert data[:2] == b'\xff\xd8'  # JPEG SOI
-    assert data[-2:] == b'\xff\xd9'  # JPEG EOI
+    assert data[:2] == b"\xff\xd8"  # JPEG SOI
+    assert data[-2:] == b"\xff\xd9"  # JPEG EOI
 
 
 def test_geotag_preserves_file_on_failure(tmp_path):

@@ -1,4 +1,5 @@
 """Make sim/scripts importable for tests."""
+
 import sys
 from pathlib import Path
 

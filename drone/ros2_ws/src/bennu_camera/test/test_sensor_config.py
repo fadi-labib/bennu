@@ -58,9 +58,7 @@ def test_unknown_sensor_raises():
         "capture_order": ["rgb", "lidar"],
     }
 
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".yaml", delete=False
-    ) as tmp:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as tmp:
         yaml.dump(bad_config, tmp)
         tmp_path = tmp.name
 
@@ -79,9 +77,7 @@ def test_capture_order_sensor_not_in_active_sensors():
         "capture_order": ["rgb", "thermal"],
     }
 
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".yaml", delete=False
-    ) as tmp:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as tmp:
         yaml.dump(bad_config, tmp)
         tmp_path = tmp.name
 
@@ -100,9 +96,7 @@ def test_empty_sensors_raises():
         "capture_order": [],
     }
 
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".yaml", delete=False
-    ) as tmp:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as tmp:
         yaml.dump(bad_config, tmp)
         tmp_path = tmp.name
 
@@ -117,9 +111,7 @@ def test_missing_required_key_raises():
     """A YAML missing a required key must raise ValueError."""
     bad_config = {"sensors": ["rgb"]}
 
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".yaml", delete=False
-    ) as tmp:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as tmp:
         yaml.dump(bad_config, tmp)
         tmp_path = tmp.name
 

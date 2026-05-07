@@ -1,4 +1,5 @@
 """Tests for image quality scoring."""
+
 import numpy as np
 import pytest
 

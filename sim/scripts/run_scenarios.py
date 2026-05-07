@@ -4,6 +4,7 @@
 Discovers scenario YAMLs, runs each via run_mission.py, and optionally
 validates artifacts. Produces a summary table at the end.
 """
+
 import argparse
 import asyncio
 import glob
@@ -55,6 +56,7 @@ async def run_single_scenario(
     """
     if runner is None:
         from run_mission import run_mission
+
         runner = run_mission
 
     name = load_scenario_name(scenario_path)
@@ -67,9 +69,7 @@ async def run_single_scenario(
             timeout=timeout,
         )
         duration = time.monotonic() - start
-        return ScenarioResult(
-            name=name, path=scenario_path, passed=ok, duration_s=duration
-        )
+        return ScenarioResult(name=name, path=scenario_path, passed=ok, duration_s=duration)
     except Exception as e:
         duration = time.monotonic() - start
         return ScenarioResult(
@@ -128,9 +128,7 @@ async def run_all_scenarios(
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run scenario matrix")
-    parser.add_argument(
-        "--dir", required=True, help="Directory containing scenario YAMLs"
-    )
+    parser.add_argument("--dir", required=True, help="Directory containing scenario YAMLs")
     parser.add_argument(
         "--address",
         default="udp://:14540",
@@ -148,9 +146,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 if __name__ == "__main__":
     args = _parse_args()
     results = asyncio.run(
-        run_all_scenarios(
-            directory=args.dir, address=args.address, timeout=args.timeout
-        )
+        run_all_scenarios(directory=args.dir, address=args.address, timeout=args.timeout)
     )
     all_passed = all(r.passed for r in results) if results else False
     sys.exit(0 if all_passed else 1)

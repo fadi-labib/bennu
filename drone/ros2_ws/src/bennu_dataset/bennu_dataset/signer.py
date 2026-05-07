@@ -1,4 +1,5 @@
 """Ed25519 manifest signing for Bennu mission bundles."""
+
 import base64
 import binascii
 import json
@@ -50,9 +51,7 @@ class ManifestSigner:
             ) from e
 
         if signing_key.verify_key.encode() != stored_pub.encode():
-            raise ValueError(
-                f"Public key {pub_path} does not match private key {key_path}"
-            )
+            raise ValueError(f"Public key {pub_path} does not match private key {key_path}")
         return cls(signing_key)
 
     def export_keys(self, key_path: Path, pub_path: Path) -> None:

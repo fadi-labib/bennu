@@ -16,7 +16,5 @@ def create_backend(name: str) -> CaptureBackend:
     Raises ValueError if the name is not recognized.
     """
     if name not in _REGISTRY:
-        raise ValueError(
-            f"Unknown camera backend: {name} (valid: {', '.join(sorted(_REGISTRY))})"
-        )
+        raise ValueError(f"Unknown camera backend: {name} (valid: {', '.join(sorted(_REGISTRY))})")
     return _REGISTRY[name]()
