@@ -64,7 +64,7 @@ jobs:
             -v --tb=short \
             --cov=drone/ros2_ws/src \
             --cov-report=term-missing \
-            --cov-fail-under=70 \
+            --cov-fail-under=90 \
             --junitxml=test-results.xml
 
       - name: Test report
