@@ -1,7 +1,7 @@
 # Development and testing dependencies
 pytest>=7,<9
 pytest-cov>=4,<6
-jsonschema>=4,<5
+jsonschema>=4.26.0,<5
 pynacl>=1.5,<2
 pyyaml>=6,<7
 mavsdk>=2,<3
