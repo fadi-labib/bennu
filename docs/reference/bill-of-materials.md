@@ -3,7 +3,19 @@
 Complete parts list for the Bennu 7" photogrammetry quadcopter.
 
 !!! info "Pricing"
-    Prices estimated as of 2026. Total: **~$650--850** excluding RC transmitter and 3D printer.
+    Prices estimated as of 2026. Total: **~$550--750** excluding RC transmitter and 3D printer.
+
+## Frame (~$50--70)
+
+| Component | Part | Price | Notes |
+|---|---|---|---|
+| Base frame | TBS Source One V5 7" Deadcat | $35--45 | Open-source carbon fiber frame, 30.5mm stack, deadcat = no props in camera view |
+| GPS mast base | 3D printed (CF-PETG) | ~$2 filament | Clips onto rear standoffs, holds 12mm CF tube |
+| Pi 4 top plate adapter | 3D printed (CF-PETG) | ~$2 filament | Mounts Pi 4 above FC stack on standoffs |
+| Camera mount | 3D printed (CF-PETG) | ~$2 filament | Bottom-mount, 15° forward tilt for IMX477 |
+| Canopy | 3D printed (CF-PETG) | ~$3 filament | Protects Pi 4 and wiring |
+| CF tube 12mm OD x 150mm | GPS mast | $5 | Vertical mast for GPS antenna |
+| M3 hardware + heat-set inserts | Assorted | $10 | Frame assembly |
 
 ## Flight Controller & Core Electronics (~$350--400)
 
@@ -26,10 +38,30 @@ Complete parts list for the Bennu 7" photogrammetry quadcopter.
 | Camera | Raspberry Pi HQ Camera (IMX477) | $50 | 12.3MP, CS-mount, ~35g |
 | Lens | 6mm CS-mount | $20 | ~2cm/pixel GSD at 50--80m |
 
-## Companion Computer (~$100)
+## Companion Computer (~$75)
 
 | Component | Part | Price | Notes |
 |---|---|---|---|
-| Computer | Raspberry Pi 5 (8GB) | $80 | ROS2, uXRCE-DDS, libcamera |
-| Storage | 64GB+ microSD or NVMe HAT | $15--30 | Image storage during flight |
-| Power | BEC 5V 3A | $5--10 | Powered from drone battery |
+| Computer | Raspberry Pi 4 (4GB) | $55 | ROS2, uXRCE-DDS, libcamera |
+| Storage | 64GB+ microSD | $10--15 | Image storage during flight |
+| Power | BEC 5V 3A | $5--10 | Dedicated BEC from battery voltage |
+
+## Weight Budget
+
+| Component | Weight |
+|---|---|
+| Source One V5 7" DC frame | ~144g |
+| 4x T-Motor V2207.5 | ~120g |
+| Tekko32 4-in-1 ESC | ~12g |
+| Pixhawk 6C + PM02 | ~55g |
+| M9N GPS + mast | ~30g |
+| RC receiver + SiK radio | ~20g |
+| Raspberry Pi 4 + SD card | ~46g |
+| IMX477 + lens | ~40g |
+| BEC + wiring + connectors | ~35g |
+| 3D printed adapters | ~30g |
+| **Dry weight** | **~530g** |
+| 4S 2200mAh battery | ~200g |
+| **AUW (2200mAh)** | **~730g** |
+| 4S 3000mAh battery | ~280g |
+| **AUW (3000mAh)** | **~810g** |

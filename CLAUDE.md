@@ -5,14 +5,14 @@
 
 ## Tech Stack
 - **Flight Controller:** PX4 v1.16+ on Holybro Pixhawk 6C
-- **Companion Computer:** Raspberry Pi 5 (8GB), Ubuntu 24.04, ROS2 Jazzy
+- **Companion Computer:** Raspberry Pi 4 (4GB), Ubuntu 24.04, ROS2 Jazzy
 - **PX4-ROS2 Bridge:** uXRCE-DDS (not MAVROS)
 - **Camera:** Raspberry Pi HQ Camera (IMX477) + 6mm CS-mount lens
 - **Ground Station:** QGroundControl + WebODM (Docker)
 - **Language:** Python (ROS2 nodes), Bash (scripts)
 
 ## Repo Structure
-- `drone/` — code that runs onboard the Pi 5
+- `drone/` — code that runs onboard the Pi 4
 - `ground/` — code that runs on the ground station PC
 - `firmware/` — PX4 parameter files and flash scripts
 - `frame/` — 3D print files (STL/STEP)

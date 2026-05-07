@@ -30,6 +30,11 @@ BAT_CRIT_THR: 0.15         # Critical at 15%
 BAT_EMERGEN_THR: 0.10      # Emergency at 10%
 COM_LOW_BAT_ACT: 2         # Low battery action: return to launch
 
+# Geofence
+GF_ACTION: 3               # Geofence violation action (0=None 1=Warning 2=Hold 3=RTL 4=Terminate 5=Land)
+GF_MAX_HOR_DIST: 200       # Max horizontal distance from home (meters)
+GF_MAX_VER_DIST: 120       # Max altitude (meters)
+
 # General
 COM_ARM_WO_GPS: 0          # Require GPS to arm
 COM_ARM_EKF_POS: 0.5       # EKF position error threshold for arming

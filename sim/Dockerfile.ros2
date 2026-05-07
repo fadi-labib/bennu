@@ -45,6 +45,7 @@ COPY drone/ros2_ws/src/bennu_camera /ros2_ws/src/bennu_camera
 COPY drone/ros2_ws/src/bennu_dataset /ros2_ws/src/bennu_dataset
 COPY drone/ros2_ws/src/bennu_mission /ros2_ws/src/bennu_mission
 COPY drone/ros2_ws/src/bennu_bringup /ros2_ws/src/bennu_bringup
+COPY drone/ros2_ws/src/bennu_survey /ros2_ws/src/bennu_survey
 
 # Build workspace
 WORKDIR /ros2_ws

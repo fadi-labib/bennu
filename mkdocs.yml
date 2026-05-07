@@ -77,6 +77,7 @@ nav:
       - System Architecture: concepts/system-architecture.md
       - Photogrammetry Pipeline: concepts/photogrammetry-pipeline.md
       - Simulation Stack: concepts/simulation-stack.md
+      - Obstacle Avoidance: concepts/obstacle-avoidance.md
   - Reference:
       - reference/index.md
       - Bill of Materials: reference/bill-of-materials.md
