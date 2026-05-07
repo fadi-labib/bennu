@@ -1,0 +1,51 @@
+/* Bennu brand colors — adapted from fadilabib.com navy palette */
+
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #1e3a63;
+  --md-primary-fg-color--light: #264b7d;
+  --md-primary-fg-color--dark: #0a1628;
+  --md-primary-bg-color: #ffffff;
+  --md-accent-fg-color: #3b7dd8;
+  --md-typeset-a-color: #264b7d;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: #0a1628;
+  --md-default-bg-color--light: #0f1d35;
+  --md-default-fg-color: #dbeafe;
+  --md-default-fg-color--light: #93c5fd;
+  --md-primary-fg-color: #162a4a;
+  --md-primary-fg-color--light: #1e3a63;
+  --md-primary-fg-color--dark: #0a1628;
+  --md-primary-bg-color: #dbeafe;
+  --md-accent-fg-color: #6ba3e8;
+  --md-typeset-a-color: #6ba3e8;
+  --md-code-bg-color: #0f1d35;
+}
+
+/* Header bar */
+.md-header {
+  background-color: #0a1628;
+}
+
+/* Tabs */
+.md-tabs {
+  background-color: #0f1d35;
+}
+
+/* Admonitions — navy tint */
+.md-typeset .admonition,
+.md-typeset details {
+  border-left-color: #3b7dd8;
+}
+
+/* Code blocks */
+[data-md-color-scheme="default"] .md-typeset code {
+  background-color: #eff6ff;
+  color: #1e3a63;
+}
+
+[data-md-color-scheme="slate"] .md-typeset code {
+  background-color: #162a4a;
+  color: #93c5fd;
+}
