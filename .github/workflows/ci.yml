@@ -7,7 +7,23 @@ on:
     branches: [main]
 
 jobs:
-  lint-and-test:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install ruff
+        run: pip install "ruff>=0.4,<1"
+
+      - name: Lint
+        run: ruff check .
+
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,15 +36,11 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements-dev.txt
-          # Install all bennu packages in editable mode
           pip install -e drone/ros2_ws/src/bennu_camera
           pip install -e drone/ros2_ws/src/bennu_core
           pip install -e drone/ros2_ws/src/bennu_dataset
           pip install -e drone/ros2_ws/src/bennu_mission
           pip install -e drone/ros2_ws/src/bennu_survey
-
-      - name: Lint
-        run: ruff check .
 
       - name: Test
         run: python -m pytest drone/ros2_ws/src/*/test/ tests/ sim/scripts/ -v --tb=short
