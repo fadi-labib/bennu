@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'sim/Dockerfile.*'
+      - 'drone/ros2_ws/src/**'
+      - 'requirements-dev.txt'
   schedule:
     - cron: '0 4 * * 0'  # Weekly Sunday 4am UTC
   workflow_dispatch:
