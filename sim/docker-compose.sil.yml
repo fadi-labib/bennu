@@ -1,5 +1,5 @@
 # Bennu SIL Testing — Headless CI + smoke tests
-# Usage: make test-sitl
+# Usage: make test-smoke (single scenario) or make test-sitl (all scenarios)
 #
 # px4-sitl uses prebuilt GHCR image with local build fallback.
 # test-runner always builds locally. No GPU required.

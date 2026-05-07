@@ -3,7 +3,7 @@
 #
 # Run `make help` to see all available commands.
 
-.PHONY: dev dev-watch dev-debug test-unit test-sitl test-scenarios test-all clean help
+.PHONY: dev dev-watch dev-debug test test-smoke test-sitl test-all clean help
 
 COMPOSE_DEV = docker compose -f docker-compose.dev.yml
 COMPOSE_SIL = docker compose -f docker-compose.sil.yml
@@ -27,20 +27,20 @@ dev-debug: ## Start debug environment with Gazebo GUI (requires GPU + xhost)
 	$(COMPOSE_DBG) up -d
 	@echo "Debug environment ready with Gazebo GUI."
 
-test-unit: ## Run unit + contract + integration tests (no PX4)
+test: ## Run unit + contract + integration tests (no PX4 needed)
 	$(COMPOSE_DEV) up -d --no-deps ros2-dev
 	$(DEV_EXEC) "cd /ros2_ws && for pkg in src/bennu/*/; do pip install --break-system-packages -e \$$pkg 2>/dev/null; done && \
 		python3 -m pytest src/bennu/*/test/ tests/ -v"
 
-test-sitl: ## Run full mission SIL headless (pulls GHCR images, or: make test-sitl BUILD=1)
+test-smoke: ## Run single SIL smoke test (nominal_survey scenario)
 	$(COMPOSE_SIL) up $(if $(BUILD),--build) --abort-on-container-exit --exit-code-from test-runner; \
 		exit_code=$$?; $(COMPOSE_SIL) down -v; exit $$exit_code
 
-test-scenarios: ## Run scenario matrix
+test-sitl: ## Run all SIL scenario tests
 	$(COMPOSE_SIL) run --rm test-runner \
 		python3 /ros2_ws/scripts/run_scenarios.py --dir /ros2_ws/scenarios
 
-test-all: test-unit ## Run unit + sitl tests
+test-all: test ## Run all tests (unit + all SIL scenarios)
 	$(COMPOSE_DEV) down -v 2>/dev/null || true
 	$(MAKE) test-sitl
 

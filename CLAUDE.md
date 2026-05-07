@@ -32,8 +32,8 @@
 - Transfer images: `./ground/transfer/sync_images.sh`
 - Start sim (dev): `cd sim && make dev`
 - Start sim (GUI): `cd sim && make dev-debug`
-- Run unit tests: `cd sim && make test-unit`
-- Run SIL tests: `cd sim && make test-sitl`
+- Run unit tests: `cd sim && make test`
+- Run SIL tests: `cd sim && make test-smoke`
 - Stop sim: `cd sim && make clean`
 
 ## Workflow Rules

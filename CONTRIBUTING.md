@@ -30,8 +30,8 @@ Open a [GitHub issue](https://github.com/fadi-labib/bennu/issues) with:
 2. **Make your changes.** Follow the code style and conventions below.
 3. **Test locally:**
    ```bash
-   cd sim && make test-unit    # Unit tests
-   cd sim && make test-sitl    # SIL integration tests
+   cd sim && make test    # Unit tests
+   cd sim && make test-smoke    # SIL integration tests
    ```
 4. **Commit** with a clear message (see commit format below).
 5. **Push** your branch and open a pull request against `main`.

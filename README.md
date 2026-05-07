@@ -109,8 +109,8 @@ Bennu uses a Docker-based PX4 SITL + Gazebo Harmonic simulation stack:
 cd sim
 make dev          # Start headless sim (PX4 + ROS2)
 make dev-debug    # Start with Gazebo GUI (requires GPU + X11)
-make test-unit    # Run unit tests in container
-make test-sitl    # Run SIL mission smoke test
+make test    # Run unit tests in container
+make test-smoke    # Run SIL mission smoke test
 make clean        # Stop and remove containers
 ```
 

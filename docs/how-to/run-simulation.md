@@ -38,7 +38,7 @@ use cases. A Makefile in `sim/` wraps all Docker Compose commands.
 | Environment | Compose File | Make Target | Use Case |
 |---|---|---|---|
 | Dev | `docker-compose.dev.yml` | `make dev` | Interactive development, pytest-watch |
-| SIL | `docker-compose.sil.yml` | `make test-sitl` | Headless CI, automated mission tests |
+| SIL | `docker-compose.sil.yml` | `make test-smoke` / `make test-sitl` | Headless CI, automated mission tests |
 | Debug | `docker-compose.debug.yml` | `make dev-debug` | Gazebo 3D GUI with GPU passthrough |
 
 ## Start the Simulation
@@ -110,13 +110,13 @@ Docker and the simulation.
 cd sim
 
 # Unit, contract, and integration tests (no PX4 needed)
-make test-unit
+make test
 
 # Full mission SIL test (headless, requires PX4 SITL)
-make test-sitl
+make test-smoke
 
 # Run all scenario tests
-make test-scenarios
+make test-sitl
 
 # Run all tests
 make test-all
@@ -201,10 +201,10 @@ Run `cd sim && make help` to see all available commands:
 dev                  Start dev environment (headless PX4 + ros2-dev shell)
 dev-watch            Start dev + pytest-watch auto-rerun
 dev-debug            Start debug environment with Gazebo GUI (requires GPU + xhost)
-test-unit            Run unit + contract + integration tests (no PX4)
-test-sitl            Run full mission SIL headless
-test-scenarios       Run scenario matrix
-test-all             Run unit + sitl tests
+test                 Run unit + contract + integration tests (no PX4)
+test-smoke           Run single SIL smoke test (nominal_survey scenario)
+test-sitl            Run all SIL scenario tests
+test-all             Run all tests (unit + all SIL scenarios)
 clean                Stop all containers, remove volumes
 help                 Show available commands
 ```

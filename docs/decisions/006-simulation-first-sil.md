@@ -22,7 +22,7 @@ Implement a layered simulation infrastructure with these architectural choices:
 
 ### Makefile developer interface
 
-All sim commands go through `sim/Makefile`: `make dev`, `make test-unit`, `make test-sitl`, `make clean`. Developers never type docker compose flags directly.
+All sim commands go through `sim/Makefile`: `make dev`, `make test`, `make test-smoke`, `make clean`. Developers never type docker compose flags directly.
 
 ### Explicit camera backends
 

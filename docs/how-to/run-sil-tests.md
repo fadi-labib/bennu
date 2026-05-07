@@ -12,7 +12,7 @@ Run automated Software-in-the-Loop (SIL) mission tests against PX4 SITL. These t
 
 ```bash
 cd sim
-make test-sitl
+make test-smoke
 ```
 
 This starts PX4 SITL + Gazebo (headless), waits for GPS lock, runs the default survey mission, and exits with code 0 on success or 1 on failure. Containers are cleaned up automatically.
@@ -21,7 +21,7 @@ This starts PX4 SITL + Gazebo (headless), waits for GPS lock, runs the default s
 
 ```mermaid
 sequenceDiagram
-    participant M as make test-sitl
+    participant M as make test-smoke
     participant P as PX4 SITL
     participant T as test-runner
     
@@ -117,16 +117,16 @@ Or run all scenarios:
 
 ```bash
 cd sim
-make test-scenarios
+make test-sitl
 ```
 
 ## Make Targets
 
 | Command | What it does |
 |---------|-------------|
-| `make test-sitl` | Run default SIL mission (nominal_survey) |
-| `make test-scenarios` | Run all scenarios in `sim/scenarios/` |
-| `make test-unit` | Run unit tests only (no PX4 needed) |
+| `make test-smoke` | Run default SIL mission (nominal_survey) |
+| `make test-sitl` | Run all scenarios in `sim/scenarios/` |
+| `make test` | Run unit tests only (no PX4 needed) |
 | `make test-all` | Run unit tests + SIL test |
 | `make clean` | Stop all containers and remove volumes |
 
@@ -194,7 +194,7 @@ PX4 SITL GPS simulation takes 30-120s depending on machine speed. On slow CI run
 
 ```bash
 # Run with longer timeout
-make test-sitl TIMEOUT=300
+make test-smoke TIMEOUT=300
 ```
 
 ### Mission timeout

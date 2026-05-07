@@ -146,7 +146,7 @@ graph TB
 | PX4 ↔ ROS2 | uXRCE-DDS over UART (TELEM2) | uXRCE-DDS over UDP 8888 |
 | Camera | `libcamera-still` → 12.3MP JPEG | Placeholder backend → minimal JPEG |
 | Image transfer | WiFi / rsync post-flight | Volume mount, validated by pytest |
-| Launch command | `ros2 launch bennu_bringup drone.launch.py` | `make dev` or `make test-sitl` |
+| Launch command | `ros2 launch bennu_bringup drone.launch.py` | `make dev` or `make test-smoke` |
 
 The key insight: **QGroundControl, MAVSDK, and your ROS2 nodes cannot tell the difference** between real hardware and simulation. They use the same MAVLink and uXRCE-DDS messages in both cases. This is what makes simulation-first development possible — code tested in SITL will behave identically on the real drone.
 

@@ -164,7 +164,7 @@ No PX4, no Gazebo. Runs inside the `ros2-dev` container.
 
 Trigger: **pytest-watch auto-reruns on file change** inside the dev container.
 
-Command: `make test-unit`
+Command: `make test`
 
 Target: under 5 seconds.
 
@@ -201,7 +201,7 @@ Runs:
 
 This is the main integration gate for drone behavior.
 
-Command: `make test-sitl`
+Command: `make test-smoke`
 
 Target: under 10 minutes.
 
@@ -218,7 +218,7 @@ Runs scenario matrix:
 - Low-battery RTL
 - DDS agent restart
 
-Command: `make test-scenarios`
+Command: `make test-sitl`
 
 Target: 20-40 minutes. Nightly CI and before release tags.
 
@@ -296,10 +296,10 @@ not just the flight path.
 ```makefile
 make dev            # Start dev container with optional Gazebo GUI
 make dev-watch      # Start dev container + pytest-watch auto-rerun
-make test-unit      # Run Tier 0 inside ros2-dev (instant)
+make test      # Run Tier 0 inside ros2-dev (instant)
 make test-component # Run Tier 1 component SIL (< 2 min)
-make test-sitl      # Run Tier 2 full mission SIL headless (< 10 min)
-make test-scenarios # Run Tier 3 scenario matrix (20-40 min)
+make test-smoke      # Run Tier 2 full mission SIL headless (< 10 min)
+make test-sitl # Run Tier 3 scenario matrix (20-40 min)
 make test-replay    # Run Tier 4 replay regression
 make test-all       # Run Tiers 0-2 sequentially
 make clean          # Stop all containers, remove volumes
@@ -310,7 +310,7 @@ make clean          # Stop all containers, remove volumes
 1. `make dev-watch` — starts ros2-dev container with pytest-watch
 2. Edit Python code on host — volumes sync to container
 3. pytest-watch detects changes, reruns relevant unit tests (~1-2s)
-4. When ready for integration: `make test-sitl` (~5-10 min)
+4. When ready for integration: `make test-smoke` (~5-10 min)
 
 ### Deep Debug Loop
 
@@ -465,7 +465,7 @@ Bennu is simulation-first when all of the following are true:
 4. Failed simulation jobs publish enough artifacts to debug remotely
 5. At least one degraded scenario runs automatically, not just the happy path
 6. The same mission bundle contract is produced by simulation and hardware modes
-7. `make test-unit` gives sub-5-second feedback with auto-rerun on file changes
+7. `make test` gives sub-5-second feedback with auto-rerun on file changes
 8. Prebuilt Docker images on GHCR keep CI jobs under 10 minutes
 
 ## First Milestone
