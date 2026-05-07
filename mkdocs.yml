@@ -79,6 +79,7 @@ nav:
       - how-to/index.md
       - Flash PX4 Parameters: how-to/flash-px4-params.md
       - Run the Simulation: how-to/run-simulation.md
+      - Run SIL Tests: how-to/run-sil-tests.md
       - Transfer Images: how-to/transfer-images.md
       - Start WebODM: how-to/start-webodm.md
   - Concepts:

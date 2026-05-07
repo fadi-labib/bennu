@@ -115,9 +115,14 @@ make test-unit
 # Full mission SIL test (headless, requires PX4 SITL)
 make test-sitl
 
+# Run all scenario tests
+make test-scenarios
+
 # Run all tests
 make test-all
 ```
+
+For detailed SIL testing guidance — scenarios, timeouts, debugging — see [Run SIL Tests](run-sil-tests.md).
 
 ## Fly the Drone
 
