@@ -45,5 +45,10 @@ jobs:
           pip install -e drone/ros2_ws/src/bennu_mission
           pip install -e drone/ros2_ws/src/bennu_survey
 
-      - name: Test
-        run: python -m pytest drone/ros2_ws/src/*/test/ tests/ sim/scripts/ -v --tb=short
+      - name: Test with coverage
+        run: |
+          python -m pytest drone/ros2_ws/src/*/test/ tests/ sim/scripts/ \
+            -v --tb=short \
+            --cov=drone/ros2_ws/src \
+            --cov-report=term-missing \
+            --cov-fail-under=70
