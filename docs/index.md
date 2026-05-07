@@ -29,9 +29,30 @@ New to Bennu? Start with the [Build Guide](build-guide/index.md) for step-by-ste
 
 ## Explore the Docs
 
-- :material-hammer-wrench: **[Build Guide](build-guide/index.md)** — Parts checklist, frame assembly, first flight
-- :material-wrench: **[How-to Guides](how-to/index.md)** — Task-oriented recipes
-- :material-lightbulb: **[Concepts](concepts/index.md)** — Architecture and design explanations
-- :material-book-open-variant: **[Reference](reference/index.md)** — Technical specifications and data
-- :material-scale-balance: **[Decisions](decisions/index.md)** — Architecture Decision Records
-- :material-post: **[Build Log](blog/index.md)** — Project journal
+<div class="grid cards" markdown>
+
+- :material-hammer-wrench: **[Build Guide](build-guide/index.md)**
+
+    Parts checklist, frame assembly, first flight
+
+- :material-wrench: **[How-to Guides](how-to/index.md)**
+
+    Task-oriented recipes
+
+- :material-lightbulb: **[Concepts](concepts/index.md)**
+
+    Architecture and design explanations
+
+- :material-book-open-variant: **[Reference](reference/index.md)**
+
+    Technical specifications and data
+
+- :material-scale-balance: **[Decisions](decisions/index.md)**
+
+    Architecture Decision Records
+
+- :material-post: **[Build Log](blog/index.md)**
+
+    Project journal
+
+</div>
