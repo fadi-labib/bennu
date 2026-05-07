@@ -37,9 +37,19 @@
 - Stop sim: `cd sim && make clean`
 
 ## Workflow Rules
-- Never include Co-Authored-By Claude in commit messages
 - Commit and push after every task
 - When a plan is completed: convert it to an ADR, design document, and/or mkdocs page, then delete the plan file — completed plans should not linger
+
+## AI Coding Assistants Policy
+Adapted from the [Linux kernel coding assistants policy](https://github.com/torvalds/linux/blob/master/Documentation/process/coding-assistants.rst).
+
+- **Human responsibility:** The human submitter reviews all AI-generated code, ensures correctness, and takes full responsibility for the contribution.
+- **No fake authorship:** AI tools must NOT be listed as commit author or co-author. Only humans author commits.
+- **Attribution:** When AI tools contribute to development, use an `Assisted-by` trailer in the commit message:
+  ```
+  Assisted-by: Claude:claude-opus-4-6
+  ```
+- **Licensing:** All contributions must be compatible with Apache-2.0.
 
 ## Design Doc
 See `docs/plans/2026-03-08-drone-platform-readiness-design.md`

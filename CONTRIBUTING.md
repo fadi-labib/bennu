@@ -64,6 +64,54 @@ test: add integration test for camera timer parameter
 
 Prefix with a type: `feat`, `fix`, `test`, `docs`, `refactor`, `config`, `ci`.
 
+## AI Coding Assistants
+
+Adapted from the [Linux kernel coding assistants policy](https://github.com/torvalds/linux/blob/master/Documentation/process/coding-assistants.rst).
+
+AI tools (Claude, Copilot, ChatGPT, etc.) may be used to assist with contributions. When they are, the following rules apply:
+
+### Human Responsibility
+
+The human submitter is responsible for:
+
+- Reviewing all AI-generated code for correctness and safety
+- Ensuring compliance with the project's licensing (Apache-2.0)
+- Testing the contribution locally before submitting
+- Taking full responsibility for the contribution
+
+AI tools do not have legal standing. A human must stand behind every contribution.
+
+### Attribution
+
+AI tools must NOT be listed as commit author or co-author (`Co-Authored-By` is not permitted for AI tools). Only humans author commits.
+
+When AI tools contribute to development, include an `Assisted-by` trailer in the commit message body:
+
+```
+feat: add terrain following for survey waypoints
+
+Implement altitude adjustment using DEM elevation data to maintain
+constant AGL over hilly terrain.
+
+Assisted-by: Claude:claude-opus-4-6
+```
+
+The format is `Assisted-by: TOOL_NAME:MODEL_VERSION`. This helps track the role of AI in the project's development without misrepresenting authorship.
+
+### What Counts as AI Assistance
+
+Include the `Assisted-by` trailer when an AI tool:
+
+- Generated or substantially wrote code that was committed
+- Designed an architecture or algorithm that was implemented
+- Debugged an issue by identifying the root cause
+
+Do NOT include it for:
+
+- Using AI for general questions or documentation lookup
+- Autocomplete suggestions (IDE-level Copilot completions)
+- Spell-checking or grammar fixes
+
 ## Code of Conduct
 
 Be respectful. Constructive feedback is welcome; personal attacks are not. Maintainers reserve the right to remove comments or block users who violate this principle.
