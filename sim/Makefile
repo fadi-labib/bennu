@@ -1,7 +1,8 @@
 # Bennu Simulation — Developer Interface
-# Usage: cd sim && make <target>
+# Usage: `make <target>` from the repo root, or `make <target>` from sim/.
 #
-# Run `make help` to see all available commands.
+# The repo root has a forwarder Makefile that delegates to this one,
+# so both invocation styles work. Run `make help` to see all targets.
 
 .PHONY: dev dev-watch dev-debug sim qgc test test-smoke test-sitl test-all clean help
 
@@ -14,7 +15,7 @@ DEV_EXEC    = docker exec bennu-ros2-dev bash -c
 SCENARIO ?= nominal_survey.yaml
 
 help: ## Show available commands
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 dev: ## Start dev environment (headless PX4 + ros2-dev shell)
