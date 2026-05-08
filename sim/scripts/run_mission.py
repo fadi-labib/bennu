@@ -15,7 +15,6 @@ from pathlib import Path
 import yaml
 from mavsdk import System
 from mavsdk.mission import MissionItem, MissionPlan
-from wait_for_px4 import wait_for_px4
 
 
 def load_scenario(path: str) -> dict:
@@ -121,7 +120,13 @@ async def run_mission(scenario_path: str, address: str, timeout: int) -> bool:
     drone = await _connect_with_backoff(address)
 
     print("[run_mission] Waiting for PX4 readiness (GPS fix + home position)...")
-    await asyncio.wait_for(wait_for_px4(address=address), timeout=timeout)
+
+    async def _wait_for_ready() -> None:
+        async for health in drone.telemetry.health():
+            if health.is_global_position_ok and health.is_home_position_ok:
+                return
+
+    await asyncio.wait_for(_wait_for_ready(), timeout=timeout)
 
     # 2. Get home position for waypoint generation
     print("[run_mission] Getting home position...")
