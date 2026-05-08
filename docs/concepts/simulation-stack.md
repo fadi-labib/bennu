@@ -96,6 +96,6 @@ In both modes, the camera node subscribes to `VehicleGlobalPosition` and writes 
 | Physics | Real world | Gazebo Harmonic |
 | Launch argument | `use_sim:=false` | `use_sim:=true` |
 | QGC connection | Telemetry radio (MAVLink) | UDP 14550 (localhost, host networking) |
-| Start command | Manual launch on Pi 4 | `cd sim && make dev` |
+| Start command | Manual launch on Pi 4 | `make sim` (one command from repo root) |
 
 The goal is to minimize the difference between simulation and hardware. The same ROS2 nodes, the same launch files, and the same uXRCE-DDS protocol are used in both environments. Only the transport layer and camera backend change.

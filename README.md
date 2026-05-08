@@ -72,7 +72,7 @@ ruff check .
 
 # Start simulation (requires Docker) — one command brings up PX4 SITL,
 # QGroundControl, and auto-flies a survey mission
-cd sim && make sim
+make sim
 ```
 
 ## ROS2 Packages
@@ -107,7 +107,7 @@ The manifest is canonicalized, signed with Ed25519, and validated against a JSON
 Bennu uses a Docker-based PX4 SITL + Gazebo Harmonic simulation stack:
 
 ```bash
-cd sim
+# All commands run from the repo root
 make sim          # One-command: containers + QGC + auto-fly nominal survey + shell
 make dev          # Headless: containers only (CI / SSH / no GUI)
 make dev-debug    # Headless + Gazebo GUI (requires GPU + X11)
@@ -115,6 +115,7 @@ make qgc          # Launch QGroundControl on its own
 make test         # Run unit tests in container
 make test-smoke   # Run SIL mission smoke test
 make clean        # Stop and remove containers
+make help         # Show all commands
 ```
 
 ## Documentation

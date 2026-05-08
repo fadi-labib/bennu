@@ -61,7 +61,6 @@ use cases. A Makefile in `sim/` wraps all Docker Compose commands.
 ### One Command (recommended)
 
 ```bash
-cd sim
 make sim
 ```
 
@@ -91,7 +90,6 @@ When done, exit the shell and run `make clean` to stop containers.
 ### Headless Mode
 
 ```bash
-cd sim
 make dev
 ```
 
@@ -101,7 +99,6 @@ this on CI runners, over SSH, or when you don't need a ground station UI.
 ### QGroundControl Only
 
 ```bash
-cd sim
 make qgc
 ```
 
@@ -111,7 +108,6 @@ to a real Pixhawk over USB.
 To start dev mode with pytest-watch auto-rerunning tests on file changes:
 
 ```bash
-cd sim
 make dev-watch
 ```
 
@@ -125,7 +121,6 @@ NVIDIA GPU passthrough and X11 forwarding:
 xhost +local:docker
 
 # Launch with Gazebo GUI enabled
-cd sim
 make dev-debug
 ```
 
@@ -162,8 +157,6 @@ Docker and the simulation.
 ## Run Tests
 
 ```bash
-cd sim
-
 # Unit, contract, and integration tests (no PX4 needed)
 make test
 
@@ -260,13 +253,12 @@ Alternatively, use QGroundControl's built-in MAVLink console
 ## Stop the Simulation
 
 ```bash
-cd sim
 make clean
 ```
 
 ## All Make Targets
 
-Run `cd sim && make help` to see all available commands:
+Run `make help` from the repo root to see all available commands:
 
 ```
 sim                  Containers + QGC + auto-fly $(SCENARIO) + ros2-dev shell

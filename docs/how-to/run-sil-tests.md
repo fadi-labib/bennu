@@ -11,7 +11,6 @@ Run automated Software-in-the-Loop (SIL) mission tests against PX4 SITL. These t
 ## Quick Start
 
 ```bash
-cd sim
 make test-smoke
 ```
 
@@ -240,7 +239,6 @@ docker compose -f docker-compose.sil.yml run --rm test-runner \
 Or run all scenarios:
 
 ```bash
-cd sim
 make test-sitl
 ```
 
