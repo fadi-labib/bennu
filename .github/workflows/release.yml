@@ -42,8 +42,23 @@ jobs:
             echo 'CHANGELOG_EOF'
           } >> "$GITHUB_OUTPUT"
 
+      - name: Package release artifacts
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          mkdir -p dist
+          tar -czf "dist/bennu-${TAG_NAME}-px4-params.tar.gz" \
+            -C firmware/px4 params upload_params.sh flash.sh VERSION
+          tar -czf "dist/bennu-${TAG_NAME}-contract-v1.tar.gz" \
+            -C contract v1
+          (cd dist && sha256sum *.tar.gz > checksums.sha256)
+          ls -lh dist/
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           body: ${{ steps.changelog.outputs.changelog }}
           generate_release_notes: false
+          files: |
+            dist/*.tar.gz
+            dist/checksums.sha256
