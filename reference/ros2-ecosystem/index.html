@@ -1,0 +1,3400 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="DIY Photogrammetry Drone — PX4 + ROS2 + OpenDroneMap">
+      
+      
+      
+        <link rel="canonical" href="https://fadi-labib.github.io/bennu/reference/ros2-ecosystem/">
+      
+      
+        <link rel="prev" href="../ros2-interfaces/">
+      
+      
+        <link rel="next" href="../compatibility-matrix/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>ROS2 Ecosystem - Bennu</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ros2-ecosystem" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Bennu" class="md-header__button md-logo" aria-label="Bennu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.5 1C8 1 10 3 10 5.5c0 .88-.25 1.7-.69 2.4l.1.1h5.18l.1-.1c-.44-.7-.69-1.52-.69-2.4C14 3 16 1 18.5 1S23 3 23 5.5 21 10 18.5 10c-.88 0-1.7-.25-2.4-.69l-1.1 1.1v3.18l1.1 1.1c.7-.44 1.52-.69 2.4-.69 2.5 0 4.5 2 4.5 4.5S21 23 18.5 23 14 21 14 18.5c0-.88.25-1.7.69-2.4l-.1-.1H9.41l-.1.1c.44.7.69 1.52.69 2.4C10 21 8 23 5.5 23S1 21 1 18.5 3 14 5.5 14c.88 0 1.7.25 2.4.69l1.1-1.1v-3.18l-1.1-1.1c-.7.44-1.52.69-2.4.69C3 10 1 8 1 5.5S3 1 5.5 1m0 2A2.5 2.5 0 0 0 3 5.5 2.5 2.5 0 0 0 5.5 8 2.5 2.5 0 0 0 8 5.5 2.5 2.5 0 0 0 5.5 3m0 13A2.5 2.5 0 0 0 3 18.5 2.5 2.5 0 0 0 5.5 21 2.5 2.5 0 0 0 8 18.5 2.5 2.5 0 0 0 5.5 16m13-13A2.5 2.5 0 0 0 16 5.5 2.5 2.5 0 0 0 18.5 8 2.5 2.5 0 0 0 21 5.5 2.5 2.5 0 0 0 18.5 3m0 13a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5 2.5 2.5 0 0 0-2.5-2.5M3.91 17.25l1.13.66c.13-.1.29-.16.46-.16a.75.75 0 0 1 .75.75l-.01.1 1.13.65-.28.5-1.13-.66c-.13.1-.29.16-.46.16a.75.75 0 0 1-.75-.75l.01-.1-1.13-.65zm-.28-11 1.13-.65-.01-.1a.75.75 0 0 1 .75-.75c.17 0 .33.06.46.16l1.13-.66.28.5-1.13.65.01.1a.75.75 0 0 1-.75.75c-.17 0-.33-.06-.46-.16l-1.13.66zm13.28-2 1.13.66c.13-.1.29-.16.46-.16a.75.75 0 0 1 .75.75l-.01.1 1.13.65-.28.5-1.13-.66c-.13.1-.29.16-.46.16a.75.75 0 0 1-.75-.75l.01-.1-1.13-.65zm-.28 15 1.12-.75a.75.75 0 0 1 .75-.75c.17 0 .33.06.46.16l1.13-.66.28.5-1.12.75a.75.75 0 0 1-.75.75c-.17 0-.33-.06-.46-.16l-1.13.66z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Bennu
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ROS2 Ecosystem
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fadi-labib/bennu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fadi-labib/bennu
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../build-guide/" class="md-tabs__link">
+          
+  
+  
+  Build Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../how-to/" class="md-tabs__link">
+          
+  
+  
+  How-to Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../concepts/" class="md-tabs__link">
+          
+  
+  
+  Concepts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../decisions/" class="md-tabs__link">
+          
+  
+  
+  Decisions
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../plans/" class="md-tabs__link">
+          
+  
+  
+  Plans
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../blog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Build Log
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Bennu" class="md-nav__button md-logo" aria-label="Bennu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.5 1C8 1 10 3 10 5.5c0 .88-.25 1.7-.69 2.4l.1.1h5.18l.1-.1c-.44-.7-.69-1.52-.69-2.4C14 3 16 1 18.5 1S23 3 23 5.5 21 10 18.5 10c-.88 0-1.7-.25-2.4-.69l-1.1 1.1v3.18l1.1 1.1c.7-.44 1.52-.69 2.4-.69 2.5 0 4.5 2 4.5 4.5S21 23 18.5 23 14 21 14 18.5c0-.88.25-1.7.69-2.4l-.1-.1H9.41l-.1.1c.44.7.69 1.52.69 2.4C10 21 8 23 5.5 23S1 21 1 18.5 3 14 5.5 14c.88 0 1.7.25 2.4.69l1.1-1.1v-3.18l-1.1-1.1c-.7.44-1.52.69-2.4.69C3 10 1 8 1 5.5S3 1 5.5 1m0 2A2.5 2.5 0 0 0 3 5.5 2.5 2.5 0 0 0 5.5 8 2.5 2.5 0 0 0 8 5.5 2.5 2.5 0 0 0 5.5 3m0 13A2.5 2.5 0 0 0 3 18.5 2.5 2.5 0 0 0 5.5 21 2.5 2.5 0 0 0 8 18.5 2.5 2.5 0 0 0 5.5 16m13-13A2.5 2.5 0 0 0 16 5.5 2.5 2.5 0 0 0 18.5 8 2.5 2.5 0 0 0 21 5.5 2.5 2.5 0 0 0 18.5 3m0 13a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5 2.5 2.5 0 0 0-2.5-2.5M3.91 17.25l1.13.66c.13-.1.29-.16.46-.16a.75.75 0 0 1 .75.75l-.01.1 1.13.65-.28.5-1.13-.66c-.13.1-.29.16-.46.16a.75.75 0 0 1-.75-.75l.01-.1-1.13-.65zm-.28-11 1.13-.65-.01-.1a.75.75 0 0 1 .75-.75c.17 0 .33.06.46.16l1.13-.66.28.5-1.13.65.01.1a.75.75 0 0 1-.75.75c-.17 0-.33-.06-.46-.16l-1.13.66zm13.28-2 1.13.66c.13-.1.29-.16.46-.16a.75.75 0 0 1 .75.75l-.01.1 1.13.65-.28.5-1.13-.66c-.13.1-.29.16-.46.16a.75.75 0 0 1-.75-.75l.01-.1-1.13-.65zm-.28 15 1.12-.75a.75.75 0 0 1 .75-.75c.17 0 .33.06.46.16l1.13-.66.28.5-1.12.75a.75.75 0 0 1-.75.75c-.17 0-.33-.06-.46-.16l-1.13.66z"/></svg>
+
+    </a>
+    Bennu
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fadi-labib/bennu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fadi-labib/bennu
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Build Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build-guide/00-parts-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parts Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build-guide/01-frame-assembly/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frame Assembly
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How-to Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    How-to Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How-to Guides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/flash-px4-params/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Flash PX4 Parameters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/run-simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run the Simulation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/run-sil-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run SIL Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/transfer-images/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transfer Images
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/start-webodm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start WebODM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/system-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/photogrammetry-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Photogrammetry Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/simulation-stack/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Simulation Stack
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/obstacle-avoidance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Obstacle Avoidance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bill-of-materials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bill of Materials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiring-diagram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wiring Diagram
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frame-specifications/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frame Specifications
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../px4-parameters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PX4 Parameters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ros2-interfaces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS2 Interfaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS2 Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS2 Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#adoption-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adoption Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#px4-ros2-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PX4-ROS2 Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PX4-ROS2 Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#px4_msgs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        px4_msgs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#px4_ros2_msg_translation_node" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        px4_ros2_msg_translation_node
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#px4-ros2-interface-lib" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        px4-ros2-interface-lib
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#px4_ros_com-not-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        px4_ros_com — Not Recommended
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#camera-image-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Camera &amp; Image Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Camera &amp; Image Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#camera_ros" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        camera_ros
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v4l2_camera-not-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v4l2_camera — Not Recommended
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#image_pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        image_pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#camera_calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        camera_calibration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#camera_info_manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        camera_info_manager
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#image_transport-compressed_image_transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        image_transport + compressed_image_transport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libcamera_ros_driver-ctu-mrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        libcamera_ros_driver (CTU-MRS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gazebo-ros2-bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gazebo-ROS2 Bridge
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Gazebo-ROS2 Bridge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ros_gz_bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ros_gz_bridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ros_gz_image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ros_gz_image
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gps-localization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPS &amp; Localization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GPS &amp; Localization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gps_umd-gps_msgs-gpsd_client-gps_tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        gps_umd (gps_msgs, gpsd_client, gps_tools)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensor_msgsnavsatfix-standard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sensor_msgs/NavSatFix (standard)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#robot_localization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        robot_localization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recording-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recording &amp; Debugging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recording &amp; Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rosbag2_storage_mcap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rosbag2_storage_mcap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foxglove_bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        foxglove_bridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#launch_testing_ros2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        launch_testing_ros2
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diagnostics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagnostics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Diagnostics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#diagnostic_updater-diagnostic_aggregator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        diagnostic_updater + diagnostic_aggregator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#autonomy-frameworks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Autonomy Frameworks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Autonomy Frameworks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aerostack2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aerostack2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nav2-gps-waypoint-following" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nav2 GPS Waypoint Following
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#apriltag_detector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        apriltag_detector
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference-projects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference Projects
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reference Projects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#marnonel6ros2_offboard_drone_control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Marnonel6/ROS2_offboard_drone_control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jacopopanaerial-autonomy-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JacopoPan/aerial-autonomy-stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ark-electronicsros2_px4_offboard_example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ARK-Electronics/ROS2_PX4_Offboard_Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sathanbernardpx4-ros2-gazebo-drone-simulation-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SathanBERNARD/PX4-ROS2-Gazebo-Drone-Simulation-Template
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parsakhaledipx4_sim_ros2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ParsaKhaledi/px4_sim_ros2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#os-rfodg-open-source-ros2-framework-for-outdoor-uav-dataset-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OS-RFODG (Open-source ROS2 Framework for Outdoor UAV Dataset Generation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../compatibility-matrix/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compatibility Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../power-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Power Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vibration-damping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibration Damping
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Decisions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Decision Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/001-px4-over-ardupilot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 PX4 over ArduPilot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/002-pi5-companion-computer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002 Pi 5 Companion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/003-rolling-shutter-camera/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003 Rolling Shutter Camera
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/004-uxrce-dds-over-mavros/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004 uXRCE-DDS over MAVROS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/005-ros2-oss-package-adoption/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005 ROS2 OSS Package Adoption
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/006-simulation-first-sil/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006 Simulation-First SIL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/007-platform-readiness-phases-0-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007 Platform Readiness Phases 0–2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plans
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Plans
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plans &amp; Design Documents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plans/2026-03-08-drone-platform-readiness-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform Readiness Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plans/2026-03-08-drone-platform-readiness-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform Readiness Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plans/2026-03-08-simulation-first-sil-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Simulation-First SIL Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#adoption-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adoption Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#px4-ros2-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PX4-ROS2 Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PX4-ROS2 Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#px4_msgs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        px4_msgs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#px4_ros2_msg_translation_node" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        px4_ros2_msg_translation_node
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#px4-ros2-interface-lib" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        px4-ros2-interface-lib
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#px4_ros_com-not-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        px4_ros_com — Not Recommended
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#camera-image-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Camera &amp; Image Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Camera &amp; Image Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#camera_ros" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        camera_ros
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v4l2_camera-not-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v4l2_camera — Not Recommended
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#image_pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        image_pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#camera_calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        camera_calibration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#camera_info_manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        camera_info_manager
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#image_transport-compressed_image_transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        image_transport + compressed_image_transport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libcamera_ros_driver-ctu-mrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        libcamera_ros_driver (CTU-MRS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gazebo-ros2-bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gazebo-ROS2 Bridge
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Gazebo-ROS2 Bridge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ros_gz_bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ros_gz_bridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ros_gz_image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ros_gz_image
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gps-localization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPS &amp; Localization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GPS &amp; Localization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gps_umd-gps_msgs-gpsd_client-gps_tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        gps_umd (gps_msgs, gpsd_client, gps_tools)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensor_msgsnavsatfix-standard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sensor_msgs/NavSatFix (standard)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#robot_localization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        robot_localization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recording-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recording &amp; Debugging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recording &amp; Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rosbag2_storage_mcap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rosbag2_storage_mcap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foxglove_bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        foxglove_bridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#launch_testing_ros2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        launch_testing_ros2
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diagnostics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagnostics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Diagnostics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#diagnostic_updater-diagnostic_aggregator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        diagnostic_updater + diagnostic_aggregator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#autonomy-frameworks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Autonomy Frameworks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Autonomy Frameworks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aerostack2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aerostack2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nav2-gps-waypoint-following" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nav2 GPS Waypoint Following
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#apriltag_detector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        apriltag_detector
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference-projects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference Projects
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reference Projects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#marnonel6ros2_offboard_drone_control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Marnonel6/ROS2_offboard_drone_control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jacopopanaerial-autonomy-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JacopoPan/aerial-autonomy-stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ark-electronicsros2_px4_offboard_example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ARK-Electronics/ROS2_PX4_Offboard_Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sathanbernardpx4-ros2-gazebo-drone-simulation-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SathanBERNARD/PX4-ROS2-Gazebo-Drone-Simulation-Template
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parsakhaledipx4_sim_ros2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ParsaKhaledi/px4_sim_ros2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#os-rfodg-open-source-ros2-framework-for-outdoor-uav-dataset-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OS-RFODG (Open-source ROS2 Framework for Outdoor UAV Dataset Generation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="ros2-ecosystem">ROS2 Ecosystem<a class="headerlink" href="#ros2-ecosystem" title="Permanent link">&para;</a></h1>
+<p>Evaluated open-source ROS2 packages for Bennu's photogrammetry drone stack (PX4 v1.16+, ROS2 Jazzy, Raspberry Pi 4, uXRCE-DDS). Packages are assessed for Jazzy compatibility, fit with Bennu's architecture, and maintenance status.</p>
+<p>See <a href="../../decisions/005-ros2-oss-package-adoption/">ADR-005</a> for the adoption decision and phased rollout.</p>
+<h2 id="adoption-summary">Adoption Summary<a class="headerlink" href="#adoption-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Category</th>
+<th>Status</th>
+<th>Phase</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>px4_msgs</code></td>
+<td>PX4 Integration</td>
+<td><strong>Adopted</strong></td>
+<td>Current</td>
+</tr>
+<tr>
+<td><code>ros_gz_bridge</code></td>
+<td>Gazebo Bridge</td>
+<td><strong>Planned</strong></td>
+<td>Tier 1</td>
+</tr>
+<tr>
+<td><code>ros_gz_image</code></td>
+<td>Gazebo Bridge</td>
+<td><strong>Planned</strong></td>
+<td>Tier 1</td>
+</tr>
+<tr>
+<td><code>launch_testing_ros2</code></td>
+<td>Testing</td>
+<td><strong>Planned</strong></td>
+<td>Tier 1</td>
+</tr>
+<tr>
+<td><code>diagnostic_updater</code></td>
+<td>Diagnostics</td>
+<td><strong>Planned</strong></td>
+<td>Tier 1</td>
+</tr>
+<tr>
+<td><code>rosbag2_storage_mcap</code></td>
+<td>Recording</td>
+<td><strong>Planned</strong></td>
+<td>Tier 2</td>
+</tr>
+<tr>
+<td><code>foxglove_bridge</code></td>
+<td>Debugging</td>
+<td><strong>Planned</strong></td>
+<td>Tier 2</td>
+</tr>
+<tr>
+<td><code>image_transport</code></td>
+<td>Camera Pipeline</td>
+<td><strong>Planned</strong></td>
+<td>Tier 3</td>
+</tr>
+<tr>
+<td><code>compressed_image_transport</code></td>
+<td>Camera Pipeline</td>
+<td><strong>Planned</strong></td>
+<td>Tier 3</td>
+</tr>
+<tr>
+<td><code>camera_info_manager</code></td>
+<td>Camera Pipeline</td>
+<td><strong>Planned</strong></td>
+<td>Tier 3</td>
+</tr>
+<tr>
+<td><code>camera_calibration</code></td>
+<td>Camera Pipeline</td>
+<td><strong>Planned</strong></td>
+<td>Tier 3</td>
+</tr>
+<tr>
+<td><code>image_pipeline</code></td>
+<td>Camera Pipeline</td>
+<td><strong>Planned</strong></td>
+<td>Tier 3</td>
+</tr>
+<tr>
+<td><code>px4_ros2_msg_translation_node</code></td>
+<td>PX4 Integration</td>
+<td><strong>Evaluate Later</strong></td>
+<td>Phase 3</td>
+</tr>
+<tr>
+<td><code>px4-ros2-interface-lib</code></td>
+<td>PX4 Integration</td>
+<td><strong>Evaluate Later</strong></td>
+<td>Phase 3</td>
+</tr>
+<tr>
+<td><code>robot_localization</code></td>
+<td>Localization</td>
+<td><strong>Evaluate Later</strong></td>
+<td>Phase 3</td>
+</tr>
+<tr>
+<td><code>Aerostack2</code></td>
+<td>Autonomy</td>
+<td><strong>Evaluate Later</strong></td>
+<td>Phase 3+</td>
+</tr>
+<tr>
+<td><code>apriltag_detector</code></td>
+<td>Testing</td>
+<td><strong>Evaluate Later</strong></td>
+<td>Phase 3+</td>
+</tr>
+<tr>
+<td><code>camera_ros</code></td>
+<td>Camera Driver</td>
+<td><strong>Monitor</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>gps_umd</code></td>
+<td>GPS</td>
+<td><strong>Monitor</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>px4_ros_com</code></td>
+<td>PX4 Integration</td>
+<td><strong>Not Recommended</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>v4l2_camera</code></td>
+<td>Camera Driver</td>
+<td><strong>Not Recommended</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>MAVROS</code></td>
+<td>PX4 Integration</td>
+<td><strong>Not Recommended</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="px4-ros2-integration">PX4-ROS2 Integration<a class="headerlink" href="#px4-ros2-integration" title="Permanent link">&para;</a></h2>
+<h3 id="px4_msgs">px4_msgs<a class="headerlink" href="#px4_msgs" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repo:</strong> <a href="https://github.com/PX4/px4_msgs">PX4/px4_msgs</a></li>
+<li><strong>What:</strong> ROS2 message definitions matching PX4's internal uORB messages. Every ROS2 node that communicates with PX4 over uXRCE-DDS needs these types (<code>VehicleCommand</code>, <code>SensorGps</code>, <code>VehicleOdometry</code>, <code>BatteryStatus</code>, etc.).</li>
+<li><strong>Jazzy:</strong> Yes. Auto-exported from PX4 main/release branches. Service message translation requires Jazzy or later.</li>
+<li><strong>Fit:</strong> Essential. Already cloned in <code>Dockerfile.ros2</code> and used by <code>bennu_camera</code>.</li>
+<li><strong>Maintained:</strong> Yes, by the PX4 project. Updated with every release.</li>
+</ul>
+<h3 id="px4_ros2_msg_translation_node">px4_ros2_msg_translation_node<a class="headerlink" href="#px4_ros2_msg_translation_node" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repo:</strong> Part of <a href="https://github.com/Auterion/px4-ros2-interface-lib">Auterion/px4-ros2-interface-lib</a></li>
+<li><strong>Docs:</strong> <a href="https://docs.px4.io/main/en/ros2/px4_ros2_msg_translation_node.html">PX4 Message Translation Node</a></li>
+<li><strong>What:</strong> Starting with PX4 v1.16, ROS2 applications may use a different version of <code>px4_msgs</code> than what PX4 was built with. This node dynamically converts messages between versions using topic name versioning.</li>
+<li><strong>Jazzy:</strong> Yes.</li>
+<li><strong>Fit:</strong> Important when PX4 firmware updates independently of the ROS2 workspace. Not urgent while development tracks a single PX4 version.</li>
+<li><strong>Maintained:</strong> Yes, by Auterion/PX4.</li>
+</ul>
+<h3 id="px4-ros2-interface-lib">px4-ros2-interface-lib<a class="headerlink" href="#px4-ros2-interface-lib" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repo:</strong> <a href="https://github.com/Auterion/px4-ros2-interface-lib">Auterion/px4-ros2-interface-lib</a></li>
+<li><strong>Docs:</strong> <a href="https://docs.px4.io/main/en/ros2/px4_ros2_interface_lib">PX4 ROS 2 Interface Library</a></li>
+<li><strong>What:</strong> C++ library for creating custom flight modes in ROS2 that register with PX4 and appear as native modes in QGroundControl. Provides typed setpoint interfaces (<code>MulticopterGotoSetpointType</code>), telemetry wrappers, integrated failsafe/arming checks, and mode lifecycle management.</li>
+<li><strong>Jazzy:</strong> Yes.</li>
+<li><strong>Fit:</strong> High value for Phase 3 autonomy. A "PhotoSurvey" flight mode could appear in QGC. However, it is C++ only — Bennu uses Python nodes. Would need a Python wrapper or serve as architectural inspiration.</li>
+<li><strong>Maintained:</strong> Yes, under active development.</li>
+</ul>
+<h3 id="px4_ros_com-not-recommended">px4_ros_com — Not Recommended<a class="headerlink" href="#px4_ros_com-not-recommended" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repo:</strong> <a href="https://github.com/PX4/px4_ros_com">PX4/px4_ros_com</a></li>
+<li><strong>What:</strong> Historically provided the ROS2/PX4 bridge. As of PX4 v1.14+, it is no longer required for communication — uXRCE-DDS handles that directly. Now serves only as example code.</li>
+<li><strong>Fit:</strong> Reference only. Do not depend on it as infrastructure.</li>
+<li><strong>Maintained:</strong> Minimally.</li>
+</ul>
+<hr />
+<h2 id="camera-image-pipeline">Camera &amp; Image Pipeline<a class="headerlink" href="#camera-image-pipeline" title="Permanent link">&para;</a></h2>
+<h3 id="camera_ros">camera_ros<a class="headerlink" href="#camera_ros" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repo:</strong> <a href="https://github.com/christianrauch/camera_ros">christianrauch/camera_ros</a></li>
+<li><strong>Docs:</strong> <a href="https://index.ros.org/p/camera_ros/">camera_ros on ROS Index</a> | <a href="https://docs.ros.org/en/jazzy/p/camera_ros/">Jazzy docs</a></li>
+<li><strong>What:</strong> ROS2 node that interfaces with cameras through libcamera. Publishes <code>sensor_msgs/Image</code> and <code>CameraInfo</code>. Provides a service to set camera parameters (exposure, gain) at runtime.</li>
+<li><strong>Jazzy:</strong> Yes, available as <code>ros-jazzy-camera-ros</code>.</li>
+<li><strong>Fit:</strong> Could replace Bennu's custom <code>LibcameraBackend</code> subprocess calls with a proper ROS2 image publisher. <strong>Caveat:</strong> The bloomed version uses upstream libcamera, which may lack full IMX477 support. For complete Pi camera module support, build against the <a href="https://github.com/raspberrypi/libcamera">Raspberry Pi fork of libcamera</a>.</li>
+<li><strong>Trade-off:</strong> <code>camera_ros</code> is designed for continuous streaming. Bennu's architecture is event-triggered (capture on PX4 camera trigger). A hybrid approach could use <code>camera_ros</code> for preview/calibration and keep the subprocess call for high-res survey captures.</li>
+<li><strong>Maintained:</strong> Yes, by Christian Rauch.</li>
+</ul>
+<h3 id="v4l2_camera-not-recommended">v4l2_camera — Not Recommended<a class="headerlink" href="#v4l2_camera-not-recommended" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repo:</strong> <a href="https://gitlab.com/boldhearts/ros2_v4l2_camera">boldhearts/ros2_v4l2_camera</a></li>
+<li><strong>What:</strong> ROS2 camera driver using Video4Linux2.</li>
+<li><strong>Fit:</strong> Not suitable for the IMX477. Pi camera modules use the Broadcom Unicam V4L2 driver, which provides raw Bayer images only. The libcamera-based <code>camera_ros</code> is the correct choice for Pi cameras. Could be useful for a future USB camera addition.</li>
+<li><strong>Maintained:</strong> Yes.</li>
+</ul>
+<h3 id="image_pipeline">image_pipeline<a class="headerlink" href="#image_pipeline" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Docs:</strong> <a href="https://docs.ros.org/en/kilted/p/image_pipeline/">image_pipeline overview</a></li>
+<li><strong>What:</strong> Stack of ROS2 packages for processing raw camera images: rectification (removing lens distortion), stereo processing, depth image handling, and point cloud generation.</li>
+<li><strong>Jazzy:</strong> Yes.</li>
+<li><strong>Fit:</strong> The <code>image_proc</code> node handles image rectification using camera calibration data — essential for photogrammetry where lens distortion must be corrected. Relevant when Bennu publishes <code>sensor_msgs/Image</code> rather than writing files directly.</li>
+<li><strong>Maintained:</strong> Yes, by ros-perception.</li>
+</ul>
+<h3 id="camera_calibration">camera_calibration<a class="headerlink" href="#camera_calibration" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Docs:</strong> <a href="https://docs.ros.org/en/ros2_packages/jazzy/api/camera_calibration/doc/index.html">camera_calibration Jazzy</a></li>
+<li><strong>What:</strong> Interactive camera calibration tool using a checkerboard pattern. Outputs intrinsic parameters and distortion coefficients as a <code>CameraInfo</code> YAML file.</li>
+<li><strong>Jazzy:</strong> Yes.</li>
+<li><strong>Fit:</strong> Run once with the IMX477 + 6mm lens to generate calibration data. Store in <code>config/camera/</code>. OpenDroneMap can use this for better reconstruction.</li>
+<li><strong>Maintained:</strong> Yes, part of image_pipeline.</li>
+</ul>
+<h3 id="camera_info_manager">camera_info_manager<a class="headerlink" href="#camera_info_manager" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Docs:</strong> <a href="https://docs.ros.org/en/ros2_packages/jazzy/api/camera_info_manager/">camera_info_manager Jazzy</a></li>
+<li><strong>What:</strong> Manages <code>CameraInfo</code> messages for camera drivers. Loads calibration YAML files and publishes them alongside image topics.</li>
+<li><strong>Jazzy:</strong> Yes.</li>
+<li><strong>Fit:</strong> Pairs with <code>camera_calibration</code> — once calibration is done, this package loads and serves the calibration data. Useful when Bennu adopts standard image transport.</li>
+<li><strong>Maintained:</strong> Yes.</li>
+</ul>
+<h3 id="image_transport-compressed_image_transport">image_transport + compressed_image_transport<a class="headerlink" href="#image_transport-compressed_image_transport" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Docs:</strong> <a href="https://docs.ros.org/en/ros2_packages/jazzy/api/image_transport/">image_transport Jazzy</a></li>
+<li><strong>What:</strong> Transparent pub/sub for images in compressed formats. Plugins include <code>compressed_image_transport</code> (JPEG/PNG), <code>theora_image_transport</code> (video stream), and <code>ffmpeg_image_transport</code> (H.264/H.265).</li>
+<li><strong>Jazzy:</strong> Yes. All plugins released for Jazzy as of February 2025.</li>
+<li><strong>Fit:</strong> Useful for bandwidth-limited scenarios: WiFi image preview during development, compressed rosbag recording (~10x size reduction). Not needed until camera node publishes <code>sensor_msgs/Image</code>.</li>
+<li><strong>Maintained:</strong> Yes.</li>
+</ul>
+<h3 id="libcamera_ros_driver-ctu-mrs">libcamera_ros_driver (CTU-MRS)<a class="headerlink" href="#libcamera_ros_driver-ctu-mrs" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repo:</strong> <a href="https://github.com/ctu-mrs/libcamera_ros_driver">ctu-mrs/libcamera_ros_driver</a></li>
+<li><strong>What:</strong> Fork of <code>camera_ros</code> from the Czech Technical University's Multi-Robot Systems group, tailored for their drone platforms.</li>
+<li><strong>Fit:</strong> Worth monitoring as an alternative if you encounter issues with mainline <code>camera_ros</code>.</li>
+</ul>
+<hr />
+<h2 id="gazebo-ros2-bridge">Gazebo-ROS2 Bridge<a class="headerlink" href="#gazebo-ros2-bridge" title="Permanent link">&para;</a></h2>
+<h3 id="ros_gz_bridge">ros_gz_bridge<a class="headerlink" href="#ros_gz_bridge" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Docs:</strong> <a href="https://docs.ros.org/en/ros2_packages/jazzy/api/ros_gz_bridge/">ros_gz_bridge Jazzy</a></li>
+<li><strong>Source:</strong> <a href="https://github.com/gazebosim/ros_gz">gazebosim/ros_gz</a></li>
+<li><strong>What:</strong> Bidirectional bridge between Gazebo Harmonic topics and ROS2 topics. Configured via YAML file specifying topic mappings and message type conversions. Supports sensor data (images, IMU, GPS, lidar) and control inputs.</li>
+<li><strong>Jazzy:</strong> Yes. Gazebo Harmonic is the <a href="https://gazebosim.org/docs/harmonic/ros_installation">paired Gazebo release</a> for ROS2 Jazzy.</li>
+<li><strong>Fit:</strong> Directly enables Bennu's planned <code>camera_backend:=rendered</code> mode. Instead of custom bridge code, a YAML config maps the Gazebo camera sensor topic to a ROS2 <code>sensor_msgs/Image</code> topic that the <code>RenderedBackend</code> subscribes to.</li>
+<li><strong>Maintained:</strong> Yes, by the Gazebo project.</li>
+</ul>
+<h3 id="ros_gz_image">ros_gz_image<a class="headerlink" href="#ros_gz_image" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Docs:</strong> <a href="https://docs.ros.org/en/jazzy/p/ros_gz_image/__README.html">ros_gz_image Jazzy</a></li>
+<li><strong>What:</strong> GPU-accelerated image format conversion between Gazebo and ROS2. Handles pixel format differences efficiently.</li>
+<li><strong>Jazzy:</strong> Yes.</li>
+<li><strong>Fit:</strong> Complements <code>ros_gz_bridge</code> for image-heavy workloads. Note: if CI runs headless without GPU, <code>ros_gz_bridge</code> alone with software rendering may suffice. Test in your GitHub Actions runner.</li>
+<li><strong>Maintained:</strong> Yes, part of ros_gz.</li>
+</ul>
+<hr />
+<h2 id="gps-localization">GPS &amp; Localization<a class="headerlink" href="#gps-localization" title="Permanent link">&para;</a></h2>
+<h3 id="gps_umd-gps_msgs-gpsd_client-gps_tools">gps_umd (gps_msgs, gpsd_client, gps_tools)<a class="headerlink" href="#gps_umd-gps_msgs-gpsd_client-gps_tools" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repo:</strong> <a href="https://github.com/swri-robotics/gps_umd">swri-robotics/gps_umd</a></li>
+<li><strong>Docs:</strong> <a href="https://index.ros.org/p/gps_msgs/">gps_msgs on ROS Index</a></li>
+<li><strong>What:</strong> Three packages: <code>gps_msgs</code> (extended GPS message types beyond <code>sensor_msgs/NavSatFix</code>), <code>gpsd_client</code> (ROS2 interface to gpsd daemon), <code>gps_tools</code> (utilities). <code>GPSFix</code> message has more fields than <code>NavSatFix</code> (track, speed, DOP values).</li>
+<li><strong>Jazzy:</strong> Yes, released for Jazzy.</li>
+<li><strong>Fit:</strong> PX4 already provides GPS data via uXRCE-DDS (<code>SensorGps</code> uORB message), so <code>gpsd_client</code> is unnecessary. <code>gps_msgs</code> could be useful for richer geotagging metadata (DOP values for quality assessment).</li>
+<li><strong>Maintained:</strong> Yes, by SwRI.</li>
+</ul>
+<h3 id="sensor_msgsnavsatfix-standard">sensor_msgs/NavSatFix (standard)<a class="headerlink" href="#sensor_msgsnavsatfix-standard" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repo:</strong> <a href="https://github.com/ros2/common_interfaces/blob/master/sensor_msgs/msg/NavSatFix.msg">ros2/common_interfaces</a></li>
+<li><strong>What:</strong> The standard ROS2 message for GNSS fixes. Contains latitude, longitude, altitude, covariance, and fix status.</li>
+<li><strong>Fit:</strong> If you need interoperability with standard ROS2 tools (robot_localization, Nav2), write a small translator node that converts PX4's <code>SensorGps</code> to <code>NavSatFix</code>.</li>
+</ul>
+<h3 id="robot_localization">robot_localization<a class="headerlink" href="#robot_localization" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repo:</strong> <a href="https://index.ros.org/p/robot_localization/">robot_localization on ROS Index</a></li>
+<li><strong>Docs:</strong> <a href="https://automaticaddison.com/sensor-fusion-and-robot-localization-using-ros-2-jazzy/">Sensor Fusion with ROS 2 Jazzy</a></li>
+<li><strong>What:</strong> EKF/UKF sensor fusion nodes plus <code>navsat_transform_node</code> for GPS→local Cartesian conversion. Common architecture: two EKF instances (odometry+IMU, plus GPS fusion).</li>
+<li><strong>Jazzy:</strong> Yes.</li>
+<li><strong>Fit:</strong> Useful for Phase 3 if you need precision position estimates beyond PX4's internal EKF. For photogrammetry geotagging, PX4's own GPS data is sufficient. Relevant if you add external sensors (optical flow, VIO).</li>
+<li><strong>Maintained:</strong> Yes.</li>
+</ul>
+<hr />
+<h2 id="recording-debugging">Recording &amp; Debugging<a class="headerlink" href="#recording-debugging" title="Permanent link">&para;</a></h2>
+<h3 id="rosbag2_storage_mcap">rosbag2_storage_mcap<a class="headerlink" href="#rosbag2_storage_mcap" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Docs:</strong> <a href="https://docs.ros.org/en/jazzy/p/rosbag2_storage_mcap/index.html">rosbag2_storage_mcap Jazzy</a></li>
+<li><strong>What:</strong> MCAP storage backend for rosbag2. MCAP is the modern rosbag format — better compression, faster seeking, and directly viewable in Foxglove Studio.</li>
+<li><strong>Jazzy:</strong> Yes.</li>
+<li><strong>Fit:</strong> Record SITL runs for replay and debugging. Supports Bennu's artifact-based test strategy — recorded bags can be replayed through the <code>camera_backend:=replay</code> path. MCAP is the recommended format over SQLite3.</li>
+<li><strong>Maintained:</strong> Yes, by Foxglove.</li>
+</ul>
+<h3 id="foxglove_bridge">foxglove_bridge<a class="headerlink" href="#foxglove_bridge" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Docs:</strong> <a href="https://docs.ros.org/en/jazzy/p/foxglove_bridge/__README.html">foxglove_bridge Jazzy</a></li>
+<li><strong>What:</strong> WebSocket bridge that connects Foxglove Studio to a live ROS2 system. Allows real-time visualization of topics, TF trees, images, and diagnostics in a browser — no X11 or GPU required.</li>
+<li><strong>Jazzy:</strong> Yes.</li>
+<li><strong>Fit:</strong> Replaces the need for <code>rqt</code> or <code>rviz2</code> (which require X11/GPU). Excellent for debugging sim runs from the host machine. Works with the diagnostics stack for system health dashboards.</li>
+<li><strong>Maintained:</strong> Yes, by Foxglove.</li>
+</ul>
+<hr />
+<h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
+<h3 id="launch_testing_ros2">launch_testing_ros2<a class="headerlink" href="#launch_testing_ros2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Docs:</strong> <a href="https://docs.ros.org/en/jazzy/p/launch_testing_ros/index.html">launch_testing_ros2 Jazzy</a></li>
+<li><strong>What:</strong> Framework for launch-level integration tests. Start a launch file, wait for nodes to come up, run assertions against topics and services, then tear down. Tests run as pytest fixtures.</li>
+<li><strong>Jazzy:</strong> Yes.</li>
+<li><strong>Fit:</strong> Fills the gap between Bennu's unit tests (pytest) and SITL scenario tests (MAVSDK). Test that <code>drone.launch.py</code> brings up the right nodes with correct parameters. Zero architecture impact — only adds test infrastructure.</li>
+<li><strong>Maintained:</strong> Yes, part of the ROS2 launch framework.</li>
+</ul>
+<hr />
+<h2 id="diagnostics">Diagnostics<a class="headerlink" href="#diagnostics" title="Permanent link">&para;</a></h2>
+<h3 id="diagnostic_updater-diagnostic_aggregator">diagnostic_updater + diagnostic_aggregator<a class="headerlink" href="#diagnostic_updater-diagnostic_aggregator" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Docs:</strong> <a href="https://docs.ros.org/en/jazzy/p/diagnostic_updater/">diagnostic_updater Jazzy</a> | <a href="https://foxglove.dev/blog/a-practical-guide-to-using-ros-diagnostics">Practical Guide</a></li>
+<li><strong>What:</strong> Standardized framework for monitoring node health. <code>diagnostic_updater</code> lets nodes publish status (OK/WARN/ERROR) with key-value pairs. <code>diagnostic_aggregator</code> groups and summarizes diagnostics from all nodes.</li>
+<li><strong>Jazzy:</strong> Yes.</li>
+<li><strong>Fit:</strong> Add to <code>bennu_camera</code> to report: capture rate, backend status, GPS staleness, disk space, DDS bridge health. ~15 lines of Python to integrate. Artifact-based assertions can check diagnostics. View in Foxglove.</li>
+<li><strong>Maintained:</strong> Yes.</li>
+</ul>
+<hr />
+<h2 id="autonomy-frameworks">Autonomy Frameworks<a class="headerlink" href="#autonomy-frameworks" title="Permanent link">&para;</a></h2>
+<h3 id="aerostack2">Aerostack2<a class="headerlink" href="#aerostack2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repo:</strong> <a href="https://github.com/aerostack2/aerostack2">aerostack2/aerostack2</a></li>
+<li><strong>What:</strong> Comprehensive ROS2 framework for autonomous multi-aerial-robot systems. Plugin-based backends for different autopilots (including PX4), behavior trees for mission planning, task delegation. Supports heterogeneous fleets.</li>
+<li><strong>Jazzy:</strong> Active development; check repo for latest distro support.</li>
+<li><strong>Fit:</strong> Most feature-complete ROS2 drone autonomy framework. Could replace custom mission planning code. Overkill for a single-drone photogrammetry project at current scope. Best used as a reference architecture.</li>
+<li><strong>Maintained:</strong> Yes, by Universidad Politécnica de Madrid.</li>
+</ul>
+<h3 id="nav2-gps-waypoint-following">Nav2 GPS Waypoint Following<a class="headerlink" href="#nav2-gps-waypoint-following" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Docs:</strong> <a href="https://docs.nav2.org/tutorials/docs/navigation2_with_gps.html">Nav2 GPS Navigation Tutorial</a></li>
+<li><strong>What:</strong> Nav2's waypoint follower has a <code>/follow_gps_waypoints</code> action server that accepts GPS coordinates, converts to Cartesian via <code>robot_localization</code>, and executes sequentially.</li>
+<li><strong>Jazzy:</strong> Yes. GPS waypoint following works on Jazzy and Rolling.</li>
+<li><strong>Fit:</strong> The GPS waypoint concept is relevant, but Nav2 is a 2D ground-robot stack. 3D drone navigation is a stated stretch goal but not production-ready. PX4's built-in mission mode or custom offboard logic is more practical for survey missions.</li>
+<li><strong>Maintained:</strong> Yes, by Open Navigation LLC.</li>
+</ul>
+<h3 id="apriltag_detector">apriltag_detector<a class="headerlink" href="#apriltag_detector" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Docs:</strong> <a href="https://docs.ros.org/en/ros2_packages/rolling/api/apriltag_detector/">apriltag_detector Rolling</a></li>
+<li><strong>What:</strong> Detects AprilTag fiducial markers in camera images. Provides pose estimation relative to known tag geometry.</li>
+<li><strong>Jazzy:</strong> Available on Rolling; check Jazzy availability.</li>
+<li><strong>Fit:</strong> Useful for landing-pad detection in simulation, calibration target ground-truth, and camera/pose verification. Nice-to-have, not blocking.</li>
+</ul>
+<hr />
+<h2 id="reference-projects">Reference Projects<a class="headerlink" href="#reference-projects" title="Permanent link">&para;</a></h2>
+<p>Open-source projects with similar architecture to Bennu. Study for design patterns, not as dependencies.</p>
+<h3 id="marnonel6ros2_offboard_drone_control">Marnonel6/ROS2_offboard_drone_control<a class="headerlink" href="#marnonel6ros2_offboard_drone_control" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repo:</strong> <a href="https://github.com/Marnonel6/ROS2_offboard_drone_control">github.com/Marnonel6/ROS2_offboard_drone_control</a></li>
+<li><strong>Project page:</strong> <a href="https://marnonel6.github.io/projects/0-autonomous-px4-drone">marnonel6.github.io</a></li>
+<li><strong>What:</strong> Complete autonomous drone with ROS2 offboard control on Pixhawk 6X + Raspberry Pi 4B, communicating via uXRCE-DDS over serial. Implements RRT path planning and waypoint following. Physical build with real hardware.</li>
+<li><strong>Why it matters:</strong> Closest architectural match to Bennu. Same stack: Pixhawk + Pi + PX4 + ROS2 + uXRCE-DDS serial. Study node architecture, launch file organization, and DDS configuration. Differences: Pi 4B (not 5), Humble (not Jazzy), C++ (not Python).</li>
+</ul>
+<h3 id="jacopopanaerial-autonomy-stack">JacopoPan/aerial-autonomy-stack<a class="headerlink" href="#jacopopanaerial-autonomy-stack" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repo:</strong> <a href="https://github.com/JacopoPan/aerial-autonomy-stack">github.com/JacopoPan/aerial-autonomy-stack</a></li>
+<li><strong>Paper:</strong> <a href="https://arxiv.org/html/2602.07264v1">arxiv.org/html/2602.07264v1</a></li>
+<li><strong>What:</strong> Multi-drone PX4/ArduPilot ROS2 framework with YOLO, LiDAR, Dockerized Gym simulation, and JetPack deployment. Supports 10x faster-than-real-time SITL simulation, synchronous stepping, and Jetson-in-the-loop testing. v0.1.0 released 2026.</li>
+<li><strong>Why it matters:</strong> The Dockerized simulation architecture and faster-than-real-time SITL could accelerate Bennu's test cycles. The autopilot-agnostic ROS2 action interface is well designed. Targets perception-based autonomy rather than photogrammetry.</li>
+</ul>
+<h3 id="ark-electronicsros2_px4_offboard_example">ARK-Electronics/ROS2_PX4_Offboard_Example<a class="headerlink" href="#ark-electronicsros2_px4_offboard_example" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repo:</strong> <a href="https://github.com/ARK-Electronics/ROS2_PX4_Offboard_Example">github.com/ARK-Electronics/ROS2_PX4_Offboard_Example</a></li>
+<li><strong>What:</strong> Beginner-friendly example of PX4 velocity setpoint control with ROS2 teleop. Keyboard control of drone velocity in offboard mode.</li>
+<li><strong>Why it matters:</strong> Clean reference for the offboard control handshake in Python/ROS2: arming, mode switching, setpoint streaming.</li>
+</ul>
+<h3 id="sathanbernardpx4-ros2-gazebo-drone-simulation-template">SathanBERNARD/PX4-ROS2-Gazebo-Drone-Simulation-Template<a class="headerlink" href="#sathanbernardpx4-ros2-gazebo-drone-simulation-template" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repo:</strong> <a href="https://github.com/SathanBERNARD/PX4-ROS2-Gazebo-Drone-Simulation-Template">github.com/SathanBERNARD/PX4-ROS2-Gazebo-Drone-Simulation-Template</a></li>
+<li><strong>What:</strong> Docker-based simulation template for a camera-equipped quadcopter. PX4 SITL + Gazebo Harmonic + ROS2. Designed for mission planning and computer vision development.</li>
+<li><strong>Why it matters:</strong> Compare with Bennu's <code>sim/</code> stack. Good reference for Docker Compose patterns and camera simulation in Gazebo.</li>
+</ul>
+<h3 id="parsakhaledipx4_sim_ros2">ParsaKhaledi/px4_sim_ros2<a class="headerlink" href="#parsakhaledipx4_sim_ros2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repo:</strong> <a href="https://github.com/ParsaKhaledi/px4_sim_ros2">github.com/ParsaKhaledi/px4_sim_ros2</a></li>
+<li><strong>What:</strong> Drone simulation with ROS2, PX4, Nav2, and Gazebo Harmonic. Uses PX4 v1.15.4 in Docker.</li>
+<li><strong>Why it matters:</strong> Demonstrates Nav2 integration with PX4 drones in simulation — relevant if Bennu explores GPS waypoint following.</li>
+</ul>
+<h3 id="os-rfodg-open-source-ros2-framework-for-outdoor-uav-dataset-generation">OS-RFODG (Open-source ROS2 Framework for Outdoor UAV Dataset Generation)<a class="headerlink" href="#os-rfodg-open-source-ros2-framework-for-outdoor-uav-dataset-generation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Paper:</strong> <a href="https://www.sciencedirect.com/science/article/pii/S2590123025026829">ScienceDirect</a></li>
+<li><strong>What:</strong> Integrates ROS2 with PX4 + Gazebo + QGroundControl for collecting synchronized multi-sensor UAV data (LiDAR, GPS, IMU, camera, barometer). Can generate Digital Surface Models via UAV photogrammetry. Published 2025.</li>
+<li><strong>Why it matters:</strong> The architecture for synchronized sensor data collection is directly relevant to Bennu's data acquisition pipeline. Research framework, not a reusable package.</li>
+</ul>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://docs.px4.io/main/en/ros2/user_guide">PX4 ROS 2 User Guide</a> — Official PX4-ROS2 integration documentation</li>
+<li><a href="https://docs.px4.io/main/en/middleware/uxrce_dds">uXRCE-DDS Bridge</a> — How PX4 exposes uORB topics as ROS2 topics</li>
+<li><a href="https://gazebosim.org/docs/harmonic/ros2_integration/">Gazebo Harmonic ROS 2 Integration</a> — Gazebo-ROS2 bridge setup and topic mapping</li>
+<li><a href="https://gazebosim.org/docs/harmonic/ros_installation">Gazebo Jazzy/Harmonic Compatibility</a> — Supported ROS2/Gazebo version pairs</li>
+<li><a href="https://ros-aerial.github.io/aerial_robotic_landscape/">ROS-Aerial Community</a> — Community landscape of ROS2 aerial robotics</li>
+<li><a href="https://ros-aerial.github.io/aerial_robotic_landscape/aerial_autonomy_stacks/">Aerial Robotics Landscape</a> — Survey of autonomy stacks</li>
+<li><a href="https://dronecode.org/dronecode-at-roscon-2025-expanding-open-collaboration-between-px4-and-ros-2/">Dronecode at ROSCon 2025</a> — PX4-ROS2 roadmap</li>
+<li><a href="https://docs.px4.io/main/en/companion_computer/pixhawk_rpi">Raspberry Pi Companion with Pixhawk</a> — PX4 setup for Pi companion</li>
+<li><a href="https://docs.px4.io/main/en/ros2/offboard_control">PX4 Offboard Control Example</a> — Official offboard control tutorial</li>
+<li><a href="https://hatarilabs.com/ih-en/how-to-geolocate-drone-imagery-from-a-csv-table-with-python-and-piexif-tutorial">Piexif Geotagging Tutorial</a> — EXIF GPS metadata with Python</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.instant", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
