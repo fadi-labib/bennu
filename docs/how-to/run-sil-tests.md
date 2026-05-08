@@ -17,6 +17,130 @@ make test-smoke
 
 This starts PX4 SITL + Gazebo (headless), waits for GPS lock, runs the default survey mission, and exits with code 0 on success or 1 on failure. Containers are cleaned up automatically.
 
+## Run a SIL Test Manually
+
+`make test-smoke` is the one-shot path. To step through the same flow interactively
+— so you can pause, inspect state, tweak a scenario, or re-run a single stage —
+use the SIL compose stack directly with an overridden command.
+
+### 1. Bring up PX4 SITL only
+
+```bash
+cd sim
+docker compose -f docker-compose.sil.yml up -d px4-sitl
+```
+
+Wait for the container to report `healthy` (the healthcheck polls UDP port 18570,
+which PX4 binds once it's ready):
+
+```bash
+docker ps --filter "name=bennu-px4-sitl-sil"
+# STATUS column should read: Up X seconds (healthy)
+```
+
+If it stays `(health: starting)` for >60s, tail the logs:
+
+```bash
+docker logs --tail 50 bennu-px4-sitl-sil
+```
+
+### 2. Open an interactive test-runner shell
+
+The test-runner image already has MAVSDK (`mavsdk>=2,<3`), the scenarios, and the
+mission scripts mounted. Override its default command to drop into a shell:
+
+```bash
+docker compose -f docker-compose.sil.yml run --rm -it --entrypoint bash test-runner
+```
+
+You're now inside the container at `/ros2_ws`. PX4 SITL is reachable on
+`udp://:14540` (host networking).
+
+### 3. Run the smoke mission by hand
+
+```bash
+python3 /ros2_ws/scripts/run_mission.py \
+    --scenario /ros2_ws/scenarios/nominal_survey.yaml \
+    --timeout 180
+```
+
+Expected output, stage by stage:
+
+```
+[run_mission] Scenario: nominal_survey
+[run_mission] Connected on attempt 1
+[run_mission] Waiting for PX4 readiness (GPS fix + home position)...
+[run_mission] Home: (47.397742, 8.545594)
+[run_mission] Generated 6 waypoints
+[run_mission] Uploading mission...
+[run_mission] Arming...
+[run_mission] Starting mission...
+[run_mission] Progress: 1/6
+[run_mission] Progress: 2/6
+...
+[run_mission] Progress: 6/6
+[run_mission] Mission items complete, waiting for landing...
+[run_mission] Landed successfully
+[run_mission] Mission finished successfully
+```
+
+Exit code is `0` on success, `1` on any failure (timeout, GPS lock, mission overrun).
+
+### 4. Watch the mission live
+
+In a separate terminal on the host, open QGroundControl. Both the SIL
+PX4 container and QGC use UDP 14550, so QGC auto-connects and shows the
+drone flying the lawnmower pattern in real time. Useful for:
+
+- Visually confirming the waypoint grid matches the scenario
+- Spotting unexpected behavior (drift, RTL kicking in early)
+- Checking telemetry (battery, GPS, mode transitions)
+
+### 5. Iterate on a scenario
+
+Edit `sim/scenarios/nominal_survey.yaml` (or any other scenario) on the host —
+the file is bind-mounted read-only into the container as `/ros2_ws/scenarios/`,
+so changes appear immediately. Re-run step 3 with the same command.
+
+To create and run a new scenario:
+
+```bash
+# On the host
+cp sim/scenarios/nominal_survey.yaml sim/scenarios/my_scenario.yaml
+$EDITOR sim/scenarios/my_scenario.yaml
+
+# Inside the test-runner shell
+python3 /ros2_ws/scripts/run_mission.py \
+    --scenario /ros2_ws/scenarios/my_scenario.yaml
+```
+
+### 6. Tear it all down
+
+Exit the test-runner shell (`exit` or Ctrl+D), then on the host:
+
+```bash
+cd sim
+docker compose -f docker-compose.sil.yml down -v
+```
+
+The `-v` flag also removes the ephemeral volumes — important so the next run
+starts from a clean PX4 state, not a stale parameter cache.
+
+!!! tip "Use the dev stack instead?"
+
+    The dev compose (`make dev`) doesn't mount `sim/scripts/` or `sim/scenarios/`
+    into the ros2-dev container, so `run_mission.py` isn't directly available
+    there. If you want to keep your `make dev` session running and also do a
+    manual SIL test, copy the script in:
+
+    ```bash
+    docker cp sim/scripts/run_mission.py bennu-ros2-dev:/tmp/run_mission.py
+    docker cp sim/scripts/wait_for_px4.py bennu-ros2-dev:/tmp/wait_for_px4.py
+    docker cp sim/scenarios/ bennu-ros2-dev:/tmp/scenarios
+    docker exec -it bennu-ros2-dev bash -c \
+        "cd /tmp && python3 run_mission.py --scenario scenarios/nominal_survey.yaml"
+    ```
+
 ## How It Works
 
 ```mermaid

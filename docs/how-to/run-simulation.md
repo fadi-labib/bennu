@@ -7,9 +7,25 @@ container provides the ROS2 Jazzy environment with the uXRCE-DDS agent.
 !!! abstract "Prerequisites"
 
     - [Docker](https://docs.docker.com/get-docker/) and Docker Compose installed
-    - [QGroundControl](https://docs.qgroundcontrol.com/master/en/qgc-user-guide/getting_started/download_and_install.html) installed on the host
+    - QGroundControl installed on the host (see below)
     - NVIDIA GPU with Container Toolkit installed (for GUI mode)
     - X11 display server running (for GUI mode)
+
+### Install QGroundControl
+
+QGroundControl is **not** in the Ubuntu apt repos. Install the official AppImage:
+
+```bash
+mkdir -p ~/Applications && cd ~/Applications
+wget https://d176tv9ibo4jno.cloudfront.net/latest/QGroundControl-x86_64.AppImage
+chmod +x QGroundControl-x86_64.AppImage
+sudo usermod -a -G dialout $USER   # needed later for hardware; harmless for sim
+./QGroundControl-x86_64.AppImage
+```
+
+If `dialout` was newly added, log out and back in once for the group change to apply. See the
+[QGC install guide](https://docs.qgroundcontrol.com/master/en/qgc-user-guide/getting_started/download_and_install.html)
+for Flatpak and other distros.
 
 ## Architecture
 
@@ -101,7 +117,7 @@ Docker and the simulation.
 
     1. **X11 access** --- run `xhost +local:docker` on the host
     2. **NVIDIA drivers** --- run `nvidia-smi` on the host to confirm drivers are loaded
-    3. **Container GPU access** --- run `docker exec bennu-px4-sitl nvidia-smi` to verify the GPU is visible inside the container
+    3. **Container GPU access** --- run `docker exec bennu-px4-sitl-debug nvidia-smi` to verify the GPU is visible inside the container
     4. **CDI spec** --- run `nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml` if the CDI spec is missing
 
 ## Run Tests
@@ -164,15 +180,29 @@ Open a shell in the ROS2 container and launch the Bennu nodes:
 ```bash
 docker exec -it bennu-ros2-dev bash
 source /ros2_ws/install/setup.bash
-ros2 launch bennu_bringup drone.launch.py use_sim:=true
+ros2 launch bennu_bringup drone.launch.py use_sim:=true output_dir:=/tmp/captures
 ```
+
+The two arg overrides matter for the dev container:
+
+- `use_sim:=true` switches `uxrce_dds_agent` from serial (`/dev/ttyAMA0`, real Pi 4 UART)
+  to UDP on port 8888, where PX4 SITL listens. It also flips the camera node to the
+  `placeholder` backend, since `libcamera` isn't available in the dev image.
+- `output_dir:=/tmp/captures` overrides the default `/home/pi/captures`, which doesn't
+  exist in the dev container.
+
+A successful start emits `UDP/IPv6 server initialized` from the agent and
+`create_client | session_id: 0x81` shortly after, when PX4 SITL connects.
 
 To inspect available topics:
 
 ```bash
 docker exec -it bennu-ros2-dev bash
-ros2 topic list
+ros2 topic list | grep fmu
 ```
+
+You should see `/fmu/out/vehicle_odometry`, `/fmu/out/vehicle_status`, and others.
+If the list is empty, the bridge hasn't connected yet — give it ~10s after launch.
 
 ## Access the PX4 Console
 
@@ -180,8 +210,10 @@ To interact with the PX4 shell (`pxh>`), open a separate terminal and exec
 into the running container:
 
 ```bash
-docker exec -it bennu-px4-sitl bash -c '/opt/px4/build/px4_sitl_default/bin/px4-mavlink-shell'
+docker exec -it bennu-px4-sitl-dev bash -c '/opt/px4/build/px4_sitl_default/bin/px4-mavlink-shell'
 ```
+
+(Use `bennu-px4-sitl-debug` instead if you started the GUI/debug profile.)
 
 Alternatively, use QGroundControl's built-in MAVLink console
 (**Analyze > MAVLink Console**).
