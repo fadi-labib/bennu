@@ -1,6 +1,13 @@
 # Bennu
 
+<!-- HERO MEDIA — once assets/demo.gif exists, replace this whole comment with:
+<p align="center">
+  <img src="assets/demo.gif" alt="Bennu auto-flying a survey grid in Gazebo (left) with QGroundControl mission view (right)" width="820">
+</p>
+-->
+
 [![CI](https://github.com/fadi-labib/bennu/actions/workflows/ci.yml/badge.svg)](https://github.com/fadi-labib/bennu/actions/workflows/ci.yml)
+[![SIL Smoke](https://github.com/fadi-labib/bennu/actions/workflows/sil-smoke.yml/badge.svg)](https://github.com/fadi-labib/bennu/actions/workflows/sil-smoke.yml)
 [![Docker](https://github.com/fadi-labib/bennu/actions/workflows/docker-images.yml/badge.svg)](https://github.com/fadi-labib/bennu/actions/workflows/docker-images.yml)
 [![codecov](https://codecov.io/gh/fadi-labib/bennu/graph/badge.svg)](https://codecov.io/gh/fadi-labib/bennu)
 [![Docs](https://img.shields.io/badge/docs-live-brightgreen)](https://fadi-labib.github.io/bennu/)
@@ -12,7 +19,11 @@
 [![ROS2](https://img.shields.io/badge/ROS2-Jazzy-blue)](https://docs.ros.org/en/jazzy/)
 [![PX4](https://img.shields.io/badge/PX4-v1.16-blue)](https://docs.px4.io/)
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/fadi-labib/bennu?quickstart=1)
+
 DIY 7" photogrammetry drone built with PX4, ROS2, and OpenDroneMap.
+
+> **Status:** Active development — not flight-ready. End-to-end simulation works (PX4 SITL + auto-survey + bundle export); the airframe build is in progress and no real flights have happened yet.
 
 Bennu produces versioned, signed, schema-validated mission bundles from autonomous survey flights. The bundles feed an independent geospatial analysis platform via a contract-first data interface.
 
