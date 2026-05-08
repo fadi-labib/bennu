@@ -30,8 +30,10 @@
 - Start WebODM: `cd ground/odm && docker compose up -d`
 - Flash PX4 params: `./firmware/px4/upload_params.sh`
 - Transfer images: `./ground/transfer/sync_images.sh`
-- Start sim (dev): `cd sim && make dev`
-- Start sim (GUI): `cd sim && make dev-debug`
+- Start sim (one command): `cd sim && make sim` — containers + QGC + auto-fly + shell
+- Start sim (headless): `cd sim && make dev`
+- Start sim (Gazebo GUI): `cd sim && make dev-debug`
+- Launch QGC only: `cd sim && make qgc`
 - Run unit tests: `cd sim && make test`
 - Run SIL tests: `cd sim && make test-smoke`
 - Stop sim: `cd sim && make clean`
