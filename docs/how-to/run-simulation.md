@@ -13,19 +13,18 @@ container provides the ROS2 Jazzy environment with the uXRCE-DDS agent.
 
 ### Install QGroundControl
 
-QGroundControl is **not** in the Ubuntu apt repos. Install the official AppImage:
+`make sim` and `make qgc` auto-download QGroundControl into `~/.local/share/bennu/`
+the first time they run, so no manual install is needed for the sim flow.
+
+For real-hardware use over USB (radio telemetry), add yourself to `dialout`:
 
 ```bash
-mkdir -p ~/Applications && cd ~/Applications
-wget https://d176tv9ibo4jno.cloudfront.net/latest/QGroundControl-x86_64.AppImage
-chmod +x QGroundControl-x86_64.AppImage
-sudo usermod -a -G dialout $USER   # needed later for hardware; harmless for sim
-./QGroundControl-x86_64.AppImage
+sudo usermod -a -G dialout $USER   # log out/in once for the group change
 ```
 
-If `dialout` was newly added, log out and back in once for the group change to apply. See the
+If you'd rather use a system-managed install, see the
 [QGC install guide](https://docs.qgroundcontrol.com/master/en/qgc-user-guide/getting_started/download_and_install.html)
-for Flatpak and other distros.
+for AppImage, Flatpak, and other distros.
 
 ## Architecture
 
@@ -59,15 +58,55 @@ use cases. A Makefile in `sim/` wraps all Docker Compose commands.
 
 ## Start the Simulation
 
-### Headless Mode (default)
+### One Command (recommended)
+
+```bash
+cd sim
+make sim
+```
+
+This single command does everything:
+
+1. Brings up PX4 SITL + ROS2 containers in Docker
+2. Launches QGroundControl on the host (auto-downloaded on first run, cached
+   in `~/.local/share/bennu/`)
+3. Kicks off the `nominal_survey` mission in the background — the drone takes
+   off, flies a lawnmower grid, takes photos, and returns home
+4. Drops you into an interactive `ros2-dev` shell
+
+Watch the drone fly in QGroundControl, or tail the mission log from the shell:
+
+```bash
+tail -f /tmp/mission.log
+```
+
+To run a different scenario, set the `SCENARIO` variable:
+
+```bash
+make sim SCENARIO=my_scenario.yaml
+```
+
+When done, exit the shell and run `make clean` to stop containers.
+
+### Headless Mode
 
 ```bash
 cd sim
 make dev
 ```
 
-PX4 SITL starts with Gazebo physics running in the background. You can fly
-the drone using QGroundControl without the 3D window.
+PX4 SITL starts with Gazebo physics running in the background, no QGC. Use
+this on CI runners, over SSH, or when you don't need a ground station UI.
+
+### QGroundControl Only
+
+```bash
+cd sim
+make qgc
+```
+
+Useful if you already have `make dev` running, or if you want to connect QGC
+to a real Pixhawk over USB.
 
 To start dev mode with pytest-watch auto-rerunning tests on file changes:
 
@@ -230,9 +269,11 @@ make clean
 Run `cd sim && make help` to see all available commands:
 
 ```
+sim                  Containers + QGC + auto-fly $(SCENARIO) + ros2-dev shell
 dev                  Start dev environment (headless PX4 + ros2-dev shell)
 dev-watch            Start dev + pytest-watch auto-rerun
 dev-debug            Start debug environment with Gazebo GUI (requires GPU + xhost)
+qgc                  Launch QGroundControl (auto-downloads on first run)
 test                 Run unit + contract + integration tests (no PX4)
 test-smoke           Run single SIL smoke test (nominal_survey scenario)
 test-sitl            Run all SIL scenario tests

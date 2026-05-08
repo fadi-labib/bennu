@@ -3,12 +3,15 @@
 #
 # Run `make help` to see all available commands.
 
-.PHONY: dev dev-watch dev-debug test test-smoke test-sitl test-all clean help
+.PHONY: dev dev-watch dev-debug sim qgc test test-smoke test-sitl test-all clean help
 
 COMPOSE_DEV = docker compose -f docker-compose.dev.yml
 COMPOSE_SIL = docker compose -f docker-compose.sil.yml
 COMPOSE_DBG = docker compose -f docker-compose.debug.yml
 DEV_EXEC    = docker exec bennu-ros2-dev bash -c
+
+# Default scenario for `make sim` — override with: make sim SCENARIO=other.yaml
+SCENARIO ?= nominal_survey.yaml
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
@@ -26,6 +29,19 @@ dev-watch: dev ## Start dev + pytest-watch auto-rerun
 dev-debug: ## Start debug environment with Gazebo GUI (requires GPU + xhost)
 	$(COMPOSE_DBG) up -d
 	@echo "Debug environment ready with Gazebo GUI."
+
+qgc: ## Launch QGroundControl (auto-downloads on first run)
+	@../ground/qgc/launch.sh
+
+sim: ## One-command sim: containers + QGC + auto-fly $(SCENARIO) + ros2-dev shell
+	@$(COMPOSE_DEV) up -d
+	@../ground/qgc/launch.sh
+	@echo "[sim] Starting mission '$(SCENARIO)' in background. Output: /tmp/mission.log inside container."
+	@docker exec -d bennu-ros2-dev bash -c \
+		"python3 -u /ros2_ws/scripts/run_mission.py --scenario /ros2_ws/scenarios/$(SCENARIO) --timeout 300 > /tmp/mission.log 2>&1"
+	@echo "[sim] Watch the drone fly in QGroundControl, or 'tail -f /tmp/mission.log' from the shell below."
+	@echo "[sim] When done, exit the shell and run 'make clean' to stop containers."
+	@docker exec -it bennu-ros2-dev bash
 
 test: ## Run unit + contract + integration tests (no PX4 needed)
 	$(COMPOSE_DEV) up -d --no-deps ros2-dev

@@ -38,6 +38,8 @@ services:
       - ../drone/ros2_ws/src:/ros2_ws/src/bennu:rw
       - ../tests:/ros2_ws/tests:rw
       - ../contract:/ros2_ws/contract:rw
+      - ./scripts:/ros2_ws/scripts:ro
+      - ./scenarios:/ros2_ws/scenarios:ro
     depends_on:
       px4-sitl:
         condition: service_healthy
