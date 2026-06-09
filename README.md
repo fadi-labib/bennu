@@ -1,6 +1,6 @@
 # Bennu
 
-<!-- HERO MEDIA — once assets/demo.gif exists, replace this whole comment with:
+<!-- HERO MEDIA: once assets/demo.gif exists, replace this whole comment with:
 <p align="center">
   <img src="assets/demo.gif" alt="Bennu auto-flying a survey grid in Gazebo (left) with QGroundControl mission view (right)" width="820">
 </p>
@@ -23,9 +23,9 @@
 
 DIY 7" photogrammetry drone built with PX4, ROS2, and OpenDroneMap.
 
-> **Status:** Active development — not flight-ready. End-to-end simulation works (PX4 SITL + auto-survey + bundle export); the airframe build is in progress and no real flights have happened yet.
+> **Status:** Active development, not flight-ready yet. The whole pipeline runs in simulation (PX4 SITL, auto-survey, bundle export). The airframe is still being built and it hasn't flown for real.
 
-Bennu produces versioned, signed, schema-validated mission bundles from autonomous survey flights. The bundles feed an independent geospatial analysis platform via a contract-first data interface.
+It flies an autonomous survey and packs the photos into a signed mission bundle. A separate mapping platform reads that bundle and does the heavy 3D/orthophoto work, so the drone and the analysis side stay decoupled and can change on their own. The bundle format is the only thing they share.
 
 ## Hardware
 
@@ -81,7 +81,7 @@ python -m pytest drone/ros2_ws/src/*/test/ tests/ -v
 # Lint
 ruff check .
 
-# Start simulation (requires Docker) — one command brings up PX4 SITL,
+# Start simulation (requires Docker). One command brings up PX4 SITL,
 # QGroundControl, and auto-flies a survey mission
 make sim
 ```
@@ -99,7 +99,7 @@ make sim
 
 ## Mission Bundle Contract
 
-The drone produces a versioned mission bundle — the only coupling point with downstream platforms:
+The drone produces a versioned mission bundle, the only coupling point with downstream platforms:
 
 ```
 {mission_id}/
@@ -142,4 +142,4 @@ Full documentation is at [fadi-labib.github.io/bennu](https://fadi-labib.github.
 
 ## License
 
-Apache-2.0 — see [LICENSE](LICENSE).
+Apache-2.0, see [LICENSE](LICENSE).
